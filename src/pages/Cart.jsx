@@ -26,6 +26,18 @@ const Cart = () => {
     }
   };
 
+  const DeleteFromCart = async (id) => {
+    try {
+      const response = await axios.delete(`/ecommerce/cart/item/${id}`, {
+        withCredentials: true,
+      });
+      console.log(response);
+      getCart();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     getCart();
   }, []);
@@ -40,7 +52,7 @@ const Cart = () => {
               onClick={() => {
                 item.quantity > 1
                   ? cartItemIncrement(item.product._id, item.quantity - 1)
-                  : alert("Quantity cannot be less than 1");
+                  : DeleteFromCart(item.product._id);
               }}
             >
               -
