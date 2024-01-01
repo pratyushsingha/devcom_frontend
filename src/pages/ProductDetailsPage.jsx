@@ -6,7 +6,7 @@ const ProductDetails = () => {
   const { id } = useParams();
   // console.log(id);
   const [ProductDetails, setProductDetails] = useState([]);
-  const { products, addToCart } = useContext(AppContext);
+  const { products, addToCart, quantity, setQuantity } = useContext(AppContext);
   useEffect(() => {
     const product = products.find((item) => item._id === id);
     if (product) {
@@ -23,10 +23,11 @@ const ProductDetails = () => {
           <h1>{item.name}</h1>
           <p>{item.description}</p>
           <p>&#8377;{item.price}</p>
+          <button onClick={() => addToCart(item._id,quantity)}>Add To Cart</button>
+          <button>Add To Wishlist</button>
         </div>
       ))}
-      <button onClick={addToCart(id)}>Add To Cart</button>
-      <button>Add To Wishlist</button>
+      <br />
     </>
   );
 };
