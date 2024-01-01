@@ -6,10 +6,11 @@ export const AppContext = createContext();
 export default function AppContextProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
+  const [categories, setCategories] = useState([]);
 
   const getProducts = async () => {
     try {
-      const response = await axios.get("/ecommerce/products?page=1&limit=10");
+      const response = await axios.get("/ecommerce/products?page=1&limit=12");
       setProducts(response.data.data.products);
     } catch (err) {
       alert(err);
@@ -17,6 +18,19 @@ export default function AppContextProvider({ children }) {
   };
   useEffect(() => {
     getProducts();
+  }, []);
+
+  const getCategory = async () => {
+    try {
+      const response = await axios.get("/ecommerce/categories?page=1&limit=10");
+      setCategories(response.data.data.categories);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getCategory();
   }, []);
 
   const addToCart = async (productId) => {
@@ -66,6 +80,8 @@ export default function AppContextProvider({ children }) {
     quantity,
     setQuantity,
     cartItemUpdate,
+    categories,
+    getCategory,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
