@@ -1,16 +1,29 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import ProductItem from "../components/ProductItem";
+import { CiHeart } from "react-icons/ci";
+import { IoHeartSharp } from "react-icons/io5";
+
+function getLocalWish() {
+  let wishes = localStorage.getItem("wish");
+  if (wishes) {
+    return JSON.parse(wishes);
+  } else {
+    return [];
+  }
+}
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const { products } = useContext(AppContext);
   // console.log(id);
   const [productDetails, setProductDetails] = useState([]);
   const [categoryId, setCategoryId] = useState();
   const [productCategory, setProductCategory] = useState([]);
   const { addToCart } = useContext(AppContext);
+  const [wishList, setWishList] = useState(getLocalWish());
 
   const getProductDetails = async (id) => {
     try {
@@ -35,6 +48,17 @@ const ProductDetails = () => {
     }
   };
 
+  function addToWish(id) {
+    const updatedWish = products.find((item) => item._id === id);
+    console.log(updatedWish);
+    setWishList([...wishList, updatedWish]);
+  }
+
+  function removeFromWish(id) {
+    const removeWish = wishList.filter((item) => item._id !== id);
+    setWishList(removeWish);
+  }
+
   useEffect(() => {
     getProductDetails(id);
     if (categoryId) {
@@ -42,25 +66,15 @@ const ProductDetails = () => {
     }
   }, [id, categoryId]);
 
+  useEffect(() => {
+    localStorage.setItem("wish", JSON.stringify(wishList));
+  }, [wishList]);
+
   return (
     <>
-      {productDetails.map((item) => (
-        // <div key={item._id}>
-        //   <p>This is product details {item._id} page</p>
-        //   <img src={item.mainImage && item.mainImage.url} alt="" />
-        //   <h1>{item.name}</h1>
-        //   <p>{item.description}</p>
-        //   <p>&#8377;{item.price}</p>
-        //   <button onClick={() => addToCart(item._id, quantity)}>
-        //     Add To Cart
-        //   </button>
-        //   <button>Add To Wishlist</button>
-        // </div>
-        <>
-          <section
-            key={item._id}
-            className="text-gray-600 body-font overflow-hidden"
-          >
+      {productDetails.map((item, index) => (
+        <div key={index}>
+          <section className="text-gray-600 body-font overflow-hidden">
             <div className="container px-5 py-24 mx-auto">
               <div className="lg:w-4/5 mx-auto flex flex-wrap">
                 <img
@@ -184,18 +198,21 @@ const ProductDetails = () => {
                     >
                       Add To Cart
                     </button>
-                    <button className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4">
-                      <svg
-                        fill="currentColor"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        className="w-5 h-5"
-                        viewBox="0 0 24 24"
+                    {wishList.some((item) => item._id === id) ? (
+                      <button
+                        onClick={() => removeFromWish(id)}
+                        className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4"
                       >
-                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z" />
-                      </svg>
-                    </button>
+                        <IoHeartSharp className="text-2xl" />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => addToWish(item._id)}
+                        className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4"
+                      >
+                        <CiHeart className="text-2xl" />
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -207,7 +224,7 @@ const ProductDetails = () => {
               <ProductItem key={item._id} product={item} />
             ))}
           </div>
-        </>
+        </div>
       ))}
       <br />
     </>
