@@ -7,11 +7,20 @@ export default function AppContextProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [categories, setCategories] = useState([]);
+  const [page, setpage] = useState(1);
+  const [itemOffset, setItemOffset] = useState(1);
+  const [cartProducts, setCartProducts] = useState([]);
+  const [cartTotal, setCartTotal] = useState();
+
+  const itemPerPage = 12;
 
   const getProducts = async () => {
     try {
-      const response = await axios.get("/ecommerce/products?page=1&limit=12");
+      const response = await axios.get(
+        `/ecommerce/products?page=${page}&limit=${itemPerPage}`
+      );
       setProducts(response.data.data.products);
+      // console.log(response)
     } catch (err) {
       alert(err);
     }
@@ -32,6 +41,18 @@ export default function AppContextProvider({ children }) {
   useEffect(() => {
     getCategory();
   }, []);
+
+  const endOffset = itemOffset + itemPerPage;
+  // console.log(`Loading products from ${itemOffset} to ${endOffset}`);
+  const currentItems = products.slice(itemOffset, endOffset);
+  const pageCount = Math.ceil(products.length / itemPerPage);
+
+  function handlePageClick(event) {
+    const newOffset = (event.selected * itemPerPage) % products.length;
+    setItemOffset(newOffset);
+    setpage(event.selected + 1);
+    getProducts();
+  }
 
   const addToCart = async (productId) => {
     try {
@@ -73,6 +94,40 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  const getCart = async () => {
+    try {
+      const response = await axios.get("ecommerce/cart", {
+        withCredentials: true,
+      });
+      setCartProducts(response.data.data.items);
+      setCartTotal(response.data.data.cartTotal);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const cartItemIncrement = async (id, quantity) => {
+    try {
+      await cartItemUpdate(id, quantity);
+      getCart();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const DeleteFromCart = async (id) => {
+    try {
+      const response = await axios.delete(`/ecommerce/cart/item/${id}`, {
+        withCredentials: true,
+      });
+      console.log(response);
+      getCart();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+
   const value = {
     getProducts,
     products,
@@ -82,6 +137,13 @@ export default function AppContextProvider({ children }) {
     cartItemUpdate,
     categories,
     getCategory,
+    handlePageClick,
+    pageCount,
+    getCart,
+    cartItemIncrement,
+    DeleteFromCart,
+    cartProducts,
+    cartTotal
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

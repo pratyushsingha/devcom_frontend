@@ -29,9 +29,11 @@ const Navbar = () => {
               <FaCartShopping />
             </button>
           </Link>
-          <button className="text-xl self-center py-2 pr-2 hover:text-blue-500">
-            <FaUser />
-          </button>
+          <Link to="/login">
+            <button className="text-xl self-center py-2 pr-2 hover:text-blue-500">
+              <FaUser />
+            </button>
+          </Link>
         </div>
       </div>
     </>

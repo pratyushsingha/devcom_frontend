@@ -1,10 +1,11 @@
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import ProductItem from "../components/ProductItem";
 import Sidebar from "../components/Sidebar";
+import ReactPaginate from "react-paginate";
 
 const ProductPage = () => {
-  const { products } = useContext(AppContext);
+  const { products, handlePageClick } = useContext(AppContext);
   const userRef = useRef();
 
   useEffect(() => {
@@ -23,10 +24,20 @@ const ProductPage = () => {
           placeholder="search by name"
         />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {products.map((item) => (
-            <ProductItem key={item._id} product={item} />
+          {products.map((item, index) => (
+            <ProductItem key={index} product={item} />
           ))}
         </div>
+        <ReactPaginate
+          className="flex space-x-3 justify-center items-center"
+          breakLabel="..."
+          nextLabel="next >"
+          onPageChange={handlePageClick}
+          pageRangeDisplayed={5}
+          pageCount={5}
+          previousLabel="< previous"
+          renderOnZeroPageCount={handlePageClick}
+        />
       </div>
     </div>
   );
