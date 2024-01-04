@@ -127,6 +127,15 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  const clearCart = async () => {
+    try {
+      const response = await axios.delete("ecommerce/cart/clear");
+      console.log(response);
+      getCart();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const value = {
     getProducts,
@@ -143,7 +152,8 @@ export default function AppContextProvider({ children }) {
     cartItemIncrement,
     DeleteFromCart,
     cartProducts,
-    cartTotal
+    cartTotal,
+    clearCart,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
