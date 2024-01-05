@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 
 const CartItem = ({ item }) => {
-  const { cartItemIncrement, DeleteFromCart } = useContext(AppContext);
+  const { cartItemIncrement, DeleteFromCart,addToWish } = useContext(AppContext);
   return (
     <>
       <div className="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
@@ -12,7 +12,7 @@ const CartItem = ({ item }) => {
           <Link to={`/product/${item.product._id}`}>
             <div className="w-20">
               <img
-                className="h-24"
+                className="h-24 rounded"
                 src={item.product.mainImage.url}
                 alt={item.product.name}
               />
@@ -20,7 +20,7 @@ const CartItem = ({ item }) => {
           </Link>
           <div className="flex flex-col justify-between ml-4 flex-grow">
             <span className="font-bold text-sm">{item.product.name}</span>
-            <span className="text-red-500 text-xs">Save to Wishlist</span>
+            <button onClick={()=>addToWish(item.product._id)} className="text-red-500 text-xs">Save to Wishlist</button>
           </div>
         </div>
         <div className="flex justify-center w-1/5">

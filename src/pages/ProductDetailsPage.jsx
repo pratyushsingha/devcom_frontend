@@ -4,26 +4,15 @@ import { AppContext } from "../context/AppContext";
 import axios from "axios";
 import ProductItem from "../components/ProductItem";
 import { CiHeart } from "react-icons/ci";
-import { IoHeartSharp } from "react-icons/io5";
-
-function getLocalWish() {
-  let wishes = localStorage.getItem("wish");
-  if (wishes) {
-    return JSON.parse(wishes);
-  } else {
-    return [];
-  }
-}
-
+import { IoHeartSharp } from "react-icons/io5"
 const ProductDetails = () => {
   const { id } = useParams();
-  const { products } = useContext(AppContext);
+  const { wishList, addToWish, removeFromWish } = useContext(AppContext);
   // console.log(id);
   const [productDetails, setProductDetails] = useState([]);
   const [categoryId, setCategoryId] = useState();
   const [productCategory, setProductCategory] = useState([]);
   const { addToCart } = useContext(AppContext);
-  const [wishList, setWishList] = useState(getLocalWish());
 
   const getProductDetails = async (id) => {
     try {
@@ -48,27 +37,12 @@ const ProductDetails = () => {
     }
   };
 
-  function addToWish(id) {
-    const updatedWish = products.find((item) => item._id === id);
-    console.log(updatedWish);
-    setWishList([...wishList, updatedWish]);
-  }
-
-  function removeFromWish(id) {
-    const removeWish = wishList.filter((item) => item._id !== id);
-    setWishList(removeWish);
-  }
-
   useEffect(() => {
     getProductDetails(id);
     if (categoryId) {
       similarProducts(categoryId);
     }
   }, [id, categoryId]);
-
-  useEffect(() => {
-    localStorage.setItem("wish", JSON.stringify(wishList));
-  }, [wishList]);
 
   return (
     <>
