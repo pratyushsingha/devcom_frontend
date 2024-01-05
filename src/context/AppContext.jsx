@@ -3,6 +3,15 @@ import axios from "axios";
 
 export const AppContext = createContext();
 
+function getLocalWish() {
+  let wishes = localStorage.getItem("wish");
+  if (wishes) {
+    return JSON.parse(wishes);
+  } else {
+    return [];
+  }
+}
+
 export default function AppContextProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
@@ -11,6 +20,12 @@ export default function AppContextProvider({ children }) {
   const [itemOffset, setItemOffset] = useState(1);
   const [cartProducts, setCartProducts] = useState([]);
   const [cartTotal, setCartTotal] = useState();
+  const [wishList, setWishList] = useState(getLocalWish());
+  const [couponCode, setCouponCode] = useState("");
+  const [disCountedTotal, setDisCountedTotal] = useState();
+  const [error, setError] = useState(false);
+  const [coupon, setCoupon] = useState(false);
+  const [allCoupon, setAllCoupon] = useState([]);
 
   const itemPerPage = 12;
 
@@ -25,9 +40,6 @@ export default function AppContextProvider({ children }) {
       alert(err);
     }
   };
-  useEffect(() => {
-    getProducts();
-  }, []);
 
   const getCategory = async () => {
     try {
@@ -37,10 +49,6 @@ export default function AppContextProvider({ children }) {
       console.log(err);
     }
   };
-
-  useEffect(() => {
-    getCategory();
-  }, []);
 
   const endOffset = itemOffset + itemPerPage;
   // console.log(`Loading products from ${itemOffset} to ${endOffset}`);
@@ -101,6 +109,7 @@ export default function AppContextProvider({ children }) {
       });
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
+      setDisCountedTotal(response.data.data.discountedTotal);
     } catch (err) {
       console.error(err);
     }
@@ -137,6 +146,83 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  function addToWish(id) {
+    const updatedWish = products.find((item) => item._id === id);
+    console.log(updatedWish);
+    setWishList([...wishList, updatedWish]);
+  }
+
+  function removeFromWish(id) {
+    const removeWish = wishList.filter((item) => item._id !== id);
+    setWishList(removeWish);
+  }
+
+  useEffect(() => {
+    localStorage.setItem("wish", JSON.stringify(wishList));
+  }, [wishList]);
+
+  const availableCoupons = async () => {
+    try {
+      const response = await axios.get(
+        "/ecommerce/coupons/customer/available?page=1&limit=10",
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response.data.data.coupons);
+      setAllCoupon(response.data.data.coupons)
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const applyCoupon = async (couponCode) => {
+    try {
+      const response = await axios.post(
+        "/ecommerce/coupons/c/apply",
+        {
+          couponCode: couponCode,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      setCoupon(true);
+      getCart();
+      setCouponCode("");
+      setError(false);
+    } catch (err) {
+      console.log(err);
+      setError(true);
+    }
+  };
+
+  const removeCoupon = async (couponCode) => {
+    try {
+      const response = await axios.post(
+        "/ecommerce/coupons/c/remove",
+        { couponCode: couponCode },
+        { withCredentials: true }
+      );
+      // console.log(response);
+      getCart();
+      setCoupon(false);
+      setError(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    getProducts();
+    getCategory();
+
+  }, []);
+
+  useEffect(() => {
+    availableCoupons();
+  }, [cartProducts]);
+
   const value = {
     getProducts,
     products,
@@ -154,6 +240,18 @@ export default function AppContextProvider({ children }) {
     cartProducts,
     cartTotal,
     clearCart,
+    wishList,
+    addToWish,
+    removeFromWish,
+    applyCoupon,
+    couponCode,
+    setCouponCode,
+    disCountedTotal,
+    setDisCountedTotal,
+    error,
+    removeCoupon,
+    coupon,
+    allCoupon
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
