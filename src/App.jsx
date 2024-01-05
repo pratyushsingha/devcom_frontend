@@ -8,6 +8,7 @@ import LoginPage from "./pages/auth/LoginPage";
 import Cart from "./pages/Cart";
 import Home from "./pages/Home";
 import WishList from "./pages/WishListPage";
+import Shipping from "./pages/Shipping";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/wishlist" element={<WishList />} />
+        <Route path="/shipping" element={<Shipping />} />
       </Routes>
     </div>
   );
