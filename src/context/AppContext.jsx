@@ -26,6 +26,15 @@ export default function AppContextProvider({ children }) {
   const [error, setError] = useState(false);
   const [coupon, setCoupon] = useState(false);
   const [allCoupon, setAllCoupon] = useState([]);
+  const [address, setAddress] = useState({
+    addressLine1: "",
+    addressLine2: "",
+    city: "",
+    state: "",
+    pincode: Number,
+    country: "India",
+  });
+  const [allAddress, setAllAddress] = useState([]);
 
   const itemPerPage = 12;
 
@@ -170,7 +179,7 @@ export default function AppContextProvider({ children }) {
         }
       );
       console.log(response.data.data.coupons);
-      setAllCoupon(response.data.data.coupons)
+      setAllCoupon(response.data.data.coupons);
     } catch (err) {
       console.log(err);
     }
@@ -213,10 +222,31 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  const getAddress = async () => {
+    try {
+      const response = await axios.get("/ecommerce/addresses");
+      // console.log(response);
+      setAllAddress(response.data.data.addresses);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const saveAddress = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post("ecommerce/addresses", address, {
+        withCredentials: true,
+      });
+      console.log(response);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   useEffect(() => {
     getProducts();
     getCategory();
-
   }, []);
 
   useEffect(() => {
@@ -251,7 +281,12 @@ export default function AppContextProvider({ children }) {
     error,
     removeCoupon,
     coupon,
-    allCoupon
+    allCoupon,
+    address,
+    setAddress,
+    saveAddress,
+    getAddress,
+    allAddress,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

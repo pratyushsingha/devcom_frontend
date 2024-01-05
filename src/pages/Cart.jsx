@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, uses } from "react";
+import React, { useContext, useEffect, useRef} from "react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
@@ -7,7 +7,7 @@ import { RxCross2 } from "react-icons/rx";
 import { BsFillBagHeartFill } from "react-icons/bs";
 import { BiSolidOffer } from "react-icons/bi";
 import Coupon from "../components/Coupon";
-// import { useRef } from "react";
+
 
 const Cart = () => {
   const dialogRef = useRef(null);
@@ -88,13 +88,22 @@ const Cart = () => {
                       <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
                         available coupons
                       </h1>
-                      <button className="mx-3" onClick={() => dialogRef.current.close()}>
+                      <button
+                        className="mx-3"
+                        onClick={() => dialogRef.current.close()}
+                      >
                         <RxCross2 className="text-2xl self-center" />
                       </button>
                     </div>
-                    {allCoupon.map((item) => (
-                      <Coupon key={item._id} item={item} />
-                    ))}
+                    {allCoupon.length > 0 ? (
+                      allCoupon.map((item) => (
+                        <Coupon key={item._id} item={item} />
+                      ))
+                    ) : (
+                      <p className="mx-5 text-center my-3 font-semibold">
+                        add more item to avail coupon
+                      </p>
+                    )}
                   </dialog>
                   <button
                     className="pb-8"
@@ -159,9 +168,11 @@ const Cart = () => {
                       ₹ {disCountedTotal < 0 ? cartTotal : disCountedTotal}
                     </span>
                   </div>
-                  <button className="bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md py-3 text-sm text-white uppercase w-full">
-                    Checkout
-                  </button>
+                  <Link to="/shipping">
+                    <button className="bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md py-3 text-sm text-white uppercase w-full">
+                      Checkout
+                    </button>
+                  </Link>
                 </div>
               </div>
             </div>
