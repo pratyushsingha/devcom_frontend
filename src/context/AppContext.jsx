@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import axios from "axios";
+import { MdOutlineAirlineSeatIndividualSuite } from "react-icons/md";
 
 export const AppContext = createContext();
 
@@ -239,6 +240,7 @@ export default function AppContextProvider({ children }) {
         withCredentials: true,
       });
       console.log(response);
+      getAddress();
     } catch (err) {
       console.log(err);
     }
@@ -247,6 +249,7 @@ export default function AppContextProvider({ children }) {
   useEffect(() => {
     getProducts();
     getCategory();
+    getAddress();
   }, []);
 
   useEffect(() => {
