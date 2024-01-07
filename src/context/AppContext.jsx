@@ -35,6 +35,14 @@ export default function AppContextProvider({ children }) {
     pincode: Number,
     country: "India",
   });
+
+  const [profileInfo, setProfileInfo] = useState({
+    avatar: "",
+    email: "",
+    username: "",
+    role: "",
+  });
+
   const [allAddress, setAllAddress] = useState([]);
 
   const itemPerPage = 12;
@@ -256,6 +264,23 @@ export default function AppContextProvider({ children }) {
     availableCoupons();
   }, [cartProducts]);
 
+  const getProfile = async () => {
+    try {
+      const response = await axios.get("/users/current-user");
+      // console.log(response.data.data.avatar.url);
+      setProfileInfo({
+        avatar: response.data.data.avatar.url,
+        email: response.data.data.email,
+        username: response.data.data.username,
+        role: response.data.data.role,
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
+
   const value = {
     getProducts,
     products,
@@ -290,6 +315,9 @@ export default function AppContextProvider({ children }) {
     saveAddress,
     getAddress,
     allAddress,
+    profileInfo,
+    setProfileInfo,
+    getProfile,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
