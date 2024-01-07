@@ -10,6 +10,8 @@ import Home from "./pages/Home";
 import WishList from "./pages/WishListPage";
 import Shipping from "./pages/Shipping";
 import SuccessPage from "./pages/SuccessPage";
+import Profile from "./pages/auth/Profile";
+import EditProfile from "./pages/auth/EditProfile";
 
 function App() {
   return (
@@ -25,6 +27,8 @@ function App() {
         <Route path="/wishlist" element={<WishList />} />
         <Route path="/shipping" element={<Shipping />} />
         <Route path="/paymentSuccess" element={<SuccessPage />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/profile/edit" element={<EditProfile />} />
       </Routes>
     </div>
   );
