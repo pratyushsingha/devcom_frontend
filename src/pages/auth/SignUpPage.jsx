@@ -2,12 +2,12 @@ import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ImCross } from "react-icons/im";
-import { TiInputChecked, TiTickOutline } from "react-icons/ti";
+import { TiInputChecked } from "react-icons/ti";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 
 const USER_REGEX = /^[a-zA-Z0-9]{3,20}$/;
 const PASS_REGEX =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-const EMAIL_REGEX = /^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$/;
 
 const SignUpPage = () => {
   const userRef = useRef();
@@ -16,15 +16,15 @@ const SignUpPage = () => {
   const [validUserName, setValidUserName] = useState(false);
   const [userFocus, setUserFocus] = useState(false);
 
-  const [validEmail, setValidEmail] = useState(false);
-  const [emailFocus, setEmailFOcus] = useState(false);
-
   const [validPassword, setValidPassword] = useState(false);
   const [passFocus, setPassFocus] = useState(false);
 
   const [cnfPass, setCnfPass] = useState("");
   const [validMatch, setValidMatch] = useState(false);
   const [matchFocus, setMatchFocus] = useState(false);
+
+  const [showPassword, setShowPassword] = useState(false);
+  const [cnfShowPassword, setCnfShowPassword] = useState(false);
 
   const [inputForm, setInputForm] = useState({
     email: "",
@@ -43,7 +43,7 @@ const SignUpPage = () => {
 
   useEffect(() => {
     const result = PASS_REGEX.test(inputForm.password);
-    console.log(result);
+    // console.log(result);
     setValidPassword(result);
     const match = inputForm.password === cnfPass;
     setValidMatch(match);
@@ -189,20 +189,33 @@ const SignUpPage = () => {
                 </span>
               </label>
               <div className="mt-2">
-                <input
-                  value={inputForm.password}
-                  onChange={(e) =>
-                    setInputForm({ ...inputForm, password: e.target.value })
-                  }
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  onFocus={() => setPassFocus(true)}
-                  onBlur={() => setPassFocus(false)}
-                  required
-                  className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
+                <div className="flex justify-between relative">
+                  <input
+                    value={inputForm.password}
+                    onChange={(e) =>
+                      setInputForm({ ...inputForm, password: e.target.value })
+                    }
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    onFocus={() => setPassFocus(true)}
+                    onBlur={() => setPassFocus(false)}
+                    required
+                    className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-none pr-8"
+                  />
+                  {showPassword ? (
+                    <AiFillEyeInvisible
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      onClick={() => setShowPassword(false)}
+                    />
+                  ) : (
+                    <AiFillEye
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      onClick={() => setShowPassword(true)}
+                    />
+                  )}
+                </div>
                 <p
                   className={
                     passFocus && inputForm.password && !validPassword
@@ -242,16 +255,29 @@ const SignUpPage = () => {
                 </span>
               </label>
               <div className="mt-2">
-                <input
-                  value={cnfPass}
-                  onChange={(e) => setCnfPass(e.target.value)}
-                  id="cnfPassword"
-                  name="cnfPassword"
-                  type="cnfPassword"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
+                <div className="flex justify-between relative">
+                  <input
+                    value={cnfPass}
+                    onChange={(e) => setCnfPass(e.target.value)}
+                    id="cnfPassword"
+                    name="cnfPassword"
+                    type={cnfShowPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-none pr-8"
+                  />
+                  {cnfShowPassword ? (
+                    <AiFillEyeInvisible
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      onClick={() => setCnfShowPassword(false)}
+                    />
+                  ) : (
+                    <AiFillEye
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      onClick={() => setCnfShowPassword(true)}
+                    />
+                  )}
+                </div>
                 <p
                   className={
                     matchFocus && cnfPass && !validMatch
