@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect, useContext } from "react";
+import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
@@ -12,6 +13,7 @@ const LoginPage = () => {
     username: "",
   });
   const [errMsg, setErrMsg] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     userRef.current.focus();
@@ -109,18 +111,31 @@ const LoginPage = () => {
                 </div>
               </div>
               <div className="mt-2">
-                <input
-                  value={inputForm.password}
-                  onChange={(e) =>
-                    setInputForm({ ...inputForm, password: e.target.value })
-                  }
-                  id="password"
-                  name="password"
-                  type="password"
-                  autoComplete="current-password"
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
+              <div className="flex justify-between relative">
+                  <input
+                    value={inputForm.password}
+                    onChange={(e) =>
+                      setInputForm({ ...inputForm, password: e.target.value })
+                    }
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="current-password"
+                    required
+                    className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-none pr-8"
+                  />
+                  {showPassword ? (
+                    <AiFillEyeInvisible
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      onClick={() => setShowPassword(false)}
+                    />
+                  ) : (
+                    <AiFillEye
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      onClick={() => setShowPassword(true)}
+                    />
+                  )}
+                </div>
               </div>
             </div>
 
