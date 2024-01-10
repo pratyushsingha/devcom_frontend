@@ -12,6 +12,8 @@ import Shipping from "./pages/Shipping";
 import SuccessPage from "./pages/SuccessPage";
 import Profile from "./pages/auth/Profile";
 import EditProfile from "./pages/auth/EditProfile";
+import ForgotPassword from "./pages/auth/ForgotPassword";
+import ResetPass from "./pages/auth/ResetPass";
 
 function App() {
   return (
@@ -29,6 +31,8 @@ function App() {
         <Route path="/paymentSuccess" element={<SuccessPage />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/profile/edit" element={<EditProfile />} />
+        <Route path="login/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:resetToken" element={<ResetPass />} />
       </Routes>
     </div>
   );
