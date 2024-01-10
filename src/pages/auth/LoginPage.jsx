@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+
   const userRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
@@ -99,12 +100,12 @@ const LoginPage = () => {
                   Password
                 </label>
                 <div className="text-sm">
-                  <a
-                    href="#"
+                  <Link
+                    to="forgot-password"
                     className="font-semibold text-indigo-600 hover:text-indigo-500"
                   >
                     Forgot password?
-                  </a>
+                  </Link>
                 </div>
               </div>
               <div className="mt-2">
