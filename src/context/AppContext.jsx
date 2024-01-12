@@ -1,6 +1,8 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { MdOutlineAirlineSeatIndividualSuite } from "react-icons/md";
+import { AuthContext } from "./AuthContext";
+import toast from "react-hot-toast";
 
 export const AppContext = createContext();
 
@@ -14,6 +16,7 @@ function getLocalWish() {
 }
 
 export default function AppContextProvider({ children }) {
+  const { auth } = useContext(AuthContext);
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [categories, setCategories] = useState([]);
@@ -82,21 +85,28 @@ export default function AppContextProvider({ children }) {
 
   const addToCart = async (productId) => {
     try {
-      const cartItems = await axios.get("/ecommerce/cart", {
-        withCredentials: true,
-      });
-
-      const cartProductIds = cartItems.data.data.items.map(
-        (item) => item.product._id
-      );
-
-      if (cartProductIds.includes(productId)) {
-        navigate("/cart");
-      } else {
-        const response = await axios.post(`/ecommerce/cart/item/${productId}`, {
+      if (auth?.accessToken) {
+        const cartItems = await axios.get("/ecommerce/cart", {
           withCredentials: true,
         });
-        console.log("new item added", response);
+
+        const cartProductIds = cartItems.data.data.items.map(
+          (item) => item.product._id
+        );
+
+        if (cartProductIds.includes(productId)) {
+          navigate("/cart");
+        } else {
+          const response = await axios.post(
+            `/ecommerce/cart/item/${productId}`,
+            {
+              withCredentials: true,
+            }
+          );
+          console.log("new item added", response);
+        }
+      } else {
+        toast.error("please login to add item in cart");
       }
     } catch (err) {
       console.error(err);
@@ -165,9 +175,14 @@ export default function AppContextProvider({ children }) {
   };
 
   function addToWish(id) {
-    const updatedWish = products.find((item) => item._id === id);
-    console.log(updatedWish);
-    setWishList([...wishList, updatedWish]);
+    if (auth?.accessToken) {
+      const updatedWish = products.find((item) => item._id === id);
+      console.log(updatedWish);
+      setWishList([...wishList, updatedWish]);
+    }
+    else{
+      toast.error("please login add in wishlist")
+    }
   }
 
   function removeFromWish(id) {
@@ -187,7 +202,7 @@ export default function AppContextProvider({ children }) {
           withCredentials: true,
         }
       );
-      console.log(response.data.data.coupons);
+      // console.log(response.data.data.coupons);
       setAllCoupon(response.data.data.coupons);
     } catch (err) {
       console.log(err);
@@ -278,8 +293,6 @@ export default function AppContextProvider({ children }) {
       console.log(err);
     }
   };
-
-
 
   const value = {
     getProducts,

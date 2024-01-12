@@ -16,10 +16,6 @@ const DropZone = ({ files, setFiles, rejected, setRejected }) => {
     onDrop,
   });
 
-  useEffect(() => {
-    console.log(files);
-  }, [files]);
-
   return (
     <>
       <div {...getRootProps()}>
