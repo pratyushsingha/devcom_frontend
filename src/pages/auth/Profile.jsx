@@ -4,24 +4,55 @@ import ProfileSidebar from "../../components/ProfileSidebar";
 import { FaEdit } from "react-icons/fa";
 import { CgDanger } from "react-icons/cg";
 import { Link } from "react-router-dom";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import Container from "../../components/Container";
+import Input from "../../components/Input";
+import { useForm } from "react-hook-form";
+import Button from "../../components/Button";
+import { toast } from "react-hot-toast";
+import axios from "axios";
 
 const Profile = () => {
   const { profileInfo, getProfile } = useContext(AppContext);
   const [showPassword, setShowPassword] = useState(false);
   const [cnfShowPassword, setCnfShowPassword] = useState(false);
+  const { register, handleSubmit, formState } = useForm({
+    newPassword: "",
+    oldPassword: "",
+  });
+
+  const { errors } = formState;
+
+  const changePassword = async ({ newPassword, oldPassword }) => {
+    try {
+      const data = await axios.post(
+        "/users/change-password",
+        {
+          newPassword: newPassword,
+          oldPassword: oldPassword,
+        },
+        { withCredentials: true }
+      );
+      // console.log(data);
+      toast.success("password changed successfully");
+    } catch (err) {
+      // console.log(err);
+      toast.error(err.message);
+    }
+  };
 
   useEffect(() => {
     getProfile();
   }, [useEffect]);
 
   return (
-    <Container className="flex">
+    <Container className="flex mt-10 justify-evenly">
+      <div>
         <ProfileSidebar />
+      </div>
       <div className="flex flex-col space-y-4">
         <h1 className="text-3xl mb-3">My Profile</h1>
-        <div className="flex space-x-12 items-center justify-between">
+        <div className="flex space-x-12 items-center justify-between bg-slate-200 rounded p-3">
           <img
             className="rounded-full w-32 h-32"
             src={profileInfo.avatar}
@@ -33,87 +64,79 @@ const Profile = () => {
             <p className="text-green-500 font-extrabold">{profileInfo.role}</p>
           </div>
           <Link to="/profile/edit">
-            <button className="flex space-x-2 bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md px-3 py-2 text-sm text-white uppercase w-full">
+            <Button className="flex space-x-2 bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md px-3 py-2 text-sm text-white uppercase w-full">
               <p className="text-lg">edit</p>
               <FaEdit className="self-center" />
-            </button>
+            </Button>
           </Link>
         </div>
         <div className="flex space-x-3 text-xl font-bold w-full">
           <CgDanger className="self-center" />
           <p>Danzer Zone</p>
         </div>
-        <div className="border rounded border-red-500 p-3">
-          <div className="flex space-x-6">
+        <div className="border-2 border-dotted rounded border-red-500 p-3">
+          <p className="text-center mb-5 font-semibold">Change password</p>
+          <form onSubmit={handleSubmit(changePassword)}>
             <div>
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Password
-              </label>
-              <div className="mt-2">
-                <div className="flex justify-between relative">
-                  <input
-                    // value={inputForm.password}
-                    // onChange={(e) =>
-                    //   setInputForm({ ...inputForm, password: e.target.value })
-                    // }
-                    id="password"
-                    name="password"
+              <div className="flex space-x-6">
+                <div className="relative">
+                  <Input
+                    label="Old password"
                     type={showPassword ? "text" : "password"}
-                    required
-                    className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-none pr-8"
+                    {...register("oldPassword", {
+                      required: true,
+                    })}
                   />
-                  {showPassword ? (
-                    <AiFillEyeInvisible
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(false)}
-                    />
-                  ) : (
-                    <AiFillEye
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(true)}
-                    />
-                  )}
+                  <div className="absolute bottom-1 right-2 flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="rounded-full  mt-10 w-7 h-7 flex items-center justify-center hover:bg-gray-400 focus:outline-none"
+                    >
+                      {showPassword ? (
+                        <AiOutlineEyeInvisible />
+                      ) : (
+                        <AiOutlineEye />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </div>
-            <div>
-              <label
-                htmlFor="cnfPassword"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Confirm Password
-              </label>
-              <div className="mt-2">
-                <div className="flex justify-between relative">
-                  <input
-                    // value={inputForm.password}
-                    // onChange={(e) =>
-                    //   setInputForm({ ...inputForm, password: e.target.value })
-                    // }
-                    id="cnfPassword"
-                    name="cnfPassword"
+                <p className="text-red-600">{errors.oldPassword?.message}</p>
+                <div className="relative">
+                  <Input
+                    label="New password"
                     type={cnfShowPassword ? "text" : "password"}
-                    required
-                    className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-none pr-8"
+                    {...register("newPassword", {
+                      required: true,
+                      validate: {
+                        matchPattern: (value) =>
+                          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+                            value
+                          ) || "password must be strong",
+                      },
+                    })}
                   />
-                  {cnfShowPassword ? (
-                    <AiFillEyeInvisible
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(false)}
-                    />
-                  ) : (
-                    <AiFillEye
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(true)}
-                    />
-                  )}
+                  <div className="absolute bottom-1 right-2 flex items-center">
+                    <button
+                      type="button"
+                      onClick={() => setCnfShowPassword(!cnfShowPassword)}
+                      className="rounded-full  mt-10 w-7 h-7 flex items-center justify-center hover:bg-gray-400 focus:outline-none"
+                    >
+                      {cnfShowPassword ? (
+                        <AiOutlineEyeInvisible />
+                      ) : (
+                        <AiOutlineEye />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
+              <div className="flex justify-between mt-3 mr-9">
+                <p className="text-red-600">{errors.newPassword?.message}</p>
+                <Button type="submit">Save</Button>
+              </div>
             </div>
-          </div>
+          </form>
         </div>
       </div>
     </Container>
