@@ -7,6 +7,7 @@ import { RxCross2 } from "react-icons/rx";
 import { BsFillBagHeartFill } from "react-icons/bs";
 import { BiSolidOffer } from "react-icons/bi";
 import Coupon from "../components/Coupon";
+import Container from "../components/Container";
 
 
 const Cart = () => {
@@ -31,7 +32,7 @@ const Cart = () => {
     getCart();
   }, []);
   return (
-    <>
+    <Container>
       {cartProducts.length > 0 ? (
         <>
           <div className="container mx-auto mt-10">
@@ -190,7 +191,7 @@ const Cart = () => {
           </div>
         </>
       )}
-    </>
+    </Container>
   );
 };
 

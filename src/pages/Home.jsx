@@ -1,6 +1,7 @@
 import React from "react";
 import ProductItem from "../components/ProductItem";
 import { Link } from "react-router-dom";
+import Container from "../components/Container";
 
 const HomeProducts = [
   {
@@ -166,7 +167,7 @@ const HomeProducts = [
 
 const Home = () => {
   return (
-    <div className="mx-20">
+    <Container>
       <div className="flex justify-center items-center">
         <img
           className="w-fit-content"
@@ -180,7 +181,7 @@ const Home = () => {
           <ProductItem key={item._id} product={item} />
         ))}
       </div>
-    </div>
+    </Container>
   );
 };
 

@@ -5,6 +5,7 @@ import axios from "axios";
 import ProductItem from "../components/ProductItem";
 import { CiHeart } from "react-icons/ci";
 import { IoHeartSharp } from "react-icons/io5"
+import Container from "../components/Container";
 const ProductDetails = () => {
   const { id } = useParams();
   const { wishList, addToWish, removeFromWish } = useContext(AppContext);
@@ -45,7 +46,7 @@ const ProductDetails = () => {
   }, [id, categoryId]);
 
   return (
-    <>
+    <Container>
       {productDetails.map((item, index) => (
         <div key={index}>
           <section className="text-gray-600 body-font overflow-hidden">
@@ -201,7 +202,7 @@ const ProductDetails = () => {
         </div>
       ))}
       <br />
-    </>
+    </Container>
   );
 };
 

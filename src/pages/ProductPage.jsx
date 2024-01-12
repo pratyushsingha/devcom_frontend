@@ -3,6 +3,7 @@ import { AppContext } from "../context/AppContext";
 import ProductItem from "../components/ProductItem";
 import Sidebar from "../components/Sidebar";
 import ReactPaginate from "react-paginate";
+import Container from "../components/Container";
 
 const ProductPage = () => {
   const { products, handlePageClick } = useContext(AppContext);
@@ -13,7 +14,7 @@ const ProductPage = () => {
   }, []);
 
   return (
-    <div className="flex flex-col lg:flex-row space-x-10">
+    <Container className="flex flex-col lg:flex-row space-x-10">
       <Sidebar />
       <div>
         <h1 className="text-3xl mt-10">PRODUCTS</h1>
@@ -39,7 +40,7 @@ const ProductPage = () => {
           renderOnZeroPageCount={handlePageClick}
         />
       </div>
-    </div>
+    </Container>
   );
 };
 

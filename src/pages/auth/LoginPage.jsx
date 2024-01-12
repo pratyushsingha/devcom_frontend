@@ -7,6 +7,7 @@ import Input from "../../components/Input";
 import { Spinner } from "../../components";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { AuthContext } from "../../context/AuthContext";
+import Container from "../../components/Container";
 const LoginPage = () => {
   const { auth,setAuth } = useContext(AuthContext);
   const userRef = useRef();
@@ -61,7 +62,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div>
+    <Container>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -135,7 +136,7 @@ const LoginPage = () => {
           </p>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 
