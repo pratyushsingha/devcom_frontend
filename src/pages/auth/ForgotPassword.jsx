@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
+import Container from "../../components/Container";
 
 const ForgotPassword = () => {
   const userRef = useRef(AppContext);
@@ -25,7 +26,7 @@ const ForgotPassword = () => {
   }, []);
   
   return (
-    <div className="flex justify-center items-center h-screen">
+    <Container className="flex justify-center items-center h-screen">
       <div className="">
         <label
           htmlFor="email"
@@ -50,7 +51,7 @@ const ForgotPassword = () => {
           send verification link
         </button>
       </div>
-    </div>
+    </Container>
   );
 };
 

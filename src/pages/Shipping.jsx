@@ -3,6 +3,7 @@ import { AppContext } from "../context/AppContext";
 import AddressForm from "../components/AddressForm";
 import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
+import Container from "../components/Container";
 
 const Shipping = () => {
   const dialogRef = useRef(null);
@@ -67,7 +68,7 @@ const Shipping = () => {
   };
 
   return (
-    <div className="my-10">
+    <Container className="my-10">
       <h1 className="text-2xl uppercase">Delivery address</h1>
       {allAddress.length > 0 ? (
         allAddress.map((item) => (
@@ -121,7 +122,7 @@ const Shipping = () => {
           </button>
         </div>
       )}
-    </div>
+    </Container>
   );
 };
 

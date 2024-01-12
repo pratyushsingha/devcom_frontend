@@ -85,7 +85,7 @@ export default function AppContextProvider({ children }) {
 
   const addToCart = async (productId) => {
     try {
-      if (auth?.accessToken) {
+      if (localStorage.getItem("accessToken")) {
         const cartItems = await axios.get("/ecommerce/cart", {
           withCredentials: true,
         });
@@ -95,7 +95,7 @@ export default function AppContextProvider({ children }) {
         );
 
         if (cartProductIds.includes(productId)) {
-          navigate("/cart");
+          toast.success("already added to cart");
         } else {
           const response = await axios.post(
             `/ecommerce/cart/item/${productId}`,
@@ -124,7 +124,7 @@ export default function AppContextProvider({ children }) {
           withCredentials: true,
         }
       );
-      console.log(response);
+      // console.log(response);
     } catch (err) {
       console.error(err);
     }
@@ -175,13 +175,12 @@ export default function AppContextProvider({ children }) {
   };
 
   function addToWish(id) {
-    if (auth?.accessToken) {
+    if (localStorage.getItem("accessToken")) {
       const updatedWish = products.find((item) => item._id === id);
       console.log(updatedWish);
       setWishList([...wishList, updatedWish]);
-    }
-    else{
-      toast.error("please login add in wishlist")
+    } else {
+      toast.error("please login add in wishlist");
     }
   }
 

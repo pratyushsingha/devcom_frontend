@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Container from "../../components/Container";
 
 const ResetPass = () => {
   const userRef = useRef();
@@ -43,7 +44,7 @@ const ResetPass = () => {
   }, [cnfPass, resetPass]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <Container className="flex justify-center items-center h-screen">
       <form onSubmit={passWordReset}>
         <div className="">
           <label
@@ -95,7 +96,7 @@ const ResetPass = () => {
           </button>
         </div>
       </form>
-    </div>
+    </Container>
   );
 };
 

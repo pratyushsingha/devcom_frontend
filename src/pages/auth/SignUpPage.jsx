@@ -8,6 +8,7 @@ import Button from "../../components/Button";
 import toast from "react-hot-toast";
 import { Spinner } from "../../components";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import Container from "../../components/Container";
 
 const SignUpPage = () => {
   const userRef = useRef();
@@ -57,7 +58,7 @@ const SignUpPage = () => {
 
   return (
     <>
-      <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
+      <Container className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
             className="mx-auto w-2/5"
@@ -172,7 +173,7 @@ const SignUpPage = () => {
             </Link>
           </p>
         </div>
-      </div>
+      </Container>
     </>
   );
 };

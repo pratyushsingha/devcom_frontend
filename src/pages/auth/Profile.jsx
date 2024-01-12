@@ -5,6 +5,7 @@ import { FaEdit } from "react-icons/fa";
 import { CgDanger } from "react-icons/cg";
 import { Link } from "react-router-dom";
 import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import Container from "../../components/Container";
 
 const Profile = () => {
   const { profileInfo, getProfile } = useContext(AppContext);
@@ -16,8 +17,8 @@ const Profile = () => {
   }, [useEffect]);
 
   return (
-    <div className="flex space-x-20 my-10">
-      <ProfileSidebar />
+    <Container className="flex">
+        <ProfileSidebar />
       <div className="flex flex-col space-y-4">
         <h1 className="text-3xl mb-3">My Profile</h1>
         <div className="flex space-x-12 items-center justify-between">
@@ -115,7 +116,7 @@ const Profile = () => {
           </div>
         </div>
       </div>
-    </div>
+    </Container>
   );
 };
 

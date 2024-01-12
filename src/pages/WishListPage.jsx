@@ -2,12 +2,13 @@ import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import WishItem from "../components/WishItem";
+import Container from "../components/Container";
 
 const WishListPage = () => {
   const { wishList } = useContext(AppContext);
 
   return (
-    <>
+    <Container>
       {wishList.length > 0 ? (
         <div className="container mx-auto mt-10">
           <div className="flex shadow-md my-10">
@@ -59,7 +60,7 @@ const WishListPage = () => {
           </Link>
         </div>
       )}
-    </>
+    </Container>
   );
 };
 

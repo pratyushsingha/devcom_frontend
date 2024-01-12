@@ -3,6 +3,7 @@ import { AppContext } from "../../context/AppContext";
 import ProfileSidebar from "../../components/ProfileSidebar";
 import axios from "axios";
 import DropZone from "../../components/DropZone";
+import Container from "../../components/Container";
 
 const EditProfile = () => {
   const [files, setFiles] = useState([]);
@@ -75,7 +76,7 @@ const EditProfile = () => {
 
   return (
     <>
-      <div className="flex space-x-10">
+      <Container className="flex space-x-10">
         <ProfileSidebar />
         <div className="flex flex-col space-y-2">
           <input
@@ -112,7 +113,7 @@ const EditProfile = () => {
         <p>Upload avatar</p>
         <DropZone files={files} setFiles={setFiles} />
         <button onClick={updateAvatar}>update image</button>
-      </div>
+      </Container>
     </>
   );
 };

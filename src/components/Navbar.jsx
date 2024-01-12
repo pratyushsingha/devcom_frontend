@@ -3,10 +3,11 @@ import "../index.css";
 import { FaSearch, FaUser } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 import { Link } from "react-router-dom";
+import Container from "./Container";
 
 const Navbar = () => {
   return (
-    <>
+    <Container>
       <div className="flex flex-row justify-between">
         <Link to="/">
           <div className="self-center">
@@ -36,7 +37,7 @@ const Navbar = () => {
           </Link>
         </div>
       </div>
-    </>
+    </Container>
   );
 };
 
