@@ -4,6 +4,9 @@ import ProfileSidebar from "../../components/ProfileSidebar";
 import axios from "axios";
 import DropZone from "../../components/DropZone";
 import Container from "../../components/Container";
+import { toast } from "react-hot-toast";
+import Button from "../../components/Button";
+import Input from "../../components/Input";
 
 const EditProfile = () => {
   const [files, setFiles] = useState([]);
@@ -54,9 +57,11 @@ const EditProfile = () => {
         const data = await axios.patch("/users/avatar", formData, {
           withCredentials: true,
         });
-        console.log(data);
+        // console.log(data);
+        toast.success("avatar updated successfully");
       } catch (err) {
         console.log(err);
+        toast.error(err.message);
       }
     }
   };
@@ -76,43 +81,54 @@ const EditProfile = () => {
 
   return (
     <>
-      <Container className="flex space-x-10">
-        <ProfileSidebar />
-        <div className="flex flex-col space-y-2">
-          <input
-            type="text"
-            value={profileDetails.firstName}
-            onChange={(e) => handleInputChange(e, "firstName")}
-            placeholder="First Name"
-          />
-          <input
-            type="text"
-            value={profileDetails.lastName}
-            onChange={(e) => handleInputChange(e, "lastName")}
-            placeholder="Last Name"
-          />
-          <input
-            type="text"
-            value={profileDetails.countryCode}
-            onChange={(e) => handleInputChange(e, "countryCode")}
-            placeholder="+91"
-          />
-          <input
-            type="text"
-            value={profileDetails.phoneNumber}
-            onChange={(e) => handleInputChange(e, "phoneNumber")}
-            placeholder="0123456789"
-          />
-          <button
-            onClick={() => updateProfile(profileDetails)}
-            disabled={isSaveDisabled}
-          >
-            save
-          </button>
+      <Container className="flex mt-10 justify-evenly">
+        <div>
+          <ProfileSidebar />
         </div>
-        <p>Upload avatar</p>
-        <DropZone files={files} setFiles={setFiles} />
-        <button onClick={updateAvatar}>update image</button>
+        <div className="space-y-5">
+          <div className="flex flex-col space-y-2 rounded bg-slate-200 p-3">
+            <form onSubmit={updateProfile}>
+              <h1 className="text-3xl mb-3">Personal Information</h1>
+              <Input
+                label="First Name"
+                value={profileDetails.firstName}
+                onChange={(e) => handleInputChange(e, "firstName")}
+                placeholder="Enter ur First Name"
+              />
+              <Input
+                label="First Name"
+                value={profileDetails.lastName}
+                onChange={(e) => handleInputChange(e, "lastName")}
+                placeholder="Enter ur Last Name"
+              />
+              <Input
+                label="County Code"
+                value={profileDetails.countryCode}
+                onChange={(e) => handleInputChange(e, "countryCode")}
+                placeholder="+91"
+              />
+              <Input
+                label="Phone Number"
+                type="number"
+                value={profileDetails.phoneNumber}
+                onChange={(e) => handleInputChange(e, "phoneNumber")}
+                placeholder="0123456789"
+              />
+              <Button
+                classname="mt-3 w-full"
+                onClick={() => updateProfile(profileDetails)}
+                disabled={isSaveDisabled}
+              >
+                save
+              </Button>
+            </form>
+          </div>
+          <div className="rounded bg-slate-200 p-3">
+            <h1 className="text-3xl my-5">Upload Avatar</h1>
+            <DropZone files={files} setFiles={setFiles} />
+            <Button classname="w-full max-lg mt-3" onClick={updateAvatar}>Upload</Button>
+          </div>
+        </div>
       </Container>
     </>
   );

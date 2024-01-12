@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { AppContext } from "../../context/AppContext";
 import axios from "axios";
 import Container from "../../components/Container";
+import Button from "../../components/Button";
 
 const ForgotPassword = () => {
   const userRef = useRef(AppContext);
@@ -15,7 +16,7 @@ const ForgotPassword = () => {
         { email: email },
         { withCredentials: true }
       );
-      console.log(data);
+      // console.log(data);
     } catch (err) {
       console.log(err);
     }
@@ -24,7 +25,6 @@ const ForgotPassword = () => {
   useEffect(() => {
     userRef.current.focus();
   }, []);
-  
   return (
     <Container className="flex justify-center items-center h-screen">
       <div className="">
@@ -47,9 +47,12 @@ const ForgotPassword = () => {
             className="block rounded-md border-0 px-2 py-1.5 my-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
-        <button onClick={forgotPass} className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        <Button
+          onClick={forgotPass}
+          className="w-full"
+        >
           send verification link
-        </button>
+        </Button>
       </div>
     </Container>
   );

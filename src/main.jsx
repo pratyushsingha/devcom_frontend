@@ -108,7 +108,7 @@ const router = createBrowserRouter([
       {
         path: "/forget-password",
         element: (
-          <AuthLayout>
+          <AuthLayout authentication={false}>
             <ForgotPassword />
           </AuthLayout>
         ),
@@ -116,7 +116,7 @@ const router = createBrowserRouter([
       {
         path: "/reset-password/:resetToken",
         element: (
-          <AuthLayout authentication>
+          <AuthLayout authentication={false}>
             <ResetPass />
           </AuthLayout>
         ),
