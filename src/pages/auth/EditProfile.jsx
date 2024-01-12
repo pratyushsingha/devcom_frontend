@@ -5,7 +5,6 @@ import axios from "axios";
 import DropZone from "../../components/DropZone";
 
 const EditProfile = () => {
-  const { profileInfo, setProfileInfo } = useContext(AppContext);
   const [files, setFiles] = useState([]);
   const [profileDetails, setProfileDetails] = useState({
     firstName: "",

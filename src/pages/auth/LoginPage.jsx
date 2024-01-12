@@ -1,60 +1,67 @@
 import axios from "axios";
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
-
+import Input from "../../components/Input";
+import { Spinner } from "../../components";
+import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { AuthContext } from "../../context/AuthContext";
 const LoginPage = () => {
-
+  const { auth,setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
-  const [inputForm, setInputForm] = useState({
-    password: "",
+
+  const { register, handleSubmit, formState } = useForm({
     username: "",
+    password: "",
   });
-  const [errMsg, setErrMsg] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
 
-  useEffect(() => {
-    userRef.current.focus();
-  }, []);
+  const [loader, setLoader] = useState(false);
+  const { errors } = formState;
+  const [showPassword, setShowPassword] = useState(null);
 
-  useEffect(() => {
-    setErrMsg("");
-  }, [inputForm.username, inputForm.password]);
+  // useEffect(() => {
+  //   userRef.current.focus();
+  // }, []);
 
-  const login = async (e) => {
-    e.preventDefault();
+  const login = async ({ username, password }) => {
     try {
-      const response = await axios.post("/users/login", inputForm);
-      //   console.log(response);
-      const accessToken = response.data.data.accessToken;
-      // console.log(accessToken);
-      //   console.log(auth);
-      if (accessToken) {
-        navigate("/products");
+      if (localStorage.getItem("accessToken")) {
+        navigate("/profile");
+      } else {
+        const response = await axios.post("/users/login", {
+          password: password,
+          username: username,
+        });
+        console.log(response.data.data);
+        const accessToken = response.data.data.accessToken;
+        // console.log(accessToken);
+        //   console.log(auth);
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
+          setAuth(response.data.data);
+          toast.success(`welcome ${response.data.data.user.username}`);
+          navigate("/profile");
+        }
       }
-      //   console.log(auth);
     } catch (err) {
       console.log(err);
       if (!err.response) {
-        setErrMsg("no server response");
+        toast.error("no server response");
       } else if (err.response?.status === 400) {
-        setErrMsg("missing username or password");
+        toast.error("missing username or password");
       } else if (err.response?.status === 401) {
-        setErrMsg("unAuthorized");
+        toast.error("unAuthorized");
       } else {
-        setErrMsg("login failed");
+        toast.error("login failed");
       }
-      errRef.current.focus();
     }
   };
 
   return (
     <div>
-      <p ref={errRef} aria-live="assertive">
-        {errMsg}
-      </p>
       <div className="flex min-h-full flex-1 flex-col justify-center px-6 py-12 lg:px-8">
         <div className="sm:mx-auto sm:w-full sm:max-w-sm">
           <img
@@ -68,82 +75,50 @@ const LoginPage = () => {
         </div>
 
         <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-          <form className="space-y-6" onSubmit={login}>
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium leading-6 text-gray-900"
-              >
-                Email address
-              </label>
-              <div className="mt-2">
-                <input
-                  ref={userRef}
-                  value={inputForm.username}
-                  onChange={(e) =>
-                    setInputForm({ ...inputForm, username: e.target.value })
-                  }
-                  id="username"
-                  name="username"
-                  type="text"
-                  autoComplete="email"
-                  required
-                  className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor="password"
-                  className="block text-sm font-medium leading-6 text-gray-900"
+          <form className="space-y-6" onSubmit={handleSubmit(login)}>
+            <Input
+              label="username"
+              placeholder="enter ur username"
+              {...register("username", {
+                required: true,
+              })}
+            />
+            <p className="text-red-600">{errors.username?.message}</p>
+            <div className="relative">
+              <Input
+                label="password"
+                type={showPassword ? "text" : "password"}
+                placeholder="enter ur password"
+                {...register("password", {
+                  required: true,
+                })}
+              />
+              <div className="absolute bottom-1 right-2 flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="rounded-full  mt-10 w-7 h-7 flex items-center justify-center hover:bg-gray-400 focus:outline-none"
                 >
-                  Password
-                </label>
-                <div className="text-sm">
-                  <Link
-                    to="forgot-password"
-                    className="font-semibold text-indigo-600 hover:text-indigo-500"
-                  >
-                    Forgot password?
-                  </Link>
-                </div>
-              </div>
-              <div className="mt-2">
-              <div className="flex justify-between relative">
-                  <input
-                    value={inputForm.password}
-                    onChange={(e) =>
-                      setInputForm({ ...inputForm, password: e.target.value })
-                    }
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    autoComplete="current-password"
-                    required
-                    className="block w-full px-3 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 border-none pr-8"
-                  />
-                  {showPassword ? (
-                    <AiFillEyeInvisible
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(false)}
-                    />
-                  ) : (
-                    <AiFillEye
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
-                      onClick={() => setShowPassword(true)}
-                    />
-                  )}
-                </div>
+                  {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+                </button>
               </div>
             </div>
 
+            <p className="text-red-600">{errors.password?.message}</p>
+            <div className="text-sm">
+              <Link
+                to="/forget-password"
+                className="flex justify-end font-semibold text-indigo-600 hover:text-indigo-500"
+              >
+                Forget password?
+              </Link>
+            </div>
             <div>
               <button
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
+                {loader && <Spinner />}
                 Sign in
               </button>
             </div>
