@@ -9,7 +9,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { AuthContext } from "../../context/AuthContext";
 import Container from "../../components/Container";
 const LoginPage = () => {
-  const { auth,setAuth } = useContext(AuthContext);
+  const { auth, setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
@@ -38,10 +38,12 @@ const LoginPage = () => {
         });
         console.log(response.data.data);
         const accessToken = response.data.data.accessToken;
+        const refreshToken = response.data.data.refreshToken;
         // console.log(accessToken);
         //   console.log(auth);
         if (accessToken) {
           localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
           setAuth(response.data.data);
           toast.success(`welcome ${response.data.data.user.username}`);
           navigate("/profile");
