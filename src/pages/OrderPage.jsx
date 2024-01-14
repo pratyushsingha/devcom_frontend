@@ -1,29 +1,45 @@
-import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
-import { Link } from "react-router-dom";
-import WishItem from "../components/WishItem";
+import toast from "react-hot-toast";
 import Container from "../components/Container";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import OrderItem from "../components/OrderItem";
+import { Link } from "react-router-dom";
 
-const WishListPage = () => {
-  const { wishList } = useContext(AppContext);
+const OrderPage = () => {
+  const [orders, setOrders] = useState([]);
+
+  const getOrders = async () => {
+    try {
+      const response = await axios.get("/ecommerce/profile/my-orders", {
+        withCredentials: true,
+      });
+      setOrders(response.data.data.orders);
+    } catch (err) {
+      toast.error("Something went wrong while fetching orders");
+    }
+  };
+
+  useEffect(() => {
+    getOrders();
+  }, []);
 
   return (
     <Container>
-      {wishList.length > 0 ? (
-        <div className="container mx-auto mt-10">
+      {orders.length > 0 ? (
+        <div className="container justify-center items-center mx-auto mt-10">
           <div className="flex shadow-md my-10">
             <div className="mx-auto w-3/4 bg-white px-10 py-10">
               <div className="flex justify-between border-b pb-8">
-                <h1 className="font-semibold text-2xl">Wish List</h1>
+                <h1 className="font-semibold text-2xl">Order List</h1>
                 <div className="flex space-x-5">
                   <h2 className="font-semibold text-4xl">
-                    {wishList.length} Items
+                    {orders.length} Items
                   </h2>
                 </div>
               </div>
               <div className="flex mt-10 mb-5">
                 <h3 className="font-semibold text-gray-600 text-xs uppercase w-2/5">
-                  Product Details
+                  Order ID
                 </h3>
                 <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">
                   Quantity
@@ -31,9 +47,15 @@ const WishListPage = () => {
                 <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 ">
                   Price
                 </h3>
+                <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 ">
+                  Discount
+                </h3>
+                <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 ">
+                  Status
+                </h3>
               </div>
-              {wishList.map((item, index) => (
-                <WishItem item={item} key={index} />
+              {orders.map((order) => (
+                <OrderItem key={order._id} item={order} />
               ))}
               <Link
                 to={"/products"}
@@ -52,7 +74,7 @@ const WishListPage = () => {
         </div>
       ) : (
         <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-2xl mb-4">Wishlist is empty</h1>
+          <h1 className="text-2xl mb-4">Cart is empty</h1>
           <Link to="/products">
             <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
               Buy now
@@ -64,4 +86,4 @@ const WishListPage = () => {
   );
 };
 
-export default WishListPage;
+export default OrderPage;

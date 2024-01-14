@@ -23,6 +23,7 @@ import {
 import { Toaster } from "react-hot-toast";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import Error from "./components/Error.jsx";
+import OrderPage from "./pages/OrderPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -71,6 +72,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication>
             <WishListPage />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/orders",
+        element: (
+          <AuthLayout authentication>
+            <OrderPage />
           </AuthLayout>
         ),
       },
