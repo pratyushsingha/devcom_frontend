@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 const AuthLayout = ({ children, authentication = true }) => {
   const [loader, setLoader] = useState(true);
@@ -8,6 +9,7 @@ const AuthLayout = ({ children, authentication = true }) => {
   const { authStatus } = useContext(AppContext);
   useEffect(() => {
     if (authentication && !localStorage.getItem("accessToken")) {
+      toast.error("please login to continue");
       navigate("/login");
     } else if (!authentication && localStorage.getItem("accessToken")) {
       navigate("/profile");

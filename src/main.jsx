@@ -22,6 +22,7 @@ import {
 } from "./components/index";
 import { Toaster } from "react-hot-toast";
 import AuthContextProvider from "./context/AuthContext.jsx";
+import Error from "./components/Error.jsx";
 
 const router = createBrowserRouter([
   {
@@ -120,6 +121,10 @@ const router = createBrowserRouter([
             <ResetPass />
           </AuthLayout>
         ),
+      },
+      {
+        path: "*",
+        element: <Error />,
       },
     ],
   },
