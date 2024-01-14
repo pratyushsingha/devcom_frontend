@@ -43,9 +43,9 @@ export default function AuthContextProvider({ children }) {
       if (response.status == 200) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.reload(false);
+        window.location.reload();
         toast.success("logout successful");
-      }
+      }o
     } catch (err) {
       toast.error(err);
     }

@@ -29,20 +29,24 @@ const LoginPage = () => {
 
   const login = async ({ username, password }) => {
     try {
-      const response = await axios.post("/users/login", {
-        password: password,
-        username: username,
-      });
-      console.log(response.data.data);
-      const accessToken = response.data.data.accessToken;
-      const refreshToken = response.data.data.refreshToken;
-      // console.log(accessToken);
-      //   console.log(auth);
-      if (accessToken) {
-        localStorage.setItem("accessToken", accessToken);
-        localStorage.setItem("refreshToken", refreshToken);
-        setAuth(response.data.data);
-        window.location.reload(false);
+      if (localStorage.getItem("accessToken")) {
+        navigate("/profile");
+      } else {
+        const response = await axios.post("/users/login", {
+          password: password,
+          username: username,
+        });
+        console.log(response.data.data);
+        const accessToken = response.data.data.accessToken;
+        const refreshToken = response.data.data.refreshToken;
+        // console.log(accessToken);
+        //   console.log(auth);
+        if (accessToken) {
+          localStorage.setItem("accessToken", accessToken);
+          localStorage.setItem("refreshToken", refreshToken);
+          setAuth(response.data.data);
+          window.location.reload(false);
+        }
       }
     } catch (err) {
       console.log(err);
