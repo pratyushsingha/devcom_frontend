@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useState, useRef, useEffect, useContext } from "react";
+import React, { useState, useRef, useContext } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { Link, useNavigate } from "react-router-dom";
@@ -9,7 +9,7 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { AuthContext } from "../../context/AuthContext";
 import Container from "../../components/Container";
 const LoginPage = () => {
-  const { auth, setAuth } = useContext(AuthContext);
+  const { setAuth } = useContext(AuthContext);
   const userRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
@@ -29,25 +29,20 @@ const LoginPage = () => {
 
   const login = async ({ username, password }) => {
     try {
-      if (localStorage.getItem("accessToken")) {
-        navigate("/profile");
-      } else {
-        const response = await axios.post("/users/login", {
-          password: password,
-          username: username,
-        });
-        console.log(response.data.data);
-        const accessToken = response.data.data.accessToken;
-        const refreshToken = response.data.data.refreshToken;
-        // console.log(accessToken);
-        //   console.log(auth);
-        if (accessToken) {
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          setAuth(response.data.data);
-          toast.success(`welcome ${response.data.data.user.username}`);
-          navigate("/profile");
-        }
+      const response = await axios.post("/users/login", {
+        password: password,
+        username: username,
+      });
+      console.log(response.data.data);
+      const accessToken = response.data.data.accessToken;
+      const refreshToken = response.data.data.refreshToken;
+      // console.log(accessToken);
+      //   console.log(auth);
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        setAuth(response.data.data);
+        window.location.reload(false);
       }
     } catch (err) {
       console.log(err);

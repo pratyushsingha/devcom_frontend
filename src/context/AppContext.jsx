@@ -269,12 +269,6 @@ export default function AppContextProvider({ children }) {
   };
 
   useEffect(() => {
-    getProducts();
-    getCategory();
-    getAddress();
-  }, []);
-
-  useEffect(() => {
     availableCoupons();
   }, [cartProducts]);
 
@@ -292,6 +286,13 @@ export default function AppContextProvider({ children }) {
       console.log(err);
     }
   };
+
+  useEffect(() => {
+    getProducts();
+    getCategory();
+    getAddress();
+    getProfile();
+  }, []);
 
   const value = {
     getProducts,

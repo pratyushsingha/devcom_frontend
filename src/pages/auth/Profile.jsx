@@ -43,7 +43,7 @@ const Profile = () => {
 
   useEffect(() => {
     getProfile();
-  }, [useEffect]);
+  }, []);
 
   return (
     <Container className="flex mt-10 justify-evenly">
