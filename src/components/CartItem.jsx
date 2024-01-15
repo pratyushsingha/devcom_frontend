@@ -1,9 +1,11 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import Spinner from "./loader/Spinner";
 
 const CartItem = ({ item }) => {
-  const { cartItemIncrement, DeleteFromCart,addToWish } = useContext(AppContext);
+  const { cartItemIncrement, DeleteFromCart, addToWish} =
+    useContext(AppContext);
   return (
     <>
       <div className="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
@@ -20,7 +22,12 @@ const CartItem = ({ item }) => {
           </Link>
           <div className="flex flex-col justify-between ml-4 flex-grow">
             <span className="font-bold text-sm">{item.product.name}</span>
-            <button onClick={()=>addToWish(item.product._id)} className="text-red-500 text-xs">Save to Wishlist</button>
+            <button
+              onClick={() => addToWish(item.product._id)}
+              className="text-red-500 text-xs"
+            >
+              Save to Wishlist
+            </button>
           </div>
         </div>
         <div className="flex justify-center w-1/5">
@@ -59,7 +66,7 @@ const CartItem = ({ item }) => {
           onClick={() => DeleteFromCart(item.product._id)}
           className="bg-red-500 hover:bg-red-600 px-5 rounded-md py-2 text-sm text-white uppercase"
         >
-          Remove
+          remove
         </button>
       </div>
     </>

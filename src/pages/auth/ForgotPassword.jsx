@@ -3,6 +3,7 @@ import { AppContext } from "../../context/AppContext";
 import axios from "axios";
 import Container from "../../components/Container";
 import Button from "../../components/Button";
+import toast from "react-hot-toast";
 
 const ForgotPassword = () => {
   const userRef = useRef(AppContext);
@@ -16,9 +17,10 @@ const ForgotPassword = () => {
         { email: email },
         { withCredentials: true }
       );
-      // console.log(data);
+      toast.success(data.data.message);
     } catch (err) {
       console.log(err);
+      toast.error("Something went wrong while sending verification link");
     }
   };
 
@@ -47,10 +49,7 @@ const ForgotPassword = () => {
             className="block rounded-md border-0 px-2 py-1.5 my-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
           />
         </div>
-        <Button
-          onClick={forgotPass}
-          className="w-full"
-        >
+        <Button type="submit" onClick={forgotPass} classname="w-full">
           send verification link
         </Button>
       </div>

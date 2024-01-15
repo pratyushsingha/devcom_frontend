@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef} from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
@@ -8,7 +8,6 @@ import { BsFillBagHeartFill } from "react-icons/bs";
 import { BiSolidOffer } from "react-icons/bi";
 import Coupon from "../components/Coupon";
 import Container from "../components/Container";
-
 
 const Cart = () => {
   const dialogRef = useRef(null);

@@ -168,3 +168,9 @@ export const DropDownOptions = [
   { id: 3, name: "Wishlist" },
   { id: 4, name: "Feedback" },
 ];
+
+export const sortFilter = [
+  { _id: 1, name: "none" },
+  { _id: 2, name: "Price: Low to High" },
+  { _id: 3, name: "Price: High to Low" },
+];

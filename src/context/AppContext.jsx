@@ -3,6 +3,7 @@ import axios from "axios";
 import { MdOutlineAirlineSeatIndividualSuite } from "react-icons/md";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
+import LoadingBar from "react-top-loading-bar";
 
 export const AppContext = createContext();
 
@@ -17,6 +18,8 @@ function getLocalWish() {
 
 export default function AppContextProvider({ children }) {
   const { auth } = useContext(AuthContext);
+  const [progress, setProgress] = useState(0);
+  const [loader, setLoader] = useState(false);
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [categories, setCategories] = useState([]);
@@ -103,13 +106,14 @@ export default function AppContextProvider({ children }) {
               withCredentials: true,
             }
           );
-          console.log("new item added", response);
+          toast.success("Item added to cart");
         }
       } else {
         toast.error("please login to add item in cart");
       }
     } catch (err) {
       console.error(err);
+      toast.error("something went wrong");
     }
   };
 
@@ -132,12 +136,14 @@ export default function AppContextProvider({ children }) {
 
   const getCart = async () => {
     try {
+      setLoader(true)
       const response = await axios.get("ecommerce/cart", {
         withCredentials: true,
       });
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
       setDisCountedTotal(response.data.data.discountedTotal);
+      setLoader(false)
     } catch (err) {
       console.error(err);
     }
@@ -154,11 +160,13 @@ export default function AppContextProvider({ children }) {
 
   const DeleteFromCart = async (id) => {
     try {
+      setLoader(true);
       const response = await axios.delete(`/ecommerce/cart/item/${id}`, {
         withCredentials: true,
       });
       console.log(response);
       getCart();
+      setLoader(false);
     } catch (err) {
       console.error(err);
     }
@@ -179,6 +187,7 @@ export default function AppContextProvider({ children }) {
       const updatedWish = products.find((item) => item._id === id);
       console.log(updatedWish);
       setWishList([...wishList, updatedWish]);
+      toast.success("Item added to wishlist");
     } else {
       toast.error("please login add in wishlist");
     }
@@ -187,6 +196,7 @@ export default function AppContextProvider({ children }) {
   function removeFromWish(id) {
     const removeWish = wishList.filter((item) => item._id !== id);
     setWishList(removeWish);
+    toast.success("Item removed from wishlist");
   }
 
   useEffect(() => {
@@ -292,6 +302,7 @@ export default function AppContextProvider({ children }) {
     getCategory();
     getAddress();
     getProfile();
+    getCart();
   }, []);
 
   const value = {
@@ -331,6 +342,8 @@ export default function AppContextProvider({ children }) {
     profileInfo,
     setProfileInfo,
     getProfile,
+    loader,
+    setLoader
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
