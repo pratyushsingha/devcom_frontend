@@ -1,13 +1,9 @@
 import React from "react";
 import "./spinner.css";
-const Spinner = () => {
+import "../../index.css"
+const Spinner = ({ classname = "", ...props }) => {
   return (
-    <div className="lds-ring ">
-      <div></div>
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
+    <div class={`loader`}></div>
   );
 };
 

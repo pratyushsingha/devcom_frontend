@@ -1,5 +1,7 @@
 import { useContext, useState } from "react";
 import { AppContext } from "../context/AppContext";
+import Select from "./Select";
+import { sortFilter } from "../utils";
 
 const Sidebar = () => {
   const { categories } = useContext(AppContext);
@@ -17,29 +19,7 @@ const Sidebar = () => {
         <div>
           <p className="font-bold">Sort</p>
           <div className="relative inline-block border rounded-lg">
-            <select className="appearance-none  px-3 py-2 bg-white text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-              <option className="text-xs" value="">
-                Select an option
-              </option>
-              <option className="text-xs" value="option1">
-                None
-              </option>
-              <option className="text-xs" value="option2">
-                Price(Low-High)
-              </option>
-              <option className="text-xs" value="option3">
-                Price(High-Low)
-              </option>
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-              <svg
-                className="fill-current h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M10 12l-6-6 1.5-1.5L10 9l4.5-4.5L16 6z" />
-              </svg>
-            </div>
+            <Select label="All" options={sortFilter} />
           </div>
         </div>
         <div>
@@ -58,25 +38,7 @@ const Sidebar = () => {
         <div>
           <p className="font-bold">Category</p>
           <div className="relative inline-block border rounded-lg">
-            <select className="appearance-none  px-3 py-2 bg-white text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-              <option className="text-xs" value="">
-                Select an option
-              </option>
-              {categories.map((item) => (
-                <option key={item._id} className="text-xs" value={item.name}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
-              <svg
-                className="fill-current h-4 w-4"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-              >
-                <path d="M10 12l-6-6 1.5-1.5L10 9l4.5-4.5L16 6z" />
-              </svg>
-            </div>
+            <Select label="All" options={categories} />
           </div>
         </div>
       </div>

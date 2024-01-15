@@ -5,9 +5,11 @@ import Sidebar from "../components/Sidebar";
 import ReactPaginate from "react-paginate";
 import Container from "../components/Container";
 
+
 const ProductPage = () => {
   const { products, handlePageClick } = useContext(AppContext);
   const userRef = useRef();
+
 
   useEffect(() => {
     userRef.current.focus();
