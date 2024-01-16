@@ -3,7 +3,6 @@ import axios from "axios";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
 import ProductItem from "../components/ProductItem";
-import { set } from "mongoose";
 
 export const AppContext = createContext();
 
