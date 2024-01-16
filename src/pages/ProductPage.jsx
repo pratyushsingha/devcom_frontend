@@ -1,17 +1,31 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { AppContext } from "../context/AppContext";
-import ProductItem from "../components/ProductItem";
 import Sidebar from "../components/Sidebar";
-import ReactPaginate from "react-paginate";
 import Container from "../components/Container";
+import Button from "../components/Button";
+import usePagination from "../hooks/usePagination";
 
 const ProductPage = () => {
-  const { handleInputChange, handlePageClick, result, query } =
-    useContext(AppContext);
+  const { handlePrevClick, handleNextClick } = usePagination();
+  const {
+    handleInputChange,
+    page,
+    getCategory,
+    getProducts,
+    result,
+    query,
+    hastNextPage,
+  } = useContext(AppContext);
   const userRef = useRef();
 
   useEffect(() => {
+    getProducts();
+  }, [page]);
+
+  useEffect(() => {
     userRef.current.focus();
+    getProducts();
+    getCategory();
   }, []);
 
   return (
@@ -28,16 +42,14 @@ const ProductPage = () => {
           placeholder="search by name"
         />
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">{result}</div>
-        <ReactPaginate
-          className="flex space-x-3 justify-center items-center"
-          breakLabel="..."
-          nextLabel="next >"
-          onPageChange={handlePageClick}
-          pageRangeDisplayed={5}
-          pageCount={5}
-          previousLabel="< previous"
-          renderOnZeroPageCount={handlePageClick}
-        />
+        <div className="flex space-x-3 justify-center">
+          <Button disabled={page <= 1} onClick={handlePrevClick}>
+            &laquo; Previous
+          </Button>
+          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
+            Next &raquo;
+          </Button>
+        </div>
       </div>
     </Container>
   );

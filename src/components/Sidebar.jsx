@@ -25,7 +25,7 @@ const Sidebar = () => {
           </div>
         </div>
         <div>
-          <p className="font-bold">MAX PRICE-{selectedPrice}</p>
+          <p className="font-bold">Price: {selectedPrice}</p>
           <input
             className="self-center"
             type="range"

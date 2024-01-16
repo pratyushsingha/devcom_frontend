@@ -9,7 +9,7 @@ import { AppContext } from "../context/AppContext";
 import Spinner from "./loader/Spinner";
 
 const Navbar = () => {
-  const { cartProducts, loader } = useContext(AppContext);
+  const { cartProducts, loader ,profileInfo} = useContext(AppContext);
   const [openDropdown, setOpenDropdown] = useState(false);
   return (
     <div className="flex relative">
@@ -45,7 +45,7 @@ const Navbar = () => {
                   onClick={() => setOpenDropdown(!openDropdown)}
                   className="text-xl self-center py-2 pr-2 hover:text-blue-500"
                 >
-                  <FaUser />
+                  <img src={profileInfo && profileInfo.avatar} className="w-10 h-10 rounded-full" alt={profileInfo.username} />
                 </button>
                 {openDropdown && <DropDownMenu />}
               </div>
