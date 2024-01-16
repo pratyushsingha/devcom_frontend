@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import AddressForm from "../components/AddressForm";
 import { RxCross2 } from "react-icons/rx";
@@ -6,7 +6,7 @@ import axios from "axios";
 import Container from "../components/Container";
 
 const Shipping = () => {
-  const { setLoader } = useContext(AppContext);
+  const { setLoader, getAddress } = useContext(AppContext);
   const dialogRef = useRef(null);
   const { allAddress, profileInfo } = useContext(AppContext);
   const [selectedAddress, setSelectedAddress] = useState();
@@ -51,6 +51,9 @@ const Shipping = () => {
       setLoader(false);
     }
   };
+  useEffect(() => {
+    getAddress();
+  }, []);
 
   return (
     <Container className="my-10">

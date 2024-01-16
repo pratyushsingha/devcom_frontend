@@ -8,13 +8,11 @@ import { IoHeartSharp } from "react-icons/io5";
 import Container from "../components/Container";
 import useCart from "../hooks/useCart";
 import { Spinner } from "../components";
-import LoadingBar from "react-top-loading-bar";
 
 const ProductDetails = () => {
-  const { addToCart, loader } = useCart();
+  const { addToCart, loader, setLoader } = useCart();
   const { id } = useParams();
-  const { wishList, addToWish, removeFromWish} =
-    useContext(AppContext);
+  const { wishList, addToWish, removeFromWish} = useContext(AppContext);
   const [progress, setProgress] = useState(0);
 
   // console.log(id);
@@ -42,15 +40,17 @@ const ProductDetails = () => {
   const getProductDetails = async (id) => {
     try {
       setProgress(progress + 10);
+      setLoader(true);
       const response = await axios.get(`/ecommerce/products/${id}`);
       setProductDetails([response.data.data]);
       // console.log(response.data.data.category);
       setCategoryId(response.data.data.category);
       setProgress(progress + 100);
+      setLoader(false);
     } catch (err) {
-      console.log(err);
+      toast.error(err.message);
       setProgress(progress + 100);
-
+      setLoader(false);
     }
   };
 
@@ -77,7 +77,6 @@ const ProductDetails = () => {
   }, []);
   return (
     <>
-      <LoadingBar color="#3F51B5" progress={progress} onLoaderFinished={() => setProgress(0)} shadow="true" className="pb-1" />
       <Container>
         {productDetails.map((item, index) => (
           <div key={index}>
@@ -211,9 +210,9 @@ const ProductDetails = () => {
                           {loader ? <Spinner /> : "Add to cart"}
                         </button>
                       )}
-                      {wishList.some((item) => item._id === id) ? (
+                      {wishList.some((item) => item._id == id) ? (
                         <button
-                          onClick={() => removeFromWish(id)}
+                          onClick={() => removeFromWish(item._id)}
                           className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4"
                         >
                           <IoHeartSharp className="text-2xl" />
@@ -234,7 +233,13 @@ const ProductDetails = () => {
             <h1 className="text-2xl -mt-16 mb-5">SIMILAR PRODUCTS</h1>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {productCategory.map((item) => (
-                <ProductItem key={item._id} _id={item._id} mainImage={item.mainImage.url} price={item.price} name={item.name} />
+                <ProductItem
+                  key={item._id}
+                  _id={item._id}
+                  mainImage={item.mainImage.url}
+                  price={item.price}
+                  name={item.name}
+                />
               ))}
             </div>
           </div>

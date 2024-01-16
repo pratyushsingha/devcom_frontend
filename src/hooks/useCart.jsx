@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useContext} from "react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../context/AppContext";
 
 const useCart = () => {
-  const [loader, setLoader] = useState(false);
+  const { loader, setLoader } = useContext(AppContext);
   const navigate = useNavigate();
   const addToCart = async (productId) => {
     try {
@@ -20,7 +21,7 @@ const useCart = () => {
 
         if (cartProductIds.includes(productId)) {
           toast.success("Item is already in the cart");
-          setProductStatus("Go to cart")
+          setProductStatus("Go to cart");
         } else {
           const response = await axios.post(
             `/ecommerce/cart/item/${productId}`,
@@ -47,7 +48,7 @@ const useCart = () => {
     }
   };
 
-  return { addToCart, loader };
+  return { addToCart, loader, setLoader };
 };
 
 export default useCart;

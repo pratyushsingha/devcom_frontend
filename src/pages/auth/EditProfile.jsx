@@ -9,6 +9,7 @@ import Button from "../../components/Button";
 import Input from "../../components/Input";
 
 const EditProfile = () => {
+  const { loader, setLoader, progress, setProgress } = useContext(AppContext);
   const [files, setFiles] = useState([]);
   const [profileDetails, setProfileDetails] = useState({
     firstName: "",
@@ -22,6 +23,8 @@ const EditProfile = () => {
 
   const getProfileDetails = async () => {
     try {
+      setProgress(progress + 10);
+      setLoader(true);
       const response = await axios.get("/ecommerce/profile", {
         withCredentials: true,
       });
@@ -31,27 +34,39 @@ const EditProfile = () => {
         countryCode: response.data.data.countryCode,
         phoneNumber: response.data.data.phoneNumber,
       });
+      setLoader(false);
+      setProgress(progress + 100);
     } catch (err) {
       console.log(err);
+      toast.error("Something went wrong while fetching profile details");
+      setLoader(false);
+      setProgress(progress + 100);
     }
   };
 
   const updateProfile = async (profileDetails) => {
     try {
+      setLoader(true);
+      setProgress(progress + 10);
       const response = await axios.patch("/ecommerce/profile", profileDetails, {
         withCredentials: true,
       });
       console.log(response);
       setIsFormDirty(false);
       setIsSaveDisabled(true);
+      setLoader(false);
+      setProgress(progress + 100);
     } catch (err) {
       console.log(err);
+      setLoader(false);
+      setProgress(progress + 100);
     }
   };
 
   const updateAvatar = async () => {
     if (files) {
       try {
+        setLoader(true);
         const formData = new FormData();
         formData.append("avatar", files);
         const data = await axios.patch("/users/avatar", formData, {
@@ -59,9 +74,11 @@ const EditProfile = () => {
         });
         // console.log(data);
         toast.success("avatar updated successfully");
+        setLoader(false);
       } catch (err) {
         console.log(err);
         toast.error(err.message);
+        setLoader(false);
       }
     }
   };
@@ -126,7 +143,9 @@ const EditProfile = () => {
           <div className="rounded bg-slate-200 p-3">
             <h1 className="text-3xl my-5">Upload Avatar</h1>
             <DropZone files={files} setFiles={setFiles} />
-            <Button classname="w-full max-lg mt-3" onClick={updateAvatar}>Upload</Button>
+            <Button classname="w-full max-lg mt-3" onClick={updateAvatar}>
+              Upload
+            </Button>
           </div>
         </div>
       </Container>

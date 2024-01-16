@@ -3,6 +3,7 @@ import axios from "axios";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
 import ProductItem from "../components/ProductItem";
+import { set } from "mongoose";
 
 export const AppContext = createContext();
 
@@ -21,8 +22,8 @@ export default function AppContextProvider({ children }) {
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
   const [categories, setCategories] = useState([]);
-  const [page, setpage] = useState(1);
-  const [itemOffset, setItemOffset] = useState(1);
+  const [page, setPage] = useState(1);
+  const [hastNextPage, setHasNextPage] = useState(true);
   const [cartProducts, setCartProducts] = useState([]);
   const [cartTotal, setCartTotal] = useState();
   const [wishList, setWishList] = useState(getLocalWish());
@@ -31,6 +32,7 @@ export default function AppContextProvider({ children }) {
   const [error, setError] = useState(false);
   const [coupon, setCoupon] = useState(false);
   const [allCoupon, setAllCoupon] = useState([]);
+  const [progress, setProgress] = useState(0);
   const [address, setAddress] = useState({
     addressLine1: "",
     addressLine2: "",
@@ -51,17 +53,23 @@ export default function AppContextProvider({ children }) {
   const [selectedCategory, setSelectedCategory] = useState(Number);
   const [selectedPrice, setSelectedPrice] = useState(1000);
 
-  const itemPerPage = 12;
-
   const getProducts = async () => {
     try {
+      setProgress(progress + 10);
+      setLoader(true);
       const response = await axios.get(
-        `/ecommerce/products?page=${page}&limit=${itemPerPage}`
+        `/ecommerce/products?page=${page}&limit=12`
       );
       setProducts(response.data.data.products);
       // console.log(response)
+      setHasNextPage(response.data.data.hasNextPage);
+      setProgress(progress + 100);
+      setLoader(false);
     } catch (err) {
-      alert(err);
+      // alert(err);
+      toast.error("Something went wrong while fetching products", err.message);
+      setProgress(progress + 100);
+      setLoader(false);
     }
   };
 
@@ -69,23 +77,11 @@ export default function AppContextProvider({ children }) {
     try {
       const response = await axios.get("/ecommerce/categories?page=1&limit=10");
       setCategories(response.data.data.categories);
-      console.log(response.data.data.categories);
+      // console.log(response.data.data.categories);
     } catch (err) {
       console.log(err);
     }
   };
-
-  const endOffset = itemOffset + itemPerPage;
-  // console.log(`Loading products from ${itemOffset} to ${endOffset}`);
-  const currentItems = products.slice(itemOffset, endOffset);
-  const pageCount = Math.ceil(products.length / itemPerPage);
-
-  function handlePageClick(event) {
-    const newOffset = (event.selected * itemPerPage) % products.length;
-    setItemOffset(newOffset);
-    setpage(event.selected + 1);
-    getProducts();
-  }
 
   const addToCart = async (productId) => {
     try {
@@ -138,16 +134,20 @@ export default function AppContextProvider({ children }) {
   const getCart = async () => {
     try {
       setLoader(true);
+      setProgress(progress + 10);
       const response = await axios.get("ecommerce/cart", {
         withCredentials: true,
       });
+      console.log(response.data.data.items)
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
       setDisCountedTotal(response.data.data.discountedTotal);
       setLoader(false);
+      setProgress(progress + 100);
     } catch (err) {
       console.error(err);
       setLoader(false);
+      setProgress(progress + 100);
     }
   };
 
@@ -315,7 +315,7 @@ export default function AppContextProvider({ children }) {
 
   function handleCategory(e) {
     setSelectedCategory(e.target.value);
-    console.log(e.target.value);
+    // console.log(e.target.value);
   }
 
   function handleInputChange(e) {
@@ -364,13 +364,9 @@ export default function AppContextProvider({ children }) {
   const result = filterData(products, selectedPrice, query);
 
   useEffect(() => {
-    getProducts();
-    getCategory();
-    getAddress();
     getProfile();
     getCart();
   }, []);
-
   const value = {
     getProducts,
     products,
@@ -380,8 +376,6 @@ export default function AppContextProvider({ children }) {
     cartItemUpdate,
     categories,
     getCategory,
-    handlePageClick,
-    pageCount,
     getCart,
     cartItemIncrement,
     DeleteFromCart,
@@ -418,6 +412,12 @@ export default function AppContextProvider({ children }) {
     query,
     result,
     filteredItems,
+    page,
+    setPage,
+    progress,
+    setProgress,
+    hastNextPage,
+    getCart,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
