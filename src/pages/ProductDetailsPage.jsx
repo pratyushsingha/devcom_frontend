@@ -49,6 +49,8 @@ const ProductDetails = () => {
       setProgress(progress + 100);
     } catch (err) {
       console.log(err);
+      setProgress(progress + 100);
+
     }
   };
 
@@ -75,7 +77,7 @@ const ProductDetails = () => {
   }, []);
   return (
     <>
-      <LoadingBar color="#00cff4" progress={progress} onLoaderFinished={() => setProgress(0)} shadow="true" className="py-0.5" />
+      <LoadingBar color="#3F51B5" progress={progress} onLoaderFinished={() => setProgress(0)} shadow="true" className="pb-1" />
       <Container>
         {productDetails.map((item, index) => (
           <div key={index}>
@@ -232,7 +234,7 @@ const ProductDetails = () => {
             <h1 className="text-2xl -mt-16 mb-5">SIMILAR PRODUCTS</h1>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               {productCategory.map((item) => (
-                <ProductItem key={item._id} product={item} />
+                <ProductItem key={item._id} _id={item._id} mainImage={item.mainImage.url} price={item.price} name={item.name} />
               ))}
             </div>
           </div>

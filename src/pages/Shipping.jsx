@@ -6,18 +6,15 @@ import axios from "axios";
 import Container from "../components/Container";
 
 const Shipping = () => {
+  const { setLoader } = useContext(AppContext);
   const dialogRef = useRef(null);
-  const { allAddress } = useContext(AppContext);
+  const { allAddress, profileInfo } = useContext(AppContext);
   const [selectedAddress, setSelectedAddress] = useState();
   const [generatedOrder, setGeneratedOrder] = useState([]);
-  const [paymentCredentials, setPaymentCredentials] = useState({
-    razorpay_order_id: "",
-    razorpay_payment_id: "",
-    razorpay_signature: "",
-  });
 
   const razorpayPayment = async (selectedAddress) => {
     try {
+      setLoader(true);
       const response = await axios.post(
         "/ecommerce/orders/provider/razorpay",
         { addressId: selectedAddress },
@@ -36,9 +33,8 @@ const Shipping = () => {
         order_id: generatedOrder.id,
         callback_url: "/ecommerce/orders/provider/razorpay/verify-payment",
         prefill: {
-          name: "Gaurav Kumar",
-          email: "gaurav.kumar@example.com",
-          contact: "98303556374",
+          name: profileInfo.username,
+          email: profileInfo.email,
         },
         notes: {
           address: "Razorpay Corporate Office",
@@ -49,21 +45,10 @@ const Shipping = () => {
       };
       const paymentObj = new window.Razorpay(options);
       paymentObj.open();
+      setLoader(false);
     } catch (err) {
       console.error("Razorpay payment error:", err);
-    }
-  };
-
-  const verifyPayment = async (paymentCredentials) => {
-    try {
-      const response = await axios.post(
-        "/ecommerce/orders/provider/razorpay/verify-payment",
-        paymentCredentials,
-        { withCredentials: true }
-      );
-      console.log(response);
-    } catch (err) {
-      console.log(err);
+      setLoader(false);
     }
   };
 

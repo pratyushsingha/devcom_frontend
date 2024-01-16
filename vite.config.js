@@ -7,11 +7,11 @@ export default defineConfig({
   server: {
     proxy: {
       '/ecommerce': {
-        target: 'https://freeapi-app-production-846b.up.railway.app/api/v1',
+        target: 'http://localhost:8080/api/v1',
         changeOrigin: true,
       },
       '/users': {
-        target: 'https://freeapi-app-production-846b.up.railway.app/api/v1/',
+        target: 'http://localhost:8080/api/v1',
         changeOrigin: true,
       },
     },

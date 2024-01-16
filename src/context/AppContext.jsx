@@ -1,9 +1,8 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import axios from "axios";
-import { MdOutlineAirlineSeatIndividualSuite } from "react-icons/md";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
-import LoadingBar from "react-top-loading-bar";
+import ProductItem from "../components/ProductItem";
 
 export const AppContext = createContext();
 
@@ -18,7 +17,6 @@ function getLocalWish() {
 
 export default function AppContextProvider({ children }) {
   const { auth } = useContext(AuthContext);
-  const [progress, setProgress] = useState(0);
   const [loader, setLoader] = useState(false);
   const [products, setProducts] = useState([]);
   const [quantity, setQuantity] = useState(1);
@@ -41,7 +39,6 @@ export default function AppContextProvider({ children }) {
     pincode: Number,
     country: "India",
   });
-
   const [profileInfo, setProfileInfo] = useState({
     avatar: "",
     email: "",
@@ -50,6 +47,9 @@ export default function AppContextProvider({ children }) {
   });
 
   const [allAddress, setAllAddress] = useState([]);
+  const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(Number);
+  const [selectedPrice, setSelectedPrice] = useState(1000);
 
   const itemPerPage = 12;
 
@@ -69,6 +69,7 @@ export default function AppContextProvider({ children }) {
     try {
       const response = await axios.get("/ecommerce/categories?page=1&limit=10");
       setCategories(response.data.data.categories);
+      console.log(response.data.data.categories);
     } catch (err) {
       console.log(err);
     }
@@ -136,16 +137,17 @@ export default function AppContextProvider({ children }) {
 
   const getCart = async () => {
     try {
-      setLoader(true)
+      setLoader(true);
       const response = await axios.get("ecommerce/cart", {
         withCredentials: true,
       });
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
       setDisCountedTotal(response.data.data.discountedTotal);
-      setLoader(false)
+      setLoader(false);
     } catch (err) {
       console.error(err);
+      setLoader(false);
     }
   };
 
@@ -169,16 +171,20 @@ export default function AppContextProvider({ children }) {
       setLoader(false);
     } catch (err) {
       console.error(err);
+      setLoader(false);
     }
   };
 
   const clearCart = async () => {
     try {
+      setLoader(true);
       const response = await axios.delete("ecommerce/cart/clear");
       console.log(response);
       getCart();
+      setLoader(false);
     } catch (err) {
       console.log(err);
+      setLoader(false);
     }
   };
 
@@ -190,6 +196,7 @@ export default function AppContextProvider({ children }) {
       toast.success("Item added to wishlist");
     } else {
       toast.error("please login add in wishlist");
+      setLoader(false);
     }
   }
 
@@ -205,6 +212,7 @@ export default function AppContextProvider({ children }) {
 
   const availableCoupons = async () => {
     try {
+      setLoader(true);
       const response = await axios.get(
         "/ecommerce/coupons/customer/available?page=1&limit=10",
         {
@@ -213,8 +221,10 @@ export default function AppContextProvider({ children }) {
       );
       // console.log(response.data.data.coupons);
       setAllCoupon(response.data.data.coupons);
+      setLoader(false);
     } catch (err) {
       console.log(err);
+      setLoader(false);
     }
   };
 
@@ -235,6 +245,7 @@ export default function AppContextProvider({ children }) {
       setError(false);
     } catch (err) {
       console.log(err);
+      setLoader(false);
       setError(true);
     }
   };
@@ -252,6 +263,7 @@ export default function AppContextProvider({ children }) {
       setError(false);
     } catch (err) {
       console.log(err);
+      setLoader(false);
     }
   };
 
@@ -262,6 +274,7 @@ export default function AppContextProvider({ children }) {
       setAllAddress(response.data.data.addresses);
     } catch (err) {
       console.log(err);
+      setLoader(false);
     }
   };
 
@@ -284,6 +297,7 @@ export default function AppContextProvider({ children }) {
 
   const getProfile = async () => {
     try {
+      setLoader(true);
       const response = await axios.get("/users/current-user");
       // console.log(response.data.data.avatar.url);
       setProfileInfo({
@@ -292,10 +306,62 @@ export default function AppContextProvider({ children }) {
         username: response.data.data.username,
         role: response.data.data.role,
       });
+      setLoader(false);
     } catch (err) {
       console.log(err);
+      setLoader(false);
     }
   };
+
+  function handleCategory(e) {
+    setSelectedCategory(e.target.value);
+    console.log(e.target.value);
+  }
+
+  function handleInputChange(e) {
+    setQuery(e.target.value);
+  }
+
+  function filteredItems(product) {
+    return product.name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
+  }
+
+  function handlePrice(e) {
+    setSelectedPrice(e.target.value);
+  }
+
+  function filterData(products, selectedPrice, query) {
+    let filteredProducts = products;
+    if (query) {
+      filteredProducts = filteredProducts.filter(function (product) {
+        return product.name.toLowerCase().includes(query.toLowerCase());
+      });
+    }
+
+    if (selectedPrice) {
+      filteredProducts = filteredProducts.filter(function (product) {
+        return product.price <= selectedPrice;
+      });
+    }
+
+    // if (selectedCategory) {
+    //  console.log(selectedCategory)
+    // }
+
+    return filteredProducts.map(function (product) {
+      return (
+        <ProductItem
+          key={product._id}
+          _id={product._id}
+          name={product.name}
+          mainImage={product.mainImage.url}
+          price={product.price}
+        />
+      );
+    });
+  }
+
+  const result = filterData(products, selectedPrice, query);
 
   useEffect(() => {
     getProducts();
@@ -343,7 +409,15 @@ export default function AppContextProvider({ children }) {
     setProfileInfo,
     getProfile,
     loader,
-    setLoader
+    setLoader,
+    selectedCategory,
+    handleCategory,
+    handleInputChange,
+    selectedPrice,
+    handlePrice,
+    query,
+    result,
+    filteredItems,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

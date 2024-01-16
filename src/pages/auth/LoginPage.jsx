@@ -8,8 +8,9 @@ import { Spinner } from "../../components";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 import { AuthContext } from "../../context/AuthContext";
 import Container from "../../components/Container";
+import { AppContext } from "../../context/AppContext";
 const LoginPage = () => {
-  const { setAuth } = useContext(AuthContext);
+  const { loader, setLoader } = useContext(AppContext);
   const userRef = useRef();
   const errRef = useRef();
   const navigate = useNavigate();
@@ -19,7 +20,6 @@ const LoginPage = () => {
     password: "",
   });
 
-  const [loader, setLoader] = useState(false);
   const { errors } = formState;
   const [showPassword, setShowPassword] = useState(null);
 
@@ -32,6 +32,7 @@ const LoginPage = () => {
       if (localStorage.getItem("accessToken")) {
         navigate("/profile");
       } else {
+        setLoader(true);
         const response = await axios.post("/users/login", {
           password: password,
           username: username,
@@ -44,9 +45,9 @@ const LoginPage = () => {
         if (accessToken) {
           localStorage.setItem("accessToken", accessToken);
           localStorage.setItem("refreshToken", refreshToken);
-          setAuth(response.data.data);
           window.location.reload(false);
         }
+        setLoader(false);
       }
     } catch (err) {
       console.log(err);
@@ -59,6 +60,7 @@ const LoginPage = () => {
       } else {
         toast.error("login failed");
       }
+      setLoader(false);
     }
   };
 
@@ -120,8 +122,8 @@ const LoginPage = () => {
                 type="submit"
                 className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
               >
-                {loader && <Spinner />}
-                Sign in
+                {loader && <Spinner classname="mx-3"/>}
+                <p>Sign in</p>
               </button>
             </div>
           </form>

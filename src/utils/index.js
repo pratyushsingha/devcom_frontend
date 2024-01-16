@@ -170,7 +170,6 @@ export const DropDownOptions = [
 ];
 
 export const sortFilter = [
-  { _id: 1, name: "none" },
-  { _id: 2, name: "Price: Low to High" },
-  { _id: 3, name: "Price: High to Low" },
+  { _id: 1, name: "Price: Low to High" },
+  { _id: 2, name: "Price: High to Low" },
 ];
