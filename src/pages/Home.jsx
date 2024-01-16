@@ -18,7 +18,7 @@ const Home = () => {
       <h1 className="text-3xl my-3">LATEST PRODUCTS</h1>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {HomeProducts.map((item) => (
-          <ProductItem key={item._id} product={item} />
+          <ProductItem key={item._id} _id={item._id} mainImage={item.mainImage.url} price={item.price} name={item.name} />
         ))}
       </div>
     </Container>

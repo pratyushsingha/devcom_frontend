@@ -1,9 +1,9 @@
 import React from "react";
 import "./spinner.css";
-import "../../index.css"
+// import "../../index.css"
 const Spinner = ({ classname = "", ...props }) => {
   return (
-    <div class={`loader`}></div>
+    <span className="loader"></span>
   );
 };
 

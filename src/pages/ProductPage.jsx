@@ -5,11 +5,10 @@ import Sidebar from "../components/Sidebar";
 import ReactPaginate from "react-paginate";
 import Container from "../components/Container";
 
-
 const ProductPage = () => {
-  const { products, handlePageClick } = useContext(AppContext);
+  const { handleInputChange, handlePageClick, result, query } =
+    useContext(AppContext);
   const userRef = useRef();
-
 
   useEffect(() => {
     userRef.current.focus();
@@ -23,14 +22,12 @@ const ProductPage = () => {
         <input
           type="text"
           ref={userRef}
+          onChange={handleInputChange}
+          value={query}
           className="my-8 mx-5 text-xl px-3 pt-2 focus:border-none focus:outline-none"
           placeholder="search by name"
         />
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-          {products.map((item, index) => (
-            <ProductItem key={index} product={item} />
-          ))}
-        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">{result}</div>
         <ReactPaginate
           className="flex space-x-3 justify-center items-center"
           breakLabel="..."

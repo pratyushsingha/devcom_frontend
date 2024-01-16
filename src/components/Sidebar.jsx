@@ -4,11 +4,13 @@ import Select from "./Select";
 import { sortFilter } from "../utils";
 
 const Sidebar = () => {
-  const { categories } = useContext(AppContext);
-  const [selectedPrice, setSelectedPrice] = useState(1000);
-  const handlePrice = (e) => {
-    setSelectedPrice(e.target.value);
-  };
+  const {
+    categories,
+    handlePrice,
+    selectedPrice,
+    handleCategory,
+    selectedCategory,
+  } = useContext(AppContext);
 
   return (
     <div className="flex flex-col">
@@ -38,7 +40,7 @@ const Sidebar = () => {
         <div>
           <p className="font-bold">Category</p>
           <div className="relative inline-block border rounded-lg">
-            <Select label="All" options={categories} />
+            <Select label="none" options={categories} onChange={handleCategory}/>
           </div>
         </div>
       </div>

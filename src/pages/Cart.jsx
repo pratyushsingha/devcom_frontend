@@ -106,10 +106,13 @@ const Cart = () => {
                     )}
                   </dialog>
                   <button
-                    className="pb-8"
+                    className="pb-8 flex"
                     onClick={() => dialogRef.current.showModal()}
                   >
                     <BiSolidOffer className="text-3xl" />
+                    <p className="bg-red-500 w-4 h-4 rounded-full text-xs text-white">
+                      {allCoupon.length}
+                    </p>
                   </button>
                 </div>
                 <hr />
