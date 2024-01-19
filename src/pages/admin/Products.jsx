@@ -7,9 +7,6 @@ import { useSortBy, useTable } from "react-table";
 import Button from "../../components/Button";
 import { Link } from "react-router-dom";
 import { CiCirclePlus } from "react-icons/ci";
-import { MdDelete } from "react-icons/md";
-import axios from "axios";
-import toast from "react-hot-toast";
 
 const columns = [
   {

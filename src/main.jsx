@@ -27,6 +27,7 @@ import OrderPage from "./pages/OrderPage.jsx";
 import Products from "./pages/admin/Products.jsx";
 import ManageProduct from "./pages/admin/ManageProduct.jsx";
 import NewProduct from "./pages/admin/NewProduct.jsx";
+import Categories from "./pages/admin/Categories.jsx";
 
 const router = createBrowserRouter([
   {
@@ -155,6 +156,14 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication>
             <NewProduct />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/categories",
+        element: (
+          <AuthLayout authentication>
+            <Categories/>
           </AuthLayout>
         ),
       },

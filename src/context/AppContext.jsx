@@ -74,7 +74,7 @@ export default function AppContextProvider({ children }) {
 
   const getCategory = async () => {
     try {
-      const response = await axios.get("/ecommerce/categories?page=1&limit=10");
+      const response = await axios.get("/ecommerce/categories?page=1&limit=50");
       setCategories(response.data.data.categories);
       // console.log(response.data.data.categories);
     } catch (err) {
