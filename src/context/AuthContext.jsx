@@ -29,7 +29,7 @@ export default function AuthContextProvider({ children }) {
   useEffect(() => {
     const interval = setInterval(() => {
       refreshAccessToken();
-    }, 24 * 60 * 60 * 1000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);

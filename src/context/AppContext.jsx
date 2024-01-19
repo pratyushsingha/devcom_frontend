@@ -416,7 +416,6 @@ export default function AppContextProvider({ children }) {
     progress,
     setProgress,
     hastNextPage,
-    getCart,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
