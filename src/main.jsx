@@ -24,6 +24,9 @@ import { Toaster } from "react-hot-toast";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import Error from "./components/Error.jsx";
 import OrderPage from "./pages/OrderPage.jsx";
+import Products from "./pages/admin/Products.jsx";
+import ManageProduct from "./pages/admin/ManageProduct.jsx";
+import NewProduct from "./pages/admin/NewProduct.jsx";
 
 const router = createBrowserRouter([
   {
@@ -128,6 +131,30 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication={false}>
             <ResetPass />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/product",
+        element: (
+          <AuthLayout authentication>
+            <Products />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/product/:id",
+        element: (
+          <AuthLayout authentication>
+            <ManageProduct />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/product/new",
+        element: (
+          <AuthLayout authentication>
+            <NewProduct />
           </AuthLayout>
         ),
       },

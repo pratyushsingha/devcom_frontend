@@ -69,6 +69,7 @@ const EditProfile = () => {
         setLoader(true);
         const formData = new FormData();
         formData.append("avatar", files);
+        console.log(formData)
         const data = await axios.patch("/users/avatar", formData, {
           withCredentials: true,
         });

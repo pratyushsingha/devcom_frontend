@@ -8,11 +8,12 @@ import { IoHeartSharp } from "react-icons/io5";
 import Container from "../components/Container";
 import useCart from "../hooks/useCart";
 import { Spinner } from "../components";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const { addToCart, loader, setLoader } = useCart();
   const { id } = useParams();
-  const { wishList, addToWish, removeFromWish} = useContext(AppContext);
+  const { wishList, addToWish, removeFromWish } = useContext(AppContext);
   const [progress, setProgress] = useState(0);
 
   // console.log(id);
