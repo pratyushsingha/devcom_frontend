@@ -137,7 +137,7 @@ export default function AppContextProvider({ children }) {
       const response = await axios.get("ecommerce/cart", {
         withCredentials: true,
       });
-      console.log(response.data.data.items)
+      console.log(response.data.data.items);
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
       setDisCountedTotal(response.data.data.discountedTotal);
@@ -416,7 +416,6 @@ export default function AppContextProvider({ children }) {
     progress,
     setProgress,
     hastNextPage,
-    getCart,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
