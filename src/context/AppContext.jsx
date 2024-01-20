@@ -51,6 +51,7 @@ export default function AppContextProvider({ children }) {
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState(Number);
   const [selectedPrice, setSelectedPrice] = useState(1000);
+  const [newCategory, setNewCategory] = useState("");
 
   const getProducts = async () => {
     try {
@@ -137,7 +138,7 @@ export default function AppContextProvider({ children }) {
       const response = await axios.get("ecommerce/cart", {
         withCredentials: true,
       });
-      console.log(response.data.data.items)
+      console.log(response.data.data.items);
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
       setDisCountedTotal(response.data.data.discountedTotal);
@@ -362,6 +363,27 @@ export default function AppContextProvider({ children }) {
 
   const result = filterData(products, selectedPrice, query);
 
+  const createCategory = async (e) => {
+    e.preventDefault();
+    try {
+      setProgress(progress + 10);
+      setLoader(true);
+      const data = await axios.post(
+        "/ecommerce/categories",
+        { name: newCategory },
+        { withCredentials: true }
+      );
+      getCategory();
+      toast.success("Category Created Successfully");
+      setProgress(progress + 100);
+      setLoader(false);
+    } catch (err) {
+      toast.error("something went wrong while adding category");
+      console.log(err);
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
     getProfile();
     getCart();
@@ -416,6 +438,9 @@ export default function AppContextProvider({ children }) {
     progress,
     setProgress,
     hastNextPage,
+    newCategory,
+    setNewCategory,
+    createCategory
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

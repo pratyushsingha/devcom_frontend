@@ -11,12 +11,16 @@ import { RxCross2 } from "react-icons/rx";
 
 const NewProduct = () => {
   const dialogRef = useRef(null);
-  const { categories, getCategory, progress, setProgress, setLoader } =
-    useContext(AppContext);
+  const {
+    categories,
+    getCategory,
+    newCategory,
+    setNewCategory,
+    createCategory,
+  } = useContext(AppContext);
   const [product, setProduct] = useState({});
   const [mainImage, setMainImage] = useState([]);
   const [isDisabled, setIsDisabled] = useState(true);
-  const [newCategory, setNewCategory] = useState("");
 
   const handleInputChange = (e, field) => {
     setProduct({
@@ -66,27 +70,6 @@ const NewProduct = () => {
       } else {
         toast.error("Something went wrong");
       }
-    }
-  };
-
-  const createCategory = async (e) => {
-    e.preventDefault();
-    try {
-      setProgress(progress + 10);
-      setLoader(true);
-      const data = await axios.post(
-        "/ecommerce/categories",
-        { name: newCategory },
-        { withCredentials: true }
-      );
-      getCategory();
-      toast.success("Category Created Successfully");
-      setProgress(progress + 100);
-      setLoader(false);
-    } catch (err) {
-      toast.error("something went wrong while adding category");
-      console.log(err);
-      setLoader(false);
     }
   };
 
@@ -143,7 +126,13 @@ const NewProduct = () => {
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
               />
-              <Button onClick={createCategory} type="submit">
+              <Button
+                onClick={(e) => {
+                  createCategory(e);
+                  dialogRef.current.close();
+                }}
+                type="submit"
+              >
                 Create
               </Button>
             </dialog>
