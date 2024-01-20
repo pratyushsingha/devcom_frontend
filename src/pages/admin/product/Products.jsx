@@ -1,10 +1,10 @@
 import React, { useContext, useEffect } from "react";
-import Container from "../../components/Container";
-import AdminSidebar from "../../components/admin/AdminSidebar";
-import usePagination from "../../hooks/usePagination";
-import { AppContext } from "../../context/AppContext";
+import Container from "../../../components/Container";
+import AdminSidebar from "../../../components/admin/AdminSidebar";
+import usePagination from "../../../hooks/usePagination";
+import { AppContext } from "../../../context/AppContext";
 import { useSortBy, useTable } from "react-table";
-import Button from "../../components/Button";
+import Button from "../../../components/Button";
 import { Link } from "react-router-dom";
 import { CiCirclePlus } from "react-icons/ci";
 

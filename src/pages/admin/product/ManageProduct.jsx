@@ -1,11 +1,11 @@
 import { useNavigate, useParams } from "react-router-dom";
-import Container from "../../components/Container";
+import Container from "../../../components/Container";
 import React, { useState, useEffect, useContext } from "react";
 import toast from "react-hot-toast";
-import { AppContext } from "../../context/AppContext";
+import { AppContext } from "../../../context/AppContext";
 import axios from "axios";
-import Input from "../../components/Input";
-import Button from "../../components/Button";
+import Input from "../../../components/Input";
+import Button from "../../../components/Button";
 import { MdDelete } from "react-icons/md";
 
 const ManageProduct = () => {
