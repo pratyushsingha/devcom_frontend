@@ -24,10 +24,12 @@ import { Toaster } from "react-hot-toast";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import Error from "./components/Error.jsx";
 import OrderPage from "./pages/OrderPage.jsx";
-import Products from "./pages/admin/Products.jsx";
-import ManageProduct from "./pages/admin/ManageProduct.jsx";
-import NewProduct from "./pages/admin/NewProduct.jsx";
-import Categories from "./pages/admin/Categories.jsx";
+import Products from "./pages/admin/product/Products.jsx";
+import ManageProduct from "./pages/admin/product/ManageProduct.jsx";
+import NewProduct from "./pages/admin/product/NewProduct.jsx";
+import Categories from "./pages/admin/category/Categories.jsx";
+import Coupons from "./pages/admin/coupon/Coupons.jsx";
+import NewCoupon from "./pages/admin/coupon/NewCoupon.jsx";
 
 const router = createBrowserRouter([
   {
@@ -163,7 +165,23 @@ const router = createBrowserRouter([
         path: "/admin/categories",
         element: (
           <AuthLayout authentication>
-            <Categories/>
+            <Categories />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/coupon",
+        element: (
+          <AuthLayout authentication>
+            <Coupons />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/coupon/new",
+        element: (
+          <AuthLayout authentication>
+            <NewCoupon />
           </AuthLayout>
         ),
       },

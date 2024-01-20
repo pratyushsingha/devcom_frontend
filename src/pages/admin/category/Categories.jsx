@@ -1,14 +1,14 @@
 import { useEffect, useRef, useContext } from "react";
-import { AppContext } from "../../context/AppContext";
-import { useSortBy, useTable, usePagination } from "react-table";
-import Container from "../../components/Container";
+import { AppContext } from "../../../context/AppContext";
+import Container from "../../../components/Container";
 import axios from "axios";
-import Button from "../../components/Button";
+import Button from "../../../components/Button";
 import { RxCross2 } from "react-icons/rx";
-import Input from "../../components/Input";
+import Input from "../../../components/Input";
 import toast from "react-hot-toast";
-import AdminSidebar from "../../components/admin/AdminSidebar";
+import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
+import Table from "../../../components/admin/Table";
 
 export const columns = [
   {
@@ -114,27 +114,6 @@ const Categories = () => {
     createCategory,
   } = useContext(AppContext);
 
-  const {
-    getTableProps,
-    getTableBodyProps,
-    page,
-    headerGroups,
-    prepareRow,
-    getRowProps,
-    nextPage,
-    previousPage,
-    hasNextPage,
-    hasPrevPage,
-    state: { pageIndex },
-    pageCount,
-  } = useTable(
-    {
-      columns,
-      data: categories,
-    },
-    useSortBy,
-    usePagination
-  );
 
   useEffect(() => {
     getCategory();
@@ -144,53 +123,7 @@ const Categories = () => {
     <Container>
       <div className="flex space-x-3">
         <AdminSidebar />
-        <div className="mx-auto">
-          <table {...getTableProps()}>
-            <thead>
-              {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()} key={headerGroup.id}>
-                  {headerGroup.headers.map((column) => (
-                    <th
-                      className="px-5"
-                      {...column.getHeaderProps(column.getSortByToggleProps())}
-                      key={column.id}
-                    >
-                      {column.render("Header")}
-                      {column.isSorted && (
-                        <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
-                      )}
-                    </th>
-                  ))}
-                </tr>
-              ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
-              {page.map((row) => {
-                prepareRow(row);
-                return (
-                  <tr {...row.getRowProps()} key={row.id}>
-                    {row.cells.map((cell) => (
-                      <td {...cell.getCellProps()} key={cell.column.id}>
-                        {cell.render("Cell")}
-                      </td>
-                    ))}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-          <div className="flex space-x-3 justify-center">
-            <Button disabled={!hasPrevPage} onClick={previousPage}>
-              Previous
-            </Button>
-            <span>
-              {pageIndex + 1} of {pageCount}
-            </span>
-            <Button disabled={!hasNextPage} onClick={nextPage}>
-              next
-            </Button>
-          </div>
-        </div>
+        <Table columns={columns} data={categories}/>
         <dialog ref={dialogRef}>
           <div className="flex">
             <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">

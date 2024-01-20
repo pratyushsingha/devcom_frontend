@@ -52,6 +52,7 @@ export default function AppContextProvider({ children }) {
   const [selectedCategory, setSelectedCategory] = useState(Number);
   const [selectedPrice, setSelectedPrice] = useState(1000);
   const [newCategory, setNewCategory] = useState("");
+  const [allCoupons, setAllCoupons] = useState([]);
 
   const getProducts = async () => {
     try {
@@ -209,6 +210,21 @@ export default function AppContextProvider({ children }) {
   useEffect(() => {
     localStorage.setItem("wish", JSON.stringify(wishList));
   }, [wishList]);
+
+  const getCoupon = async () => {
+    try {
+      setLoader(true);
+      setProgress(progress + 10);
+      const response = await axios.get("/ecommerce/coupons");
+      setAllCoupons(response.data.data.coupons);
+      console.log(response.data.data.coupons);
+      setLoader(false);
+      setProgress(progress + 100);
+    } catch (err) {
+      toast.error("something went wrong");
+      setProgress(progress + 100);
+    }
+  };
 
   const availableCoupons = async () => {
     try {
@@ -440,7 +456,9 @@ export default function AppContextProvider({ children }) {
     hastNextPage,
     newCategory,
     setNewCategory,
-    createCategory
+    createCategory,
+    getCoupon,
+    allCoupons
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

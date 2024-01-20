@@ -173,3 +173,5 @@ export const sortFilter = [
   { _id: 1, name: "Price: Low to High" },
   { _id: 2, name: "Price: High to Low" },
 ];
+
+export const couponType = [{ id: 1, name: "FLAT" }];
