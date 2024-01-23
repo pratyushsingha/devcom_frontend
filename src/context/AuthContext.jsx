@@ -1,10 +1,12 @@
+import { Toast } from "@/components/ui/toast";
+import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
+  const toast = useToast();
   const [auth, setAuth] = useState({});
   const refreshAccessToken = async () => {
     try {
@@ -34,20 +36,29 @@ export default function AuthContextProvider({ children }) {
     return () => clearInterval(interval);
   }, []);
 
-  const logout = async () => {
+  const logout = async (e) => {
+    e.preventDefault();
     try {
       const response = await axios.post("/users/logout", {
         withCredentials: true,
       });
-      console.log(response);
+
       if (response.status == 200) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
         window.location.reload();
-        toast.success("logout successful");
-      }o
+        toast({
+          title: "loging out",
+          description: "successfully logged out",
+        });
+      }
+      o;
     } catch (err) {
-      toast.error(err);
+      toast({
+        variant: "destructive",
+        title: "Oopps",
+        description: "something went wrong",
+      });
     }
   };
 

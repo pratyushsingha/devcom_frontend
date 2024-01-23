@@ -20,7 +20,7 @@ import {
   ResetPass,
   AuthLayout,
 } from "./components/index";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/toaster";
 import AuthContextProvider from "./context/AuthContext.jsx";
 import Error from "./components/Error.jsx";
 import OrderPage from "./pages/OrderPage.jsx";
@@ -30,6 +30,7 @@ import NewProduct from "./pages/admin/product/NewProduct.jsx";
 import Categories from "./pages/admin/category/Categories.jsx";
 import Coupons from "./pages/admin/coupon/Coupons.jsx";
 import NewCoupon from "./pages/admin/coupon/NewCoupon.jsx";
+import { ThemeProvider } from "./context/theme-provider.jsx";
 
 const router = createBrowserRouter([
   {
@@ -196,8 +197,10 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById("root")).render(
   <AuthContextProvider>
     <AppContextProvider>
-      <RouterProvider router={router} />
-      <Toaster />
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <RouterProvider router={router} />
+        <Toaster />
+      </ThemeProvider>
     </AppContextProvider>
   </AuthContextProvider>
 );

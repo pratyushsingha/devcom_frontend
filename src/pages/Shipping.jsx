@@ -1,9 +1,20 @@
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../context/AppContext";
 import AddressForm from "../components/AddressForm";
-import { RxCross2 } from "react-icons/rx";
 import axios from "axios";
 import Container from "../components/Container";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const Shipping = () => {
   const { setLoader, getAddress } = useContext(AppContext);
@@ -56,58 +67,51 @@ const Shipping = () => {
   }, []);
 
   return (
-    <Container className="my-10">
+    <Container className="my-10 flex flex-col justify-center items-center">
       <h1 className="text-2xl uppercase">Delivery address</h1>
       {allAddress.length > 0 ? (
         allAddress.map((item) => (
-          <div key={item._id}>
-            <label>
-              <input
-                className="mx-3"
-                type="radio"
-                name="addressSelection"
+          <RadioGroup
+            key={item._id}
+            defaultValue={selectedAddress}
+            onValueChange={(value) => setSelectedAddress(value)}
+          >
+            <div className="flex my-2 space-x-2">
+              <RadioGroupItem
+                checked={selectedAddress == item._id}
                 value={item._id}
-                checked={selectedAddress === item._id}
-                onChange={(e) => setSelectedAddress(e.target.value)}
+                id={item._id}
               />
-              {item.addressLine1},{item.addressLine2},{item.city},{item.state},
-              {item.country},pin-
-              {item.pincode}
-            </label>
-          </div>
+              <Label htmlFor={item._id}>
+                {item.addressLine1},{item.addressLine2},{item.city},{item.state}
+                ,{item.country},pin-
+                {item.pincode}
+              </Label>
+            </div>
+          </RadioGroup>
         ))
       ) : (
         <p>no address found...</p>
       )}
-
-      <dialog ref={dialogRef}>
-        <div className="mx-10 my-5">
-          <div className="flex">
-            <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-              add address
-            </h1>
-            <button className="mx-3" onClick={() => dialogRef.current.close()}>
-              <RxCross2 className="text-2xl self-center" />
-            </button>
-          </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button className="my-2">Add New Address</Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Add Address</DialogTitle>
+            <DialogDescription>
+              add a new address,where u want to ship
+            </DialogDescription>
+          </DialogHeader>
           <AddressForm />
-        </div>
-      </dialog>
-      <button
-        className="bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md py-3 text-sm text-white uppercase p-3 my-3"
-        onClick={() => dialogRef.current.showModal()}
-      >
-        Add New Address
-      </button>
-
+        </DialogContent>
+      </Dialog>
       {selectedAddress && (
         <div>
-          <button
-            onClick={() => razorpayPayment(selectedAddress)}
-            className="bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md py-3 text-sm text-white uppercase p-3 my-3"
-          >
+          <Button onClick={() => razorpayPayment(selectedAddress)}>
             Pay Now
-          </button>
+          </Button>
         </div>
       )}
     </Container>

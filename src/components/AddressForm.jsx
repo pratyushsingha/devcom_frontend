@@ -1,74 +1,123 @@
-import React, { useContext, useRef } from "react";
+import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { states } from "@/utils";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Button } from "./ui/button";
+import { DialogFooter } from "./ui/dialog";
 
 const AddressForm = () => {
-  const { address, setAddress, saveAddress } =
-    useContext(AppContext);
+  const { address, setAddress, saveAddress } = useContext(AppContext);
   return (
     <form onSubmit={saveAddress}>
-      <div className=" flex flex-col justify-center items-center space-y-5">
-        <input
-          value={address.addressLine1}
-          type="text"
-          className="border-2 p-3 text-lg rounded focus:outline-none"
-          placeholder="Address 1"
-          onChange={(e) =>
-            setAddress({ ...address, addressLine1: e.target.value })
-          }
-          required
-        />
-        <input
-          value={address.addressLine2}
-          type="text"
-          className="border-2 p-3 text-lg rounded focus:outline-none"
-          placeholder="Address 2"
-          onChange={(e) =>
-            setAddress({ ...address, addressLine2: e.target.value })
-          }
-          required
-        />
-        <input
-          value={address.city}
-          type="text"
-          className="border-2 p-3 text-lg rounded focus:outline-none"
-          placeholder="City"
-          onChange={(e) => setAddress({ ...address, city: e.target.value })}
-          required
-        />
-        <input
-          value={address.state}
-          type="text"
-          className="border-2 p-3 text-lg rounded focus:outline-none"
-          placeholder="State"
-          onChange={(e) => setAddress({ ...address, state: e.target.value })}
-          required
-        />
-
-        <input
-          value={address.pincode}
-          type="text"
-          className="border-2 p-3 text-lg rounded focus:outline-none"
-          placeholder="Pin Code"
-          onChange={(e) => setAddress({ ...address, pincode: e.target.value })}
-          required
-        />
-        <select
-          value={address.country}
-          className="appearance-none border-2 rounded p-3 bg-white text-gray-700 leading-tight focus:outline-none focus:shadow-outline w-10/12"
-          onChange={(e) => setAddress({ ...address, country: e.target.value })}
-          required
-        >
-          <option value="country" disabled>
-            Choose Country
-          </option>
-          <option value="India">India</option>
-        </select>
-        <button
-          className="bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md py-3 text-sm text-white uppercase w-10/12"
-          type="submit"
-        >
-          Save
-        </button>
+      <div className="grid gap-4 py-4">
+        <div className="grid grid-cols-3 items-center gap-4">
+          <Label htmlFor="address1">Address 1</Label>
+          <Input
+            id="address1"
+            value={address.addressLine1}
+            onChange={(e) =>
+              setAddress({ ...address, addressLine1: e.target.value })
+            }
+            required
+            placeholder="Address 1"
+            className="col-span-3"
+          />
+        </div>
+        <div className="grid grid-cols-3 items-center gap-4">
+          <Label htmlFor="address2">Address 2</Label>
+          <Input
+            id="address2"
+            value={address.addressLine2}
+            onChange={(e) =>
+              setAddress({ ...address, addressLine2: e.target.value })
+            }
+            required
+            placeholder="Address 2"
+            className="col-span-3"
+          />
+        </div>
+        <div className="grid grid-cols-3 items-center gap-4">
+          <Label htmlFor="city">City</Label>
+          <Input
+            id="city"
+            value={address.city}
+            onChange={(e) => setAddress({ ...address, city: e.target.value })}
+            required
+            placeholder="City"
+            className="col-span-3"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Select
+            defaultValue={address.state}
+            onValueChange={(value) => setAddress({ ...address, state: value })}
+            value={address.state}
+            required
+            className="w-full"
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a option" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>none</SelectLabel>
+                {states.map((state) => (
+                  <SelectItem key={state.id} value={state.name}>
+                    {state.name}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Input
+            value={address.pincode}
+            type="number"
+            placeholder="Pin Code"
+            onChange={(e) =>
+              setAddress({ ...address, pincode: e.target.value })
+            }
+            required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="city">City</Label>
+          <Select
+            defaultValue={address.country}
+            onValueChange={(value) =>
+              setAddress({ ...address, country: value })
+            }
+            value={address.country}
+            required
+            className="w-full"
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Select a option" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectLabel>none</SelectLabel>
+                <SelectItem value="India">India</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <DialogFooter>
+          <Button type="submit">Save</Button>
+        </DialogFooter>
       </div>
     </form>
   );

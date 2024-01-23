@@ -6,7 +6,8 @@ import OrderItem from "../components/OrderItem";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import usePagination from "../hooks/usePagination";
-import Button from "../components/Button";
+import { Button } from "@/components/ui/button";
+
 
 const OrderPage = () => {
   const { setLoader, page, progress, setProgress } = useContext(AppContext);
@@ -49,7 +50,7 @@ const OrderPage = () => {
       {orders.length > 0 ? (
         <div className="container justify-center items-center mx-auto mt-10">
           <div className="flex shadow-md my-10">
-            <div className="mx-auto w-3/4 bg-white px-10 py-10">
+            <div className="mx-auto w-3/4 bg-[#0E1629] px-10 py-10">
               <div className="flex justify-between border-b pb-8">
                 <h1 className="font-semibold text-2xl">Order List</h1>
                 <div className="flex space-x-5">
@@ -108,9 +109,9 @@ const OrderPage = () => {
         <div className="flex flex-col justify-center items-center h-screen">
           <h1 className="text-2xl mb-4">OrderPage is empty</h1>
           <Link to="/products">
-            <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+            <Button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
               Buy now
-            </button>
+            </Button>
           </Link>
         </div>
       )}
