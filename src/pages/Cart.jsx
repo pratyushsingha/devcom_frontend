@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import CartItem from "../components/CartItem";
@@ -8,10 +8,21 @@ import { BsFillBagHeartFill } from "react-icons/bs";
 import { BiSolidOffer } from "react-icons/bi";
 import Coupon from "../components/Coupon";
 import Container from "../components/Container";
+import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 const Cart = () => {
-  const dialogRef = useRef(null);
-
   const {
     getCart,
     cartProducts,
@@ -24,6 +35,7 @@ const Cart = () => {
     disCountedTotal,
     removeCoupon,
     coupon,
+    wishList,
     allCoupon,
   } = useContext(AppContext);
 
@@ -35,16 +47,21 @@ const Cart = () => {
       {cartProducts.length > 0 ? (
         <>
           <div className="container mx-auto mt-10">
-            <div className="flex shadow-md my-10">
-              <div className="w-3/4 bg-white px-10 py-10">
+            <div className="flex space-x-4 shadow-md my-10">
+              <Card className="w-3/4 bg-[#0E1629] px-10 py-10">
                 <div className="flex justify-between border-b pb-8">
                   <h1 className="font-semibold text-2xl">Shopping Cart</h1>
                   <div className="flex space-x-5">
-                    <Link to="/wishlist">
-                      <button className="mt-2">
-                        <BsFillBagHeartFill className="self-center text-2xl" />
-                      </button>
-                    </Link>
+                    <div className="flex">
+                      <Link to="/wishlist">
+                        <button className="mt-2">
+                          <BsFillBagHeartFill className="self-center text-2xl" />
+                        </button>
+                      </Link>
+                      <p className="bg-red-500 w-4 h-4 pl-1 rounded-full text-xs text-white">
+                        {wishList.length}
+                      </p>
+                    </div>
                     <h2 className="font-semibold text-4xl">
                       {cartProducts.length} Items
                     </h2>
@@ -64,9 +81,11 @@ const Cart = () => {
                     Price
                   </h3>
                 </div>
-                {cartProducts.map((item, index) => (
-                  <CartItem item={item} key={index} />
-                ))}
+                <ScrollArea className="h-72 w-full rounded-md border p-4">
+                  {cartProducts.map((item, index) => (
+                    <CartItem item={item} key={index} />
+                  ))}
+                </ScrollArea>
                 <Link
                   to={"/products"}
                   className="flex font-semibold text-indigo-600 text-sm mt-10"
@@ -79,41 +98,40 @@ const Cart = () => {
                   </svg>
                   Continue Shopping
                 </Link>
-              </div>
-              <div id="summary" className="w-1/4 px-8 py-10">
+              </Card>
+              <Card id="summary" className="w-1/4 px-8 py-10">
                 <div className="flex justify-between">
                   <h1 className="font-semibold text-2xl pb-8">Order Summary</h1>
-                  <dialog ref={dialogRef}>
-                    <div className="flex">
-                      <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-                        available coupons
-                      </h1>
-                      <button
-                        className="mx-3"
-                        onClick={() => dialogRef.current.close()}
-                      >
-                        <RxCross2 className="text-2xl self-center" />
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="pb-8 flex">
+                        <BiSolidOffer className="text-3xl" />
+                        <p className="bg-red-500 w-4 h-4 rounded-full text-xs text-white">
+                          {allCoupon.length}
+                        </p>
                       </button>
-                    </div>
-                    {allCoupon.length > 0 ? (
-                      allCoupon.map((item) => (
-                        <Coupon key={item._id} item={item} />
-                      ))
-                    ) : (
-                      <p className="mx-5 text-center my-3 font-semibold">
-                        add more item to avail coupon
-                      </p>
-                    )}
-                  </dialog>
-                  <button
-                    className="pb-8 flex"
-                    onClick={() => dialogRef.current.showModal()}
-                  >
-                    <BiSolidOffer className="text-3xl" />
-                    <p className="bg-red-500 w-4 h-4 rounded-full text-xs text-white">
-                      {allCoupon.length}
-                    </p>
-                  </button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[425px]">
+                      <DialogHeader>
+                        <DialogTitle className="text-center">
+                          available coupons
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="grid gap-4 py-4">
+                        <div className="flex flex-col items-center gap-4">
+                          {allCoupon.length > 0 ? (
+                            allCoupon.map((item) => (
+                              <Coupon key={item._id} item={item} />
+                            ))
+                          ) : (
+                            <p className="mx-5 text-center my-3 font-semibold">
+                              add more item to avail coupon
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </div>
                 <hr />
                 <div className="flex justify-between mt-10 mb-5">
@@ -123,9 +141,12 @@ const Cart = () => {
                   <span className="font-semibold text-sm">₹ {cartTotal}</span>
                 </div>
                 <div>
-                  <label className="text-green-500 font-semibold inline-block mb-3 text-sm uppercase ">
+                  <Label
+                    htmlFor="couponCode"
+                    className="text-green-500 font-semibold inline-block mb-3 text-sm uppercase "
+                  >
                     Have a Coupon Code??
-                  </label>
+                  </Label>
                   {coupon == true ? (
                     <div className="text-center p-2 rounded-md bg-green-300 text-green-800">
                       <span>Coupon applied successfully</span>
@@ -136,20 +157,18 @@ const Cart = () => {
                   ) : (
                     <>
                       <div className="flex space-x-2">
-                        <input
+                        <Input
+                          id="couponCode"
                           value={couponCode}
                           onChange={(e) => setCouponCode(e.target.value)}
-                          className="block p-2 text-grey-600 mb-3 text-sm uppercase border-2 border-gray-400 rounded-md"
                           type="text"
+                          className="uppercase"
                           placeholder="enter your coupon"
                         />
                         {couponCode && (
-                          <button
-                            className="self-center bg-indigo-500 hover:bg-indigo-600 text-white px-2 py-2 mb-3 rounded"
-                            onClick={() => applyCoupon(couponCode)}
-                          >
-                            apply
-                          </button>
+                          <Button onClick={() => applyCoupon(couponCode)}>
+                            Apply
+                          </Button>
                         )}
                       </div>
                     </>
@@ -172,12 +191,10 @@ const Cart = () => {
                     </span>
                   </div>
                   <Link to="/shipping">
-                    <button className="bg-indigo-500 font-semibold hover:bg-indigo-600 rounded-md py-3 text-sm text-white uppercase w-full">
-                      Checkout
-                    </button>
+                    <Button className="w-full">Checkout</Button>
                   </Link>
                 </div>
-              </div>
+              </Card>
             </div>
           </div>
         </>
@@ -186,9 +203,9 @@ const Cart = () => {
           <div className="flex flex-col justify-center items-center h-screen">
             <h1 className="text-2xl mb-4">cart is empty</h1>
             <Link to="/products">
-              <button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+              <Button>
                 Buy now
-              </button>
+              </Button>
             </Link>
           </div>
         </>

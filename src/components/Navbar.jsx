@@ -1,16 +1,20 @@
 import { useContext, useState } from "react";
 import "../index.css";
-import { FaSearch, FaUser } from "react-icons/fa";
+import { FaSearch } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
 import { Link } from "react-router-dom";
 import Container from "./Container";
-import DropDownMenu from "./DropDownMenu";
 import { AppContext } from "../context/AppContext";
 import Spinner from "./loader/Spinner";
+import { Button } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import DropDown from "./NavDropDown";
 
 const Navbar = () => {
-  const { cartProducts, loader ,profileInfo} = useContext(AppContext);
-  const [openDropdown, setOpenDropdown] = useState(false);
+  const { cartProducts, loader, profileInfo } = useContext(AppContext);
   return (
     <div className="flex relative">
       <Container>
@@ -40,33 +44,34 @@ const Navbar = () => {
               </button>
             </Link>
             {localStorage.getItem("accessToken") ? (
-              <div className="relative">
-                <button
-                  onClick={() => setOpenDropdown(!openDropdown)}
-                  className="text-xl self-center py-2 pr-2 hover:text-blue-500"
-                >
-                  <img src={profileInfo && profileInfo.avatar} className="w-10 h-10 rounded-full" alt={profileInfo.username} />
-                </button>
-                {openDropdown && <DropDownMenu />}
-              </div>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button>
+                    <img
+                      src={profileInfo && profileInfo.avatar}
+                      className="w-10 h-10 rounded-full"
+                      alt={profileInfo.username}
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropDown />
+              </DropdownMenu>
             ) : (
               <div className="self-center space-x-3">
                 <Link to="/login">
-                  <button className="p-2 bg-slate-600 rounded text-white hover:bg-slate-500">
-                    Login
-                  </button>
+                  <Button variant="outline">Login</Button>
                 </Link>
                 <Link to="/register">
-                  <button className="p-2 bg-slate-600 rounded text-white hover:bg-slate-500">
-                    Register
-                  </button>
+                  <Button variant="outline">Register</Button>
                 </Link>
               </div>
             )}
           </div>
         </div>
       </Container>
-      {loader && <Spinner classname="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 text-end" />}
+      {loader && (
+        <Spinner classname="absolute top-1/2 right-1/2 transform translate-x-1/2 -translate-y-1/2 text-end" />
+      )}
     </div>
   );
 };

@@ -1,13 +1,15 @@
+import { Badge } from "./ui/badge";
+
 const OrderItem = ({ item }) => {
   return (
-    <div className="flex items-center hover:bg-gray-100 -mx-8 px-6 py-5">
+    <div className="flex items-center hover:bg-[#00001e] -mx-8 px-6 py-5">
       <div className="flex w-2/5">
         <div className="w-20">
           <p>{item._id}</p>
         </div>
       </div>
       <div className="flex justify-center w-1/5">
-        <p className="mx-2 border text-center w-8">{item.totalOrderItems}</p>
+        <Badge className="mx-2 border text-center w-8">{item.totalOrderItems}</Badge>
       </div>
       <span className="text-center w-1/5 font-semibold text-sm">
         ₹ {item.discountedOrderPrice}
@@ -21,9 +23,9 @@ const OrderItem = ({ item }) => {
           </span>
         )}
       </div>
-      <span className="text-center w-1/5 font-semibold text-sm bg-red-500 rounded-lg p-2 text-white">
+      <Badge className="bg-red-500 hover:bg-red-800">
         {item.status}
-      </span>
+      </Badge>
     </div>
   );
 };

@@ -49,8 +49,9 @@ export default function AppContextProvider({ children }) {
 
   const [allAddress, setAllAddress] = useState([]);
   const [query, setQuery] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState(Number);
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPrice, setSelectedPrice] = useState(1000);
+  const [selectedSort, setSelectedSort] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [allCoupons, setAllCoupons] = useState([]);
 
@@ -329,9 +330,13 @@ export default function AppContextProvider({ children }) {
     }
   };
 
-  function handleCategory(e) {
-    setSelectedCategory(e.target.value);
-    // console.log(e.target.value);
+  function handleSort(value) {
+    setSelectedSort(value);
+  }
+
+  function handleCategory(value) {
+    setSelectedCategory(value);
+    // console.log(value);
   }
 
   function handleInputChange(e) {
@@ -342,8 +347,8 @@ export default function AppContextProvider({ children }) {
     return product.name.toLowerCase().indexOf(query.toLowerCase()) !== -1;
   }
 
-  function handlePrice(e) {
-    setSelectedPrice(e.target.value);
+  function handlePrice(value) {
+    setSelectedPrice(value);
   }
 
   function filterData(products, selectedPrice, query) {
@@ -354,15 +359,34 @@ export default function AppContextProvider({ children }) {
       });
     }
 
+    // if (selectedCategory) {
+    //   filteredProducts = filteredProducts.filter(function (product) {
+    //     return product.category.includes(selectedCategory);
+    //   });
+    // }
+    if (selectedSort === "Sort: Z-A") {
+      filteredProducts = filteredProducts.sort((a, b) => {
+        return b.name.localeCompare(a.name);
+      });
+    } else if (selectedSort === "Sort: A-Z") {
+      filteredProducts = filteredProducts.sort((a, b) =>
+        a.name.localeCompare(b.name)
+      );
+    } else if (selectedSort === "Price: Low to High") {
+      filteredProducts = filteredProducts.sort(
+        (a, b) => parseFloat(a.price) - parseFloat(b.price)
+      );
+    } else if (selectedSort === "Price: High to Low") {
+      filteredProducts = filteredProducts.sort(
+        (a, b) => parseFloat(b.price) - parseFloat(a.price)
+      );
+    }
+
     if (selectedPrice) {
       filteredProducts = filteredProducts.filter(function (product) {
         return product.price <= selectedPrice;
       });
     }
-
-    // if (selectedCategory) {
-    //  console.log(selectedCategory)
-    // }
 
     return filteredProducts.map(function (product) {
       return (
@@ -458,7 +482,9 @@ export default function AppContextProvider({ children }) {
     setNewCategory,
     createCategory,
     getCoupon,
-    allCoupons
+    allCoupons,
+    selectedSort,
+    handleSort,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

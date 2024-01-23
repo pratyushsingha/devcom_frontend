@@ -5,11 +5,11 @@ const ProductItem = ({ name, _id, price,mainImage }) => {
     <Link to={`/product/${_id}`}>
       <section className="flex flex-col justify-center items-center">
         <img
-          className="rounded-xl w-3/4 items-center"
+          className="rounded w-3/4 items-center"
           src={mainImage}
           alt={name}
         />
-        <p className="text-xs md:text-base text-center font-semibold">
+        <p className="text-xs my-2 md:text-base text-center font-semibold">
           {name}
         </p>
         <p className="text-center font-bold text-lg">&#8377;{price}</p>

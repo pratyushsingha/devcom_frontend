@@ -1,20 +1,21 @@
 import React, { useContext } from "react";
 import { AppContext } from "../context/AppContext";
+import { Button } from "./ui/button";
 
 const Coupon = ({ item }) => {
   const { applyCoupon } = useContext(AppContext);
   return (
-    <div className="mx-2 border-2 border-orange-600 flex flex-col mb-4">
-      <div className="text-center bg-yellow-400 border border-orange-500">
-        <button
+    <div className="mx-2 border-2 border-purple-600 flex flex-col mb-4 rounded">
+      <div className="text-center bg-[#0E1629] border border-purple-500 rounded">
+        <Button variant="ghost"
           onClick={() => applyCoupon(item.couponCode)}
-          className="bg-yellow-400 text-lg font-bold"
+          className="bg-[#0E1629] text-lg font-bold"
         >
           {item.couponCode}
-        </button>
+        </Button>
         <button></button>
       </div>
-      <p>
+      <p className="p-2">
         Get flat &#8377;{item.discountValue} off on minumum order of &#8377;
         {item.minimumCartValue}
       </p>

@@ -4,9 +4,18 @@ import AdminSidebar from "../../../components/admin/AdminSidebar";
 import usePagination from "../../../hooks/usePagination";
 import { AppContext } from "../../../context/AppContext";
 import { useSortBy, useTable } from "react-table";
-import Button from "../../../components/Button";
 import { Link } from "react-router-dom";
 import { CiCirclePlus } from "react-icons/ci";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 
 const columns = [
   {
@@ -67,61 +76,60 @@ const Products = () => {
   }, [page]);
 
   return (
-    <Container>
-      <div className="flex space-x-3">
-        <AdminSidebar />
-        <div className="mx-auto">
-          <p>Products</p>
-          <table {...getTableProps()} className="">
-            <thead>
+    <Container className="flex">
+      <AdminSidebar />
+      <div className="mx-auto">
+        <h2 className="text-2xl my-5">Products</h2>
+        <div className="rounded-md border bg-[#0E1629]">
+          <Table {...getTableProps()} className="">
+            <TableHeader>
               {headerGroups.map((headerGroup) => (
-                <tr {...headerGroup.getHeaderGroupProps()}>
+                <TableRow {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
-                    <th
-                      className="px-5"
+                    <TableHead
+                      className=""
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       {column.render("Header")}
                       {column.isSorted && (
                         <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
                       )}
-                    </th>
+                    </TableHead>
                   ))}
-                </tr>
+                </TableRow>
               ))}
-            </thead>
-            <tbody {...getTableBodyProps()}>
+            </TableHeader>
+            <TableBody {...getTableBodyProps()}>
               {rows.map((row) => {
                 prepareRow(row);
                 return (
-                  <tr {...row.getRowProps()}>
+                  <TableRow {...row.getRowProps()}>
                     {row.cells.map((cell) => (
-                      <td className="px-5" {...cell.getCellProps()}>
+                      <TableCell className="px-10" {...cell.getCellProps()}>
                         {cell.render("Cell")}
-                      </td>
+                      </TableCell>
                     ))}
-                  </tr>
+                  </TableRow>
                 );
               })}
-            </tbody>
-          </table>
-
-          <div className="flex space-x-3 justify-center">
-            <Button disabled={page <= 1} onClick={handlePrevClick}>
-              &laquo; Previous
-            </Button>
-
-            <Button disabled={hastNextPage == false} onClick={handleNextClick}>
-              Next &raquo;
-            </Button>
-          </div>
+            </TableBody>
+          </Table>
         </div>
-        <Link to="/admin/product/new">
-          <button className="text-4xl">
-            <CiCirclePlus />
-          </button>
-        </Link>
+        <div className="flex space-x-3 justify-center my-4">
+          <Button disabled={page <= 1} onClick={handlePrevClick}>
+            &laquo; Previous
+          </Button>
+
+          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
+            Next &raquo;
+          </Button>
+        </div>
       </div>
+      <Link to="/admin/product/new">
+        <Button variant="ghost" className="text-4xl">
+          <CiCirclePlus />
+        </Button>
+      </Link>
     </Container>
   );
 };
