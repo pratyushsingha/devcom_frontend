@@ -1,17 +1,53 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Container from "../../../components/Container";
 import React, { useState, useEffect, useContext } from "react";
-import toast from "react-hot-toast";
 import { AppContext } from "../../../context/AppContext";
 import axios from "axios";
-import Input from "../../../components/Input";
-import Button from "../../../components/Button";
 import { MdDelete } from "react-icons/md";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { CiCirclePlus } from "react-icons/ci";
+
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@radix-ui/react-dropdown-menu";
 
 const ManageProduct = () => {
+  const { toast } = useToast();
   const navigate = useNavigate();
-  const { setLoader, progress, setProgress } =
-    useContext(AppContext);
+  const {
+    setLoader,
+    progress,
+    setProgress,
+    categories,
+    getCategory,
+    newCategory,
+    setNewCategory,
+    createCategory,
+  } = useContext(AppContext);
   const { id } = useParams();
 
   const [files, setFiles] = useState([]);
@@ -30,7 +66,10 @@ const ManageProduct = () => {
       setProgress(progress + 100);
       setLoader(false);
     } catch (err) {
-      toast.error(err.message);
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
       setProgress(progress + 100);
       setLoader(false);
     }
@@ -71,105 +110,229 @@ const ManageProduct = () => {
         formData,
         { withCredentials: true }
       );
-
-      // Handle the response as needed
-      // console.log(response.data);
-      toast.success("Product updated Successfully");
+      toast({
+        title: "uhh hoo",
+        description: response.data.message,
+      });
       getProductDetails(id);
+      setIsSaveDisabled(true);
     } catch (err) {
-      toast.error(err.message);
+      console.error(err.message);
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
+    }
+  };
+
+  const deleteProrduct = async () => {
+    try {
+      const response = await axios.delete(`/ecommerce/products/${id}
+`);
+      console.log(response);
+      toast({
+        title: "success",
+        description: "product deleted successfully",
+      });
+      navigate("/admin/product");
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "error",
+        description: "something went wrong",
+      });
     }
   };
 
   useEffect(() => {
+    getCategory();
     getProductDetails(id);
   }, []);
   return (
-    <Container>
+    <Container className="flex space-x-4 h-screen justify-center items-center">
       {productDetails.map((product) => (
         <div key={id} className="flex justify-center space-x-5">
-          <div className="flex">
-            <div className="flex justify-between">
-              <p>ID: {product._id}</p>
-              <p className="text-green-500">stock: {product.stock}</p>
-            </div>
-            <div className="flex-col space-y-3">
-              <img
-                className="w-fit h-full"
-                src={product.mainImage.url}
-                alt={product.name}
-              />
-              <p className="text-center text-xl">&#8377; {product.price}</p>
-              <Button
-                classname="bg-red-500 hover:bg-red-700"
-                onClick={async () => {
-                  try {
-                    await axios.delete(`/ecommerce/products/${id}
-                `);
-                    toast.success("Product deleted Successfully");
-                    navigate("/admin/product");
-                  } catch (err) {
-                    console.log(err);
-                    toast.error("something went wrong");
-                  }
-                }}
-              >
-                <MdDelete />
-              </Button>
-            </div>
-
-            <div>
-              <form onSubmit={handleSubmit}>
-                <h1 className="text-3xl mb-3 uppercase">Manage Product</h1>
-                <Input
-                  label="Product Name"
-                  value={updatedProduct.name}
-                  onChange={(e) => handleInputChange(e, "name")}
-                  placeholder="Enter ur Product Name"
-                />
-                <Input
-                  label="Description"
-                  value={updatedProduct.description}
-                  onChange={(e) => handleInputChange(e, "description")}
-                  placeholder="Enter ur Last Name"
-                />
-                <Input
-                  label="Price"
-                  type="number"
-                  value={updatedProduct.price}
-                  onChange={(e) => handleInputChange(e, "price")}
-                  placeholder="enter product price"
-                />
-                <Input
-                  label="Stock"
-                  type="number"
-                  value={updatedProduct.stock}
-                  onChange={(e) => handleInputChange(e, "stock")}
-                  placeholder="Stock"
-                />
-                <Input
-                  label="Main Image"
-                  type="file"
-                  onChange={(e) => {
-                    handleFileChange(e);
-                    setIsSaveDisabled(false);
-                  }}
-                />
-                <img
-                  src={files.length > 0 ? files[0].preview : ""}
-                  alt={files[0]?.name || "Selected Image"}
-                  style={{ maxWidth: "100%", maxHeight: "200px" }}
-                />{" "}
+          <div className="flex space-x-3">
+            <Card>
+              <CardHeader className="flex flex-row justify-between">
+                <CardTitle className="text-2xl">Product Details</CardTitle>
                 <Button
-                  type="submit"
-                  classname="mt-3 w-full"
-                  onClick={handleSubmit}
-                  disabled={isSaveDisabled}
+                  size="sm"
+                  variant="destructive"
+                  onClick={deleteProrduct}
                 >
-                  update
+                  <MdDelete />
                 </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="my-2">
+                  <p>ID: {product._id}</p>
+                  <p className="text-green-500">stock: {product.stock}</p>
+                </div>
+                <div className="flex-col space-y-3">
+                  <img
+                    className="mx-auto w-48 h-52 rounded"
+                    src={product.mainImage.url}
+                    alt={product.name}
+                  />
+                </div>
+              </CardContent>
+              <CardFooter className="justify-center">
+                <p className="text-center text-xl">&#8377; {product.price}</p>
+              </CardFooter>
+            </Card>
+            <Card>
+              <form onSubmit={handleSubmit}>
+                <CardHeader>
+                  <CardTitle className="text-2xl mb-3 text-center">
+                    Manage Product
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Label htmlFor="name" className="my-2">
+                    Product name:
+                  </Label>
+                  <Input
+                    id="name"
+                    value={updatedProduct.name}
+                    onChange={(e) => handleInputChange(e, "name")}
+                    placeholder="Enter ur Product Name"
+                    required
+                  />
+                  <Label htmlFor="description" className="my-2">
+                    Product description:
+                  </Label>
+                  <Input
+                    id="description"
+                    value={updatedProduct.description}
+                    onChange={(e) => handleInputChange(e, "description")}
+                    placeholder="Enter ur Last Name"
+                    required
+                  />
+                  <Label htmlFor="price" className="my-2">
+                    Product price:
+                  </Label>
+                  <Input
+                    label="price"
+                    type="number"
+                    value={updatedProduct.price}
+                    onChange={(e) => handleInputChange(e, "price")}
+                    placeholder="enter product price"
+                    required
+                  />
+                  <div className="my-2">
+                    <Label htmlFor="category">Product Category:</Label>
+                    <div className="flex space-x-3 my-3 rounded">
+                      <Select
+                        id="category"
+                        defaultValue={updatedProduct.category}
+                        onValueChange={(value) => {
+                          setIsSaveDisabled(false);
+                          setUpdatedProduct({
+                            ...updatedProduct,
+                            category: value,
+                          });
+                        }}
+                        value={product.category}
+                        required
+                        className="w-full"
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select a option" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectLabel>none</SelectLabel>
+                            {categories.map((category) => (
+                              <SelectItem
+                                key={category._id}
+                                value={category._id}
+                              >
+                                {category.name}
+                              </SelectItem>
+                            ))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            type="button"
+                            className="text-2xl"
+                          >
+                            <CiCirclePlus />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px]">
+                          <DialogHeader>
+                            <DialogTitle className="text-center text-xl">
+                              Create Category
+                            </DialogTitle>
+                          </DialogHeader>
+                          <form onSubmit={createCategory}>
+                            <div className="grid gap-4 py-4">
+                              <Label htmlFor="name">Category name</Label>
+                              <Input
+                                id="name"
+                                value={newCategory}
+                                className="col-span-3"
+                                onChange={(e) => setNewCategory(e.target.value)}
+                              />
+                            </div>
+                            <DialogFooter>
+                              <Button type="submit">create</Button>
+                            </DialogFooter>
+                          </form>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                  <Label htmlFor="stock" className="my-2">
+                    stock:
+                  </Label>
+                  <Input
+                    label="stock"
+                    type="number"
+                    value={updatedProduct.stock}
+                    onChange={(e) => handleInputChange(e, "stock")}
+                    placeholder="Stock"
+                    required
+                  />
+                  <Label htmlFor="mainImage" className="my-2">
+                    Main Image:
+                  </Label>
+                  <Input
+                    label="mainImage"
+                    type="file"
+                    onChange={(e) => {
+                      handleFileChange(e);
+                      setIsSaveDisabled(false);
+                    }}
+                    required
+                  />
+                  <Label htmlFor="preview" className="my-2">
+                    Preview:
+                  </Label>
+                  <img
+                    id="preview"
+                    src={files.length > 0 ? files[0].preview : ""}
+                    alt={files[0]?.name || "Selected Image"}
+                    style={{ maxWidth: "100%", maxHeight: "200px" }}
+                  />{" "}
+                </CardContent>
+                <CardFooter className="w-full">
+                  <Button
+                    type="submit"
+                    classname=" w-full"
+                    onClick={handleSubmit}
+                    disabled={isSaveDisabled}
+                  >
+                    update
+                  </Button>
+                </CardFooter>
               </form>
-            </div>
+            </Card>
           </div>
         </div>
       ))}
