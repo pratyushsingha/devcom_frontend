@@ -1,4 +1,3 @@
-import { Toast } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
@@ -6,7 +5,7 @@ import { createContext, useEffect, useState } from "react";
 export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
-  const toast = useToast();
+  const { toast } = useToast();
   const [auth, setAuth] = useState({});
   const refreshAccessToken = async () => {
     try {
@@ -46,13 +45,15 @@ export default function AuthContextProvider({ children }) {
       if (response.status == 200) {
         localStorage.removeItem("accessToken");
         localStorage.removeItem("refreshToken");
-        window.location.reload();
+        // window.location.reload();
         toast({
           title: "loging out",
-          description: "successfully logged out",
+          description: "successfully logging out",
         });
+        setTimeout(() => {
+          window.location.reload(false);
+        }, 1500);
       }
-      o;
     } catch (err) {
       toast({
         variant: "destructive",
