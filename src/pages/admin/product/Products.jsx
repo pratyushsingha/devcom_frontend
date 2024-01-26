@@ -87,7 +87,7 @@ const Products = () => {
                 <TableRow {...headerGroup.getHeaderGroupProps()}>
                   {headerGroup.headers.map((column) => (
                     <TableHead
-                      className=""
+                      className="px-10"
                       {...column.getHeaderProps(column.getSortByToggleProps())}
                     >
                       {column.render("Header")}

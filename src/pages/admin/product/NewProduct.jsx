@@ -1,16 +1,34 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Container from "../../../components/Container";
-import Input from "../../../components/Input";
 import axios from "axios";
-import Button from "../../../components/Button";
-import toast from "react-hot-toast";
-import Select from "../../../components/Select";
+import { Button } from "../../../components/ui/button";
 import { AppContext } from "../../../context/AppContext";
 import { CiCirclePlus } from "react-icons/ci";
-import { RxCross2 } from "react-icons/rx";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
 
 const NewProduct = () => {
-  const dialogRef = useRef(null);
+  const { toast } = useToast();
   const {
     categories,
     getCategory,
@@ -40,9 +58,9 @@ const NewProduct = () => {
     }
   };
 
-  //   const handleSubImageChange = () => {
-  //     setSubImages([...subImages, ...e.target.files]);
-  //   };
+  // //   const handleSubImageChange = () => {
+  // //     setSubImages([...subImages, ...e.target.files]);
+  // //   };
 
   const createProduct = async (e) => {
     e.preventDefault();
@@ -60,16 +78,19 @@ const NewProduct = () => {
       const data = await axios.post("/ecommerce/products", formData, {
         withCredentials: true,
       });
-      toast.success("Product Created Successfully");
+      toast({
+        title: "success",
+        description: data.data.message,
+      });
 
       //   console.log(data);
+      setIsDisabled(true);
     } catch (err) {
       console.log(err);
-      if (err.response.status === 422) {
-        toast.error("please fill all the fields");
-      } else {
-        toast.error("Something went wrong");
-      }
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
     }
   };
 
@@ -78,108 +99,143 @@ const NewProduct = () => {
   }, []);
 
   return (
-    <Container>
-      <div className="flex-col justify-center items-center">
+    <Container className="flex justify-center items-center h-screen">
+      <Card>
         <form onSubmit={createProduct}>
-          <h1 className="text-3xl mb-3 uppercase">Manage Product</h1>
-          <Input
-            label="Product Name"
-            value={product.name}
-            onChange={(e) => handleInputChange(e, "name")}
-            placeholder="Enter ur Product Name"
-          />
-          <Input
-            label="Description"
-            value={product.description}
-            onChange={(e) => handleInputChange(e, "description")}
-            placeholder="Enter product description"
-          />
-          <Input
-            label="Price"
-            type="number"
-            value={product.price}
-            onChange={(e) => handleInputChange(e, "price")}
-            placeholder="enter product price"
-            required
-          />
-          <div className="flex space-x-3 my-3 rounded">
-            <Select
-              label="select an category"
-              options={categories}
-              onChange={(e) => handleInputChange(e, "category")}
-            />
-            <dialog ref={dialogRef}>
-              <div className="flex">
-                <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-                  Create Category
-                </h1>
-                <button
-                  className="text-3xl"
-                  type="button"
-                  onClick={() => dialogRef.current.close()}
-                >
-                  <RxCross2 />
-                </button>
-              </div>
+          <CardHeader>
+            <CardTitle className="text-2xl mb-3 text-center">
+              Create Product
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="my-2">
+              <Label htmlFor="name">Product name:</Label>
               <Input
-                label="category name"
-                value={newCategory}
-                onChange={(e) => setNewCategory(e.target.value)}
+                id="name"
+                value={product.name}
+                onChange={(e) => handleInputChange(e, "name")}
+                placeholder="Enter your Product Name"
+                required
               />
-              <Button
-                onClick={(e) => {
-                  createCategory(e);
-                  dialogRef.current.close();
+            </div>
+            <div className="my-2">
+              <Label htmlFor="description">Product description:</Label>
+              <Textarea
+                id="description"
+                value={product.description}
+                onChange={(e) => handleInputChange(e, "description")}
+                placeholder="Enter product description"
+              />
+            </div>
+            <div className="my-2">
+              <Label htmlFor="price">Product price:</Label>
+              <Input
+                id="price"
+                type="number"
+                value={product.price}
+                onChange={(e) => handleInputChange(e, "price")}
+                placeholder="Enter product price"
+                required
+              />
+            </div>
+            <div className="my-2">
+              <Label htmlFor="category">Product Category:</Label>
+              <div className="flex space-x-3 my-3 rounded">
+                <Select
+                  id="category"
+                  defaultValue={product.category}
+                  onValueChange={(value) =>
+                    setProduct({ ...product, category: value })
+                  }
+                  value={product.category}
+                  required
+                  className="w-full"
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select a option" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>none</SelectLabel>
+                      {categories.map((category) => (
+                        <SelectItem key={category._id} value={category._id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="ghost" type="button" className="text-2xl">
+                      <CiCirclePlus />
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[425px]">
+                    <DialogHeader>
+                      <DialogTitle className="text-center text-xl">
+                        Create Category
+                      </DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={createCategory}>
+                      <div className="grid gap-4 py-4">
+                        <Label htmlFor="name">Category name</Label>
+                        <Input
+                          id="name"
+                          value={newCategory}
+                          className="col-span-3"
+                          onChange={(e) => setNewCategory(e.target.value)}
+                        />
+                      </div>
+                      <DialogFooter>
+                        <Button type="submit">create</Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </div>
+            <div className="my-2">
+              <Label htmlFor="stock">Product stock:</Label>
+              <Input
+                id="stock"
+                type="number"
+                value={product.stock}
+                onChange={(e) => handleInputChange(e, "stock")}
+                placeholder="Enter product stock"
+              />
+            </div>
+            <div className="my-2">
+              <Label htmlFor="mainImage">Main Image:</Label>
+              <Input
+                id="mainImage"
+                type="file"
+                onChange={(e) => {
+                  handleFileChange(e);
+                  setIsDisabled(false);
                 }}
-                type="submit"
-              >
-                Create
-              </Button>
-            </dialog>
-            <button
-              type="button"
-              className="text-3xl"
-              onClick={() => dialogRef.current.showModal()}
+              />
+            </div>
+            <div className="my-2">
+              <Label htmlFor="preview">Preview:</Label>
+              <img
+                id="preview"
+                src={mainImage.length > 0 ? mainImage[0].name : ""}
+                alt={mainImage[0]?.name || "Selected Image"}
+                style={{ maxWidth: "100%", maxHeight: "200px" }}
+              />{" "}
+            </div>
+            <Button
+              disabled={isDisabled}
+              type="submit"
+              className="mt-3 w-full"
+              onClick={createProduct}
             >
-              <CiCirclePlus />
-            </button>
-          </div>
-          <Input
-            label="Stock"
-            type="number"
-            value={product.stock}
-            onChange={(e) => handleInputChange(e, "stock")}
-            placeholder="enter product stock"
-          />
-          <Input
-            label="Main Image"
-            type="file"
-            onChange={(e) => {
-              handleFileChange(e);
-              setIsDisabled(false);
-            }}
-          />
-          {/* <Input
-            label="SubImages"
-            type="file"
-            onChange={handleSubImageChange}
-
-          /> */}
-          <img
-            src={mainImage.length > 0 ? mainImage[0].preview : ""}
-            alt={mainImage[0]?.name || "Selected Image"}
-            style={{ maxWidth: "100%", maxHeight: "200px" }}
-          />{" "}
-          <Button
-            disabled={isDisabled}
-            type="submit"
-            classname="mt-3 w-full"
-            onClick={createProduct}
-          >
-            Create
-          </Button>
+              Create
+            </Button>
+          </CardContent>
         </form>
-      </div>
+      </Card>
     </Container>
   );
 };
