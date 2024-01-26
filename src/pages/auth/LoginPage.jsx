@@ -39,26 +39,23 @@ const LoginPage = () => {
 
   const login = async ({ username, password }) => {
     try {
-      if (localStorage.getItem("accessToken")) {
+      setLoader(true);
+      const response = await axios.post("/users/login", {
+        password: password,
+        username: username,
+      });
+      console.log(response.data.data);
+      const accessToken = response.data.data.accessToken;
+      const refreshToken = response.data.data.refreshToken;
+      // console.log(accessToken);
+      //   console.log(auth);
+      if (accessToken) {
+        localStorage.setItem("accessToken", accessToken);
+        localStorage.setItem("refreshToken", refreshToken);
+        // window.location.reload(false);
         navigate("/profile");
-      } else {
-        setLoader(true);
-        const response = await axios.post("/users/login", {
-          password: password,
-          username: username,
-        });
-        console.log(response.data.data);
-        const accessToken = response.data.data.accessToken;
-        const refreshToken = response.data.data.refreshToken;
-        // console.log(accessToken);
-        //   console.log(auth);
-        if (accessToken) {
-          localStorage.setItem("accessToken", accessToken);
-          localStorage.setItem("refreshToken", refreshToken);
-          window.location.reload(false);
-        }
-        setLoader(false);
       }
+      setLoader(false);
     } catch (err) {
       console.log(err);
       if (!err.response) {
