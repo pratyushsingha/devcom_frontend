@@ -54,6 +54,7 @@ export default function AppContextProvider({ children }) {
   const [selectedSort, setSelectedSort] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [allCoupons, setAllCoupons] = useState([]);
+  const [orders, setOrders] = useState([]);
 
   const getProducts = async () => {
     try {
@@ -424,9 +425,30 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  const getOrders = async () => {
+    try {
+      setProgress(progress + 10);
+      setLoader(true);
+      const response =
+        await axios.get(`/ecommerce/orders/list/admin?&page=${page}&limit=15
+      `);
+
+      // console.log(response.data.data.orders);
+      setOrders(response.data.data.orders);
+      setHasNextPage(response.data.data.hasNextPage);
+      setProgress(progress + 100);
+      setLoader(false);
+    } catch (err) {
+      console.log(err);
+      setProgress(progress + 100);
+      setLoader(false);
+    }
+  };
+
   useEffect(() => {
     getProfile();
     getCart();
+    getOrders();
   }, []);
   const value = {
     getProducts,
@@ -485,6 +507,9 @@ export default function AppContextProvider({ children }) {
     allCoupons,
     selectedSort,
     handleSort,
+    getOrders,
+    orders,
+    setOrders,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

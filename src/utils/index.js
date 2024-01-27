@@ -48,3 +48,8 @@ export const states = [
   { id: 29, name: "Uttarakhand" },
   { id: 30, name: "West Bengal" },
 ];
+
+export const OrderStatuses = [
+  { id: 1, name: "DELIVERED" },
+  { id: 2, name: "CANCELLED" },
+];

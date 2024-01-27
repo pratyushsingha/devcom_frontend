@@ -31,6 +31,8 @@ import Categories from "./pages/admin/category/Categories.jsx";
 import Coupons from "./pages/admin/coupon/Coupons.jsx";
 import NewCoupon from "./pages/admin/coupon/NewCoupon.jsx";
 import { ThemeProvider } from "./context/theme-provider.jsx";
+import Orders from "./pages/admin/order/Orders.jsx";
+import ManageOrder from "./pages/admin/order/ManageOrder.jsx";
 
 const router = createBrowserRouter([
   {
@@ -183,6 +185,22 @@ const router = createBrowserRouter([
         element: (
           <AuthLayout authentication>
             <NewCoupon />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/orders",
+        element: (
+          <AuthLayout authentication>
+            <Orders />
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/admin/order/:id",
+        element: (
+          <AuthLayout authentication>
+            <ManageOrder />
           </AuthLayout>
         ),
       },
