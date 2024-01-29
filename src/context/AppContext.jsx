@@ -22,7 +22,7 @@ export default function AppContextProvider({ children }) {
   const [quantity, setQuantity] = useState(1);
   const [categories, setCategories] = useState([]);
   const [page, setPage] = useState(1);
-  const [hastNextPage, setHasNextPage] = useState(true);
+  const [hastNextPage, setHasNextPage] = useState();
   const [cartProducts, setCartProducts] = useState([]);
   const [cartTotal, setCartTotal] = useState();
   const [wishList, setWishList] = useState(getLocalWish());
@@ -55,6 +55,7 @@ export default function AppContextProvider({ children }) {
   const [newCategory, setNewCategory] = useState("");
   const [allCoupons, setAllCoupons] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [cHasNextPage, setChasNextPage] = useState();
 
   const getProducts = async () => {
     try {
@@ -217,9 +218,11 @@ export default function AppContextProvider({ children }) {
     try {
       setLoader(true);
       setProgress(progress + 10);
-      const response = await axios.get("/ecommerce/coupons");
+      const response = await axios.get(
+        `/ecommerce/coupons?page=${page}&limit=15`
+      );
       setAllCoupons(response.data.data.coupons);
-      console.log(response.data.data.coupons);
+      setChasNextPage(response.data.data.hasNextPage);
       setLoader(false);
       setProgress(progress + 100);
     } catch (err) {
@@ -237,7 +240,7 @@ export default function AppContextProvider({ children }) {
           withCredentials: true,
         }
       );
-      // console.log(response.data.data.coupons);
+      console.log(response);
       setAllCoupon(response.data.data.coupons);
       setLoader(false);
     } catch (err) {
@@ -510,6 +513,7 @@ export default function AppContextProvider({ children }) {
     getOrders,
     orders,
     setOrders,
+    cHasNextPage,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
