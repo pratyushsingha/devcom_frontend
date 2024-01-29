@@ -3,13 +3,34 @@ import Container from "../../../components/Container";
 import { useContext, useEffect, useRef, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
 import toast from "react-hot-toast";
-import Table from "../../../components/admin/Table";
-import Button from "../../../components/Button";
-import { RxCross2 } from "react-icons/rx";
-import Input from "../../../components/Input";
+import { Button } from "@/components/ui/button";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
 import { Link } from "react-router-dom";
+import { useSortBy, useTable } from "react-table";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import moment from "moment";
+import usePagination from "@/hooks/usePagination";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
 
 export const columns = [
   {
@@ -26,13 +47,16 @@ export const columns = [
   },
   {
     Header: "Expiry",
-    accessor: "isActive" ? "expiryDate" : "Expired",
+    accessor: (row) =>
+      "isActive"
+        ? moment(row.expiryDate).format("YYYY-MM-DD HH:mm:ss")
+        : "Expired",
   },
   {
     Header: "Action",
     accessor: "_id",
     Cell: ({ row }) => {
-      const dialogRef = useRef(null);
+      const { toast } = useToast();
       const { progress, setProgress, setLoader, getCoupon } =
         useContext(AppContext);
       const [couponUpdate, setCouponUpdate] = useState({
@@ -53,11 +77,19 @@ export const columns = [
           );
           setProgress(progress + 100);
           setLoader(false);
-          toast.success("coupon updated successfully");
+          toast({
+            title: "success",
+            description: data.data.message,
+          });
           getCoupon();
         } catch (err) {
           console.log(err);
-          toast.error("something went wrong");
+          toast({
+            title: "error",
+            description: err.response.data.message,
+          });
+          setProgress(progress + 100);
+          setLoader(false);
         }
       };
 
@@ -65,16 +97,22 @@ export const columns = [
         try {
           setProgress(progress + 10);
           setLoader(true);
-          await axios.delete(`/ecommerce/coupons/${couponId}`, {
+          const response=await axios.delete(`/ecommerce/coupons/${couponId}`, {
             withCredentials: true,
           });
           setProgress(progress + 100);
           setLoader(false);
-          toast.success("coupon deleted successfully");
+          toast({
+            title: "success",
+            description: response.data.message,
+          });
           getCoupon();
         } catch (err) {
           console.log(err);
-          toast.error("something went wrong");
+          toast({
+            title: "error",
+            description: err.response.data.message,
+          });
           setProgress(progress + 100);
           setLoader(false);
         }
@@ -82,65 +120,82 @@ export const columns = [
 
       return (
         <div className="space-x-3">
-          <dialog ref={dialogRef}>
-            <div className="flex">
-              <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-                Create Category
-              </h1>
-              <button
-                className="text-3xl"
-                type="button"
-                onClick={() => dialogRef.current.close()}
-              >
-                <RxCross2 />
-              </button>
-            </div>
-            <form onSubmit={updateCoupon}>
-              <Input
-                placeholder={row.values.name}
-                label="name"
-                value={couponUpdate.name}
-                onChange={(e) =>
-                  setCouponUpdate({ ...couponUpdate, name: e.target.value })
-                }
-              />
-              <Input
-                type="number"
-                placeholder={row.values.discountValue}
-                label="discount value"
-                value={couponUpdate.discountValue}
-                onChange={(e) =>
-                  setCouponUpdate({
-                    ...couponUpdate,
-                    discountValue: e.target.value,
-                  })
-                }
-              />
-              <Input
-                classname="uppercase"
-                placeholder={row.values.couponCode}
-                label="coupon code"
-                value={couponUpdate.couponCode}
-                onChange={(e) =>
-                  setCouponUpdate({
-                    ...couponUpdate,
-                    couponCode: e.target.value,
-                  })
-                }
-              />
-              <Button
-                onClick={(e) => {
-                  updateCoupon(row.values._id, e);
-                  dialogRef.current.close();
-                }}
-                type="submit"
-              >
-                update
-              </Button>
-            </form>
-          </dialog>
-          <Button onClick={() => dialogRef.current.showModal()}>update</Button>
-          <Button onClick={(e) => deleteCoupon(row.values._id, e)}>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>update</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="text-center">Update Coupon</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4 py-4">
+                <form onSubmit={updateCoupon}>
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-right">
+                      Coupon name
+                    </Label>
+                    <Input
+                      placeholder={row.values.name}
+                      id="name"
+                      value={couponUpdate.name}
+                      onChange={(e) =>
+                        setCouponUpdate({
+                          ...couponUpdate,
+                          name: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="discountValue" className="text-right">
+                      Discount value
+                    </Label>
+                    <Input
+                      type="number"
+                      placeholder={row.values.discountValue}
+                      id="discountValue"
+                      value={couponUpdate.discountValue}
+                      onChange={(e) =>
+                        setCouponUpdate({
+                          ...couponUpdate,
+                          discountValue: e.target.value,
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="couponCode" className="text-right">
+                      Coupon Code
+                    </Label>
+                    <Input
+                      placeholder={row.values.couponCode}
+                      id="couponCode"
+                      value={couponUpdate.couponCode}
+                      onChange={(e) =>
+                        setCouponUpdate({
+                          ...couponUpdate,
+                          couponCode: e.target.value,
+                        })
+                      }
+                      className="uppercase"
+                    />
+                  </div>
+                </form>
+              </div>
+              <DialogFooter>
+                <Button
+                  onClick={(e) => updateCoupon(row.values._id, e)}
+                  type="submit"
+                >
+                  Save changes
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          <Button
+            variant="destructive"
+            onClick={(e) => deleteCoupon(row.values._id, e)}
+          >
             delete
           </Button>
         </div>
@@ -150,24 +205,78 @@ export const columns = [
 ];
 
 const Coupons = () => {
-  const { getCoupon, allCoupons } = useContext(AppContext);
+  const { getCoupon, allCoupons, page, cHasNextPage } = useContext(AppContext);
+  const { handleNextClick, handlePrevClick } = usePagination();
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    rows,
+    headerGroups,
+    prepareRow,
+    getRowProps,
+  } = useTable(
+    {
+      columns,
+      data: allCoupons,
+    },
+    useSortBy
+  );
 
   useEffect(() => {
     getCoupon();
   }, []);
   return (
-    <Container>
-      <div className="flex space-x-3">
-        <AdminSidebar />
-        <div>
-          <Table data={allCoupons} columns={columns} />
+    <Container className="flex">
+      <AdminSidebar />
+      <div className="mx-auto w-full">
+        <Table {...getTableProps()} className="">
+          <TableHeader>
+            {headerGroups.map((headerGroup) => (
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableHead
+                    className="px-10"
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
+                    {column.render("Header")}
+                    {column.isSorted && (
+                      <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <TableRow {...row.getRowProps()}>
+                  {row.cells.map((cell) => (
+                    <TableCell className="px-10" {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <div className="flex space-x-3 justify-center my-4">
+          <Button disabled={page <= 1} onClick={handlePrevClick}>
+            &laquo; Previous
+          </Button>
+          <Button disabled={cHasNextPage == false} onClick={handleNextClick}>
+            Next &raquo;
+          </Button>
         </div>
-        <Link to="/admin/coupon/new">
-          <button className="text-4xl">
-            <CiCirclePlus />
-          </button>
-        </Link>
       </div>
+      <Link to="/admin/coupon/new">
+        <Button variant="ghost" className="text-4xl">
+          <CiCirclePlus />
+        </Button>
+      </Link>
     </Container>
   );
 };

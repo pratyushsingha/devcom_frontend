@@ -173,7 +173,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/admin/coupon",
+        path: "/admin/coupons",
         element: (
           <AuthLayout authentication>
             <Coupons />
