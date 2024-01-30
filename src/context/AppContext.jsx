@@ -79,11 +79,20 @@ export default function AppContextProvider({ children }) {
 
   const getCategory = async () => {
     try {
-      const response = await axios.get("/ecommerce/categories?page=1&limit=50");
+      setLoader(true);
+      setProgress(progress + 10);
+      const response = await axios.get(
+        `/ecommerce/categories?page=${page}&limit=15`
+      );
       setCategories(response.data.data.categories);
-      // console.log(response.data.data.categories);
+      console.log(response);
+      setHasNextPage(response.data.data.hasNextPage);
+      setLoader(false);
+      setProgress(progress + 100);
     } catch (err) {
       console.log(err);
+      setLoader(false);
+      setProgress(progress + 10);
     }
   };
 
