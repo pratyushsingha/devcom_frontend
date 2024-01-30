@@ -15,7 +15,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -41,6 +40,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import useCategory from "@/hooks/useCategory";
 
 export const columns = [
   {
@@ -51,6 +51,8 @@ export const columns = [
     Header: "Action",
     accessor: "_id",
     Cell: ({ row }) => {
+      const [aOpen, setAopen] = useState(false);
+      const [dOpen, setDopen] = useState(false);
       const { toast } = useToast();
       const updatedCategoryRef = useRef("");
       const { progress, setProgress, setLoader, getCategory } =
@@ -72,6 +74,7 @@ export const columns = [
             description: data.data.message,
           });
           getCategory();
+          setDopen(false);
         } catch (err) {
           // console.log(err);
           toast({
@@ -100,6 +103,7 @@ export const columns = [
             description: data.data.message,
           });
           getCategory();
+          setAopen(false);
         } catch (err) {
           toast({
             title: "error",
@@ -113,7 +117,7 @@ export const columns = [
 
       return (
         <div className="flex space-x-3">
-          <Dialog>
+          <Dialog open={dOpen} onOpenChange={setDopen}>
             <DialogTrigger asChild>
               <Button>update</Button>
             </DialogTrigger>
@@ -145,7 +149,7 @@ export const columns = [
             </DialogContent>
           </Dialog>
 
-          <AlertDialog>
+          <AlertDialog open={aOpen} onOpenChange={setAopen}>
             <AlertDialogTrigger asChild>
               <Button variant="destructive">delete</Button>
             </AlertDialogTrigger>
@@ -174,15 +178,9 @@ export const columns = [
 
 const Categories = () => {
   const dialogRef = useRef(null);
-  const {
-    categories,
-    getCategory,
-    newCategory,
-    setNewCategory,
-    createCategory,
-    page,
-    hastNextPage,
-  } = useContext(AppContext);
+  const { categories, getCategory, page, hastNextPage, dOpen, setDopen } =
+    useContext(AppContext);
+  const { createCategory, newCategory, setNewCategory } = useCategory();
 
   const { handlePrevClick, handleNextClick } = usePagination();
 
@@ -251,7 +249,7 @@ const Categories = () => {
           </Button>
         </div>
       </div>
-      <Dialog>
+      <Dialog open={dOpen} onOpenChange={setDopen}>
         <DialogTrigger asChild>
           <Button variant="ghost" className="text-4xl">
             <CiCirclePlus />

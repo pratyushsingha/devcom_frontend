@@ -52,10 +52,10 @@ export default function AppContextProvider({ children }) {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPrice, setSelectedPrice] = useState(1000);
   const [selectedSort, setSelectedSort] = useState("");
-  const [newCategory, setNewCategory] = useState("");
   const [allCoupons, setAllCoupons] = useState([]);
   const [orders, setOrders] = useState([]);
   const [cHasNextPage, setChasNextPage] = useState();
+  const [dOpen, setDopen] = useState(false);
 
   const getProducts = async () => {
     try {
@@ -416,27 +416,6 @@ export default function AppContextProvider({ children }) {
 
   const result = filterData(products, selectedPrice, query);
 
-  const createCategory = async (e) => {
-    e.preventDefault();
-    try {
-      setProgress(progress + 10);
-      setLoader(true);
-      const data = await axios.post(
-        "/ecommerce/categories",
-        { name: newCategory },
-        { withCredentials: true }
-      );
-      getCategory();
-      toast.success("Category Created Successfully");
-      setProgress(progress + 100);
-      setLoader(false);
-    } catch (err) {
-      toast.error("something went wrong while adding category");
-      console.log(err);
-      setLoader(false);
-    }
-  };
-
   const getOrders = async () => {
     try {
       setProgress(progress + 10);
@@ -512,9 +491,6 @@ export default function AppContextProvider({ children }) {
     progress,
     setProgress,
     hastNextPage,
-    newCategory,
-    setNewCategory,
-    createCategory,
     getCoupon,
     allCoupons,
     selectedSort,
@@ -523,6 +499,8 @@ export default function AppContextProvider({ children }) {
     orders,
     setOrders,
     cHasNextPage,
+    dOpen,
+    setDopen,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
