@@ -1,14 +1,46 @@
-import { useEffect, useRef, useContext } from "react";
+import { useEffect, useRef, useContext, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
 import Container from "../../../components/Container";
 import axios from "axios";
-import Button from "../../../components/Button";
-import { RxCross2 } from "react-icons/rx";
-import Input from "../../../components/Input";
-import toast from "react-hot-toast";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
-import Table from "../../../components/admin/Table";
+import { useSortBy, useTable } from "react-table";
+import usePagination from "@/hooks/usePagination";
+
+import {
+  Table,
+  TableCell,
+  TableBody,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/use-toast";
+
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export const columns = [
   {
@@ -19,85 +51,121 @@ export const columns = [
     Header: "Action",
     accessor: "_id",
     Cell: ({ row }) => {
+      const { toast } = useToast();
       const updatedCategoryRef = useRef("");
-      const dialogRef = useRef(null);
       const { progress, setProgress, setLoader, getCategory } =
         useContext(AppContext);
+      const updateCategory = async (e) => {
+        e.preventDefault();
+        try {
+          setProgress(progress + 10);
+          setLoader(true);
+          const data = await axios.patch(
+            `/ecommerce/categories/${row.values._id}`,
+            { name: updatedCategoryRef.current },
+            { withCredentials: true }
+          );
+          setProgress(progress + 100);
+          setLoader(false);
+          toast({
+            title: "success",
+            description: data.data.message,
+          });
+          getCategory();
+        } catch (err) {
+          // console.log(err);
+          toast({
+            title: "error",
+            description: err.response.data.message,
+          });
+          setLoader(false);
+          setProgress(progress + 10);
+        }
+      };
+
+      const deleteCategory = async (e) => {
+        e.preventDefault();
+        try {
+          setProgress(progress + 10);
+          setLoader(true);
+          const data = await axios.delete(
+            `/ecommerce/categories/${row.values._id}`,
+            { name: updatedCategoryRef.current },
+            { withCredentials: true }
+          );
+          setProgress(progress + 100);
+          setLoader(false);
+          toast({
+            title: "success",
+            description: data.data.message,
+          });
+          getCategory();
+        } catch (err) {
+          toast({
+            title: "error",
+            description: err.response.data.message,
+          });
+          console.log(err);
+          setProgress(progress + 100);
+          setLoader(false);
+        }
+      };
+
       return (
         <div className="flex space-x-3">
-          <dialog ref={dialogRef}>
-            <div className="flex">
-              <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-                Create Category
-              </h1>
-              <button
-                className="text-3xl"
-                type="button"
-                onClick={() => dialogRef.current.close()}
-              >
-                <RxCross2 />
-              </button>
-            </div>
-            <Input
-              placeholder={row.values.name}
-              label="Update Category"
-              onChange={(e) => (updatedCategoryRef.current = e.target.value)}
-            />{" "}
-            <Button
-              onClick={async () => {
-                try {
-                  setProgress(progress + 10);
-                  setLoader(true);
-                  await axios.patch(
-                    `/ecommerce/categories/${row.values._id}`,
-                    { name: updatedCategoryRef.current },
-                    { withCredentials: true }
-                  );
-                  setProgress(progress + 100);
-                  setLoader(false);
-                  getCategory();
-                  dialogRef.current.close();
-                  // window.location.reload(false);
-                } catch (err) {
-                  console.log(err);
-                  setLoader(false);
-                  setProgress(progress + 10);
-                  dialogRef.current.close();
-                }
-              }}
-              type="submit"
-            >
-              update
-            </Button>
-          </dialog>
-          <Button onClick={() => dialogRef.current.showModal()}>update</Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>update</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle className="text-center">
+                  Update Category
+                </DialogTitle>
+              </DialogHeader>
+              <form onSubmit={updateCategory}>
+                <div className="grid gap-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-right">
+                      Coupon name
+                    </Label>
+                    <Input
+                      placeholder={row.values.name}
+                      id="name"
+                      onChange={(e) =>
+                        (updatedCategoryRef.current = e.target.value)
+                      }
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button type="submit">update</Button>
+                </DialogFooter>
+              </form>
+            </DialogContent>
+          </Dialog>
 
-          <button
-            onClick={async () => {
-              try {
-                setProgress(progress + 10);
-                setLoader(true);
-                await axios.delete(
-                  `/ecommerce/categories/${row.values._id}`,
-                  { name: updatedCategoryRef.current },
-                  { withCredentials: true }
-                );
-                setProgress(progress + 100);
-
-                setLoader(false);
-                toast.success("category updated Successfully");
-                getCategory();
-              } catch (err) {
-                setProgress(progress + 100);
-                setLoader(false);
-                console.log(err);
-                toast.success("something went wrong");
-              }
-            }}
-            className="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
-          >
-            delete
-          </button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="destructive">delete</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This action cannot be undone. This will permanently delete
+                  this category and can throw error if u don't delete the
+                  corresponding products
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={deleteCategory}>
+                  Continue
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       );
     },
@@ -112,55 +180,149 @@ const Categories = () => {
     newCategory,
     setNewCategory,
     createCategory,
+    page,
+    hastNextPage,
   } = useContext(AppContext);
 
+  const { handlePrevClick, handleNextClick } = usePagination();
+
+  const {
+    getTableProps,
+    getTableBodyProps,
+    rows,
+    headerGroups,
+    prepareRow,
+    getRowProps,
+  } = useTable(
+    {
+      columns,
+      data: categories,
+    },
+    useSortBy
+  );
 
   useEffect(() => {
     getCategory();
-  }, []);
+  }, [page]);
 
   return (
-    <Container>
-      <div className="flex space-x-3">
-        <AdminSidebar />
-        <Table columns={columns} data={categories}/>
-        <dialog ref={dialogRef}>
-          <div className="flex">
-            <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-              Create Category
-            </h1>
-            <button
-              className="text-3xl"
-              type="button"
-              onClick={() => dialogRef.current.close()}
-            >
-              <RxCross2 />
-            </button>
-          </div>
-          <Input
-            placeholder="enter category"
-            label="Category name"
-            value={newCategory}
-            onChange={(e) => setNewCategory(e.target.value)}
-          />{" "}
-          <Button
-            onClick={(e) => {
-              createCategory(e);
-              dialogRef.current.close();
-            }}
-            type="submit"
-          >
-            update
+    <Container className="flex">
+      <AdminSidebar />
+      <div className="mx-auto w-full">
+        <Table {...getTableProps()} className="">
+          <TableHeader>
+            {headerGroups.map((headerGroup) => (
+              <TableRow {...headerGroup.getHeaderGroupProps()}>
+                {headerGroup.headers.map((column) => (
+                  <TableHead
+                    className="px-10"
+                    {...column.getHeaderProps(column.getSortByToggleProps())}
+                  >
+                    {column.render("Header")}
+                    {column.isSorted && (
+                      <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
+                    )}
+                  </TableHead>
+                ))}
+              </TableRow>
+            ))}
+          </TableHeader>
+          <TableBody {...getTableBodyProps()}>
+            {rows.map((row) => {
+              prepareRow(row);
+              return (
+                <TableRow {...row.getRowProps()}>
+                  {row.cells.map((cell) => (
+                    <TableCell className="px-10" {...cell.getCellProps()}>
+                      {cell.render("Cell")}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+        <div className="flex space-x-3 justify-center my-4">
+          <Button disabled={page <= 1} onClick={handlePrevClick}>
+            &laquo; Previous
           </Button>
-        </dialog>
-        <button
-          onClick={() => dialogRef.current.showModal()}
-          className="text-4xl"
-        >
-          <CiCirclePlus />
-        </button>
+          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
+            Next &raquo;
+          </Button>
+        </div>
       </div>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="ghost" className="text-4xl">
+            <CiCirclePlus />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className="text-center">Update Category</DialogTitle>
+          </DialogHeader>
+          <form onSubmit={(e) => createCategory(e)}>
+            <div className="grid gap-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-right">
+                  Coupon name
+                </Label>
+                <Input
+                  placeholder="enter category name"
+                  id="name"
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value)}
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">update</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </Container>
+    // <Container>
+    //   <div className="flex space-x-3">
+    //     <AdminSidebar />
+    //     <Table columns={columns} data={categories}/>
+    //     <dialog ref={dialogRef}>
+    //       <div className="flex">
+    //         <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
+    //           Create Category
+    //         </h1>
+    //         <button
+    //           className="text-3xl"
+    //           type="button"
+    //           onClick={() => dialogRef.current.close()}
+    //         >
+    //           <RxCross2 />
+    //         </button>
+    //       </div>
+    //       <Input
+    //         placeholder="enter category"
+    //         label="Category name"
+    //         value={newCategory}
+    //         onChange={(e) => setNewCategory(e.target.value)}
+    //       />{" "}
+    //       <Button
+    //         onClick={(e) => {
+    //           createCategory(e);
+    //           dialogRef.current.close();
+    //         }}
+    //         type="submit"
+    //       >
+    //         update
+    //       </Button>
+    //     </dialog>
+    //     <button
+    //       onClick={() => dialogRef.current.showModal()}
+    //       className="text-4xl"
+    //     >
+    //       <CiCirclePlus />
+    //     </button>
+    //   </div>
+    // </Container>
   );
 };
 
