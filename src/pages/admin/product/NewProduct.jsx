@@ -26,16 +26,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
+import useCategory from "@/hooks/useCategory";
 
 const NewProduct = () => {
   const { toast } = useToast();
-  const {
-    categories,
-    getCategory,
-    newCategory,
-    setNewCategory,
-    createCategory,
-  } = useContext(AppContext);
+  const { categories, getCategory } = useContext(AppContext);
+  const { createCategory, newCategory, setNewCategory } = useCategory();
   const [product, setProduct] = useState({});
   const [mainImage, setMainImage] = useState([]);
   const [isDisabled, setIsDisabled] = useState(true);

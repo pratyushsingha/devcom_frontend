@@ -34,20 +34,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-dropdown-menu";
+import useCategory from "@/hooks/useCategory";
 
 const ManageProduct = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const {
-    setLoader,
-    progress,
-    setProgress,
-    categories,
-    getCategory,
-    newCategory,
-    setNewCategory,
-    createCategory,
-  } = useContext(AppContext);
+  const { setLoader, progress, setProgress, categories, getCategory } =
+    useContext(AppContext);
+  const { createCategory, newCategory, setNewCategory } = useCategory();
+
   const { id } = useParams();
 
   const [files, setFiles] = useState([]);
