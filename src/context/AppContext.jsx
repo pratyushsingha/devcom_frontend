@@ -1,4 +1,10 @@
-import { createContext, useState, useEffect, useContext } from "react";
+import {
+  createContext,
+  useState,
+  useEffect,
+  useContext,
+  useCallback,
+} from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContext";
 import toast from "react-hot-toast";
@@ -441,6 +447,10 @@ export default function AppContextProvider({ children }) {
     getCart();
     getOrders();
   }, []);
+
+  useCallback(() => {
+    getCart();
+  }, [cartProducts, getCart]);
   const value = {
     getProducts,
     products,

@@ -27,11 +27,16 @@ const OrderPage = () => {
         }
       );
       setOrders(response.data.data.orders);
+      // console.log(response.data.data)
       setTotalOrders(response.data.data.totalOrders);
       setLoader(false);
       setProgress(progress + 100);
     } catch (err) {
-      toast.error("Something went wrong while fetching orders");
+      toast({
+        varinat: "destructive",
+        title: "error",
+        description: err.response.data.message,
+      });
       setLoader(false);
       setProgress(progress + 100);
     }
@@ -59,7 +64,7 @@ const OrderPage = () => {
                   </h2>
                 </div>
               </div>
-              <div className="flex mt-10 mb-5">
+              <div className="flex mt-10 mb-5 ml-8">
                 <h3 className="font-semibold text-gray-600 text-xs uppercase w-2/5">
                   Order ID
                 </h3>
@@ -109,9 +114,7 @@ const OrderPage = () => {
         <div className="flex flex-col justify-center items-center h-screen">
           <h1 className="text-2xl mb-4">OrderPage is empty</h1>
           <Link to="/products">
-            <Button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
-              Buy now
-            </Button>
+            <Button>Buy now</Button>
           </Link>
         </div>
       )}

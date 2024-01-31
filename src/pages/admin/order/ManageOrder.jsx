@@ -22,47 +22,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { OrderStatuses } from "@/utils";
-import { AppContext } from "@/context/AppContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
+import useOrder from "@/hooks/useOrder";
 
 const ManageOrder = () => {
   const { toast } = useToast();
   const { id } = useParams();
-  const { progress, setProgress, setLoader } = useContext(AppContext);
-  const [orderedProducts, setOrderedProducts] = useState([]);
-  const [customer, setCustomer] = useState({});
-  const [address, setAddress] = useState({});
-  const [order, setOrder] = useState({});
-  const [orderStatus, setOrderStatus] = useState("");
-  const [couponCode, setCouponCode] = useState({});
+  const {
+    orderedProducts,
+    customer,
+    address,
+    order,
+    couponCode,
+    orderDetails,
+  } = useOrder();
 
-  const orderDetails = async (id) => {
-    try {
-      setProgress(progress + 10);
-      setLoader(true);
-      const response = await axios.get(`/ecommerce/orders/${id}`, {
-        withCredentials: true,
-      });
-      setAddress(response.data.data.order.address);
-      setCustomer(response.data.data.order.customer);
-      setOrderedProducts(response.data.data.order.items);
-      // console.log(response.data.data.order.coupon);
-      setOrder(response.data.data.order);
-      setCouponCode(response.data.data.order.coupon);
-      setProgress(progress + 100);
-      setLoader(false);
-    } catch (err) {
-      console.log(err);
-      setProgress(progress + 100);
-      setLoader(false);
-      toast({
-        variant: "destructive",
-        title: "error",
-        description: err.response.data.message,
-      });
-    }
-  };
+  const [orderStatus, setOrderStatus] = useState("");
 
   const updateStatus = async (e) => {
     e.preventDefault();
@@ -100,8 +76,8 @@ const ManageOrder = () => {
             <div className="my-2">
               <div className="flex-col space-y-2">
                 {orderedProducts.map((product) => (
-                  <>
-                    <div key={product._id} className="flex justify-between">
+                  <div className="space-y-2" key={product._id}>
+                    <div className="flex justify-between">
                       <div className="flex space-x-3">
                         <img
                           className="w-20 h-20 rounded"
@@ -116,7 +92,7 @@ const ManageOrder = () => {
                       </p>
                     </div>
                     <Separator />
-                  </>
+                  </div>
                 ))}
               </div>
             </div>

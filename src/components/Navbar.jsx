@@ -1,8 +1,8 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import "../index.css";
 import { FaSearch } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import Container from "./Container";
 import { AppContext } from "../context/AppContext";
 import Spinner from "./loader/Spinner";
@@ -14,7 +14,7 @@ import {
 import DropDown from "./NavDropDown";
 
 const Navbar = () => {
-  const { cartProducts, loader, profileInfo } = useContext(AppContext);
+  const { cartProducts, loader, profileInfo, getCart } = useContext(AppContext);
   return (
     <div className="flex relative">
       <Container>
@@ -25,24 +25,39 @@ const Navbar = () => {
             </div>
           </Link>
           <div className="flex space-x-4 self-center">
-            <Link to="/">
-              <button className="text-xl self-center hover:text-blue-500">
-                HOME
-              </button>
-            </Link>
-            <Link to="/products">
-              <button className="text-xl self-center py-2 pr-2 hover:text-blue-500">
-                <FaSearch />
-              </button>
-            </Link>
-            <Link to="/cart">
+            <NavLink
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-white"
+                } text-xl self-center hover:text-blue-500`
+              }
+              to="/"
+            >
+              HOME
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                `${
+                  isActive ? "text-blue-500" : "text-white"
+                } text-xl self-center py-2 pr-2 hover:text-blue-500`
+              }
+              to="/products"
+            >
+              <FaSearch />
+            </NavLink>
+            <NavLink
+              className={({ isActive }) =>
+                `${isActive ? "text-blue-500" : "text-white"}`
+              }
+              to="/cart"
+            >
               <button className="flex text-xl self-center py-2 pr-2 hover:text-blue-500">
                 <FaCartShopping />
                 <p className="bg-red-500 w-4 h-4 rounded-full text-xs text-white">
                   {cartProducts.length}
                 </p>
               </button>
-            </Link>
+            </NavLink>
             {localStorage.getItem("accessToken") ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
