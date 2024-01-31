@@ -62,6 +62,7 @@ const ManageProduct = () => {
       setLoader(false);
     } catch (err) {
       toast({
+        variant: "destructive",
         title: "error",
         description: err.response.data.message,
       });

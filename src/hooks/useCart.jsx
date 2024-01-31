@@ -1,50 +1,56 @@
-import { useContext} from "react";
+import { useContext } from "react";
 import axios from "axios";
-import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
+import { useToast } from "@/components/ui/use-toast";
 
 const useCart = () => {
+  const { toast } = useToast();
   const { loader, setLoader } = useContext(AppContext);
   const navigate = useNavigate();
   const addToCart = async (productId) => {
     try {
       setLoader(true);
       if (localStorage.getItem("accessToken")) {
-        const cartItems = await axios.get("/ecommerce/cart", {
-          withCredentials: true,
-        });
-
-        const cartProductIds = cartItems.data.data.items.map(
-          (item) => item.product._id
+        const response = await axios.post(
+          `/ecommerce/cart/item/${productId}`,
+          {},
+          {
+            withCredentials: true,
+          }
         );
 
-        if (cartProductIds.includes(productId)) {
-          toast.success("Item is already in the cart");
-          setProductStatus("Go to cart");
-        } else {
-          const response = await axios.post(
-            `/ecommerce/cart/item/${productId}`,
-            {},
-            {
-              withCredentials: true,
-            }
-          );
-
-          if (response.data.success) {
-            toast.success("Item added to cart");
+        if (response.data.success) {
+          console.log(response);
+          toast({
+            title: "success",
+            description: response.data.message,
+          });
+          setTimeout(() => {
             navigate("/cart");
-          } else {
-            toast.error("Failed to add item to cart");
-          }
+          }, 1000);
+        } else {
+          toast({
+            title: "error",
+            description: "something went wrong",
+          });
+          setLoader(false);
         }
-        setLoader(false);
       } else {
-        toast.error("Please login to add items to the cart");
+        toast({
+          title: "error",
+          description: "Please login to add items to the cart",
+        });
+        setLoader(false);
       }
     } catch (err) {
       console.error(err);
-      toast.error("Something went wrong");
+      toast({
+        varinat: "destructive",
+        title: "error",
+        description: err.response.data.message,
+      });
+      setLoader(false);
     }
   };
 

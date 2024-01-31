@@ -10,33 +10,25 @@ import useCart from "../hooks/useCart";
 import { Spinner } from "../components";
 import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const ProductDetails = () => {
   const { addToCart, loader, setLoader } = useCart();
   const { id } = useParams();
-  const { wishList, addToWish, removeFromWish } = useContext(AppContext);
-  const [progress, setProgress] = useState(0);
+  const {
+    wishList,
+    addToWish,
+    removeFromWish,
+    getProducts,
+    cartProducts,
+    setProgress,
+    progress,
+  } = useContext(AppContext);
 
-  const ref = useRef(null);
-  const [productStatus, setProductStatus] = useState(false);
   const [productDetails, setProductDetails] = useState([]);
   const [categoryId, setCategoryId] = useState();
   const [productCategory, setProductCategory] = useState([]);
-
-  const isInCart = async (id) => {
-    const cartItems = await axios.get("/ecommerce/cart", {
-      withCredentials: true,
-    });
-
-    const cartProductIds = cartItems.data.data.items.map(
-      (item) => item.product._id
-    );
-    if (cartProductIds.includes(id)) {
-      setProductStatus(true);
-    } else {
-      setProductStatus(false);
-    }
-  };
+  const [category, setCategory] = useState("");
 
   const getProductDetails = async (id) => {
     try {
@@ -61,8 +53,7 @@ const ProductDetails = () => {
         `/ecommerce/products/category/${categoryId}?page=1&limit=5`
       );
       setProductCategory(response.data.data.products);
-      // console.log(response.data.data.products);
-      TODO: "get category names from  request";
+      setCategory(response.data.data.category.name);
     } catch (err) {
       console.log(err);
     }
@@ -75,7 +66,8 @@ const ProductDetails = () => {
   }, [id, categoryId]);
 
   useEffect(() => {
-    isInCart(id);
+    getProducts();
+    getProductDetails(id);
   }, []);
   return (
     <>
@@ -92,7 +84,7 @@ const ProductDetails = () => {
                   />
                   <div className="lg:w-1/2 w-full lg:pl-10 lg:py-6 mt-6 lg:mt-0">
                     <h2 className="text-sm title-font text-gray-500 tracking-widest">
-                      {/* {productCategory.category.name} */}
+                      {category}
                     </h2>
                     <h1 className="mt-10 scroll-m-20 border-b pb-2 text-3xl text-white font-semibold tracking-tight transition-colors first:mt-0">
                       {item.name}
@@ -164,28 +156,32 @@ const ProductDetails = () => {
                       <span className="leading-7 text-2xl [&:not(:first-child)]:mt-6 text-white">
                         &#8377;{item.price}
                       </span>
-                      {productStatus ? (
-                        <button className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded">
+                      {cartProducts.some((item) => item.product._id == id) ? (
+                        <Button className="flex ml-auto">
                           <Link to="/cart">Go to cart</Link>
-                        </button>
+                        </Button>
                       ) : (
                         <Button
-                          onClick={() => addToCart(item._id)}
-                          className="flex ml-auto text-white bg-indigo-500 border-0 py-2 px-6 focus:outline-none hover:bg-indigo-600 rounded"
+                          className="flex ml-auto"
+                          onClick={() => addToCart(id)}
                         >
-                          {loader ? <Spinner /> : "Add to cart"}
+                          {loader ? (
+                            <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
+                          ) : (
+                            "Add to cart"
+                          )}
                         </Button>
                       )}
-                      {wishList.some((item) => item._id == id) ? (
+                      {wishList.some((item) => item._id === id) ? (
                         <button
-                          onClick={() => removeFromWish(item._id)}
+                          onClick={() => removeFromWish(id)}
                           className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center ml-4"
                         >
                           <IoHeartSharp className="text-2xl text-gray-600" />
                         </button>
                       ) : (
                         <button
-                          onClick={() => addToWish(item._id)}
+                          onClick={() => addToWish(id)}
                           className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center text-gray-500 ml-4"
                         >
                           <CiHeart className="text-2xl text-gray-600" />
