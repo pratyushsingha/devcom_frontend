@@ -3,6 +3,8 @@ import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 
 import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Card,
   CardContent,
@@ -22,11 +24,44 @@ import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
 
 import Container from "../../components/Container";
 import { AppContext } from "@/context/AppContext";
+import { passwordStrength } from "check-password-strength";
+import PassStrengthBar from "@/components/PassStrengthBar";
+
+const signupSchema = z
+  .object({
+    email: z
+      .string()
+      .nonempty("Email is required")
+      .email("Email format is not valid"),
+    password: z
+      .string()
+      .nonempty("Password is required")
+      .min(8, { message: "Password must be 8 or more characters long" })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      ),
+    role: z.enum(["USER", "ADMIN"]),
+    username: z
+      .string()
+      .nonempty("Username is required")
+      .regex(/^\w{3,}$/),
+    cnfPassword: z.string(),
+  })
+  .refine((data) => data.password == data.cnfPassword, {
+    message: "password does not match",
+    path: ["cnfPassword"],
+  });
 
 const SignUpPage = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
-  const { register, handleSubmit, watch, formState } = useForm({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+    setValue,
+  } = useForm({
     defaultValues: {
       email: "",
       password: "",
@@ -34,9 +69,10 @@ const SignUpPage = () => {
       username: "",
       cnfPassword: "",
     },
+    resolver: zodResolver(signupSchema),
   });
-  const { errors } = formState;
   const [showPassword, setShowPassword] = useState(false);
+  const [passStrength, setPassStrength] = useState(-1);
   const { loader, setLoader } = useContext(AppContext);
 
   const signUp = async ({ email, password, role, username }) => {
@@ -49,31 +85,24 @@ const SignUpPage = () => {
         username: username,
       });
       setLoader(false);
+      console.log(response);
       if (response.status === 201) {
         toast({
           title: "success",
-          description: `welcome ${response.data.data.email} `,
+          description: `welcome ${response.data.data.user.username} `,
         });
         navigate("/login");
       }
       console.log(response);
     } catch (err) {
       console.log(err);
-      if (err.response.status == 409) {
-        toast({
-          title: "error",
-          description: "username or email already exists",
-        });
-      } else
-        toast({
-          title: "error",
-          description: "something went wrong",
-        });
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
       setLoader(false);
     }
   };
-
-  const watchPassword = watch("password", "");
 
   return (
     <>
@@ -92,11 +121,6 @@ const SignUpPage = () => {
                   placeholder="enter your username"
                   {...register("username", {
                     required: true,
-                    validate: {
-                      matchPattern: (value) =>
-                        /^[a-zA-Z0-9]{3,20}$/.test(value) ||
-                        "username must be a valid address",
-                    },
                   })}
                 />
               </div>
@@ -108,11 +132,6 @@ const SignUpPage = () => {
                   placeholder="enter your email"
                   {...register("email", {
                     required: true,
-                    validate: {
-                      matchPattern: (value) =>
-                        /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi.test(value) ||
-                        "email address must be a valid address",
-                    },
                   })}
                 />
               </div>
@@ -125,13 +144,12 @@ const SignUpPage = () => {
                   placeholder="enter your password"
                   {...register("password", {
                     required: true,
-                    validate: {
-                      matchPattern: (value) =>
-                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-                          value
-                        ) || "password must be strong",
-                    },
                   })}
+                  onChange={(e) => {
+                    e.target.value !== ""
+                      ? setPassStrength(passwordStrength(e.target.value).id)
+                      : setPassStrength(-1);
+                  }}
                 />
                 <div className="absolute bottom-1 right-2 flex items-center">
                   <button
@@ -147,6 +165,7 @@ const SignUpPage = () => {
                   </button>
                 </div>
               </div>
+              <PassStrengthBar passStrength={passStrength} />
               <p className="text-red-600">{errors.password?.message}</p>
               <div className="relative grid w-full max-w-sm items-center gap-1.5">
                 <Label htmlFor="password">Confirm Password: </Label>
@@ -156,15 +175,17 @@ const SignUpPage = () => {
                   placeholder="confirm password"
                   {...register("cnfPassword", {
                     required: true,
-                    validate: {
-                      matchPattern: (value) =>
-                        value === watchPassword || "password doesnot match",
-                    },
                   })}
                 />
                 <p className="text-red-600">{errors.cnfPassword?.message}</p>
               </div>
-              <RadioGroup className="flex" defaultValue="USER">
+              <RadioGroup
+                className="flex"
+                value={watch("role")}
+                defaultValue={watch("role")}
+                onValueChange={(value) => setValue("role", value)}
+                required
+              >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
                     value="USER"
@@ -183,7 +204,7 @@ const SignUpPage = () => {
                 </div>
               </RadioGroup>
               <div>
-                <Button disabled={loader} className="w-full">
+                <Button disabled={isSubmitting} className="w-full">
                   {loader && (
                     <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />
                   )}
@@ -192,14 +213,16 @@ const SignUpPage = () => {
               </div>
             </form>
           </CardContent>
-          <CardFooter className="justify-center">
-            <p>Already have an account? </p>
-            <Link
-              to="/login"
-              className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 hover:underline"
-            >
-              ‎ Login
-            </Link>
+          <CardFooter className="justify-center flex-col space-y-3">
+            <div className="flex">
+              <p>Already have an account? </p>
+              <Link
+                to="/login"
+                className="font-semibold leading-6 text-indigo-600 hover:text-indigo-500 hover:underline"
+              >
+                ‎ Login
+              </Link>
+            </div>
           </CardFooter>
         </Card>
       </Container>

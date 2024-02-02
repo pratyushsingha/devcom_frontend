@@ -20,6 +20,8 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 import { AppContext } from "../../context/AppContext";
 import Container from "../../components/Container";
+import { Separator } from "@/components/ui/separator";
+import GoogleSignin from "@/components/GoogleSignin";
 
 const LoginPage = () => {
   const { loader, setLoader } = useContext(AppContext);
@@ -27,14 +29,17 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  const { register, handleSubmit, formState } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  const { errors } = formState;
   const [showPassword, setShowPassword] = useState(null);
 
   const login = async ({ username, password }) => {
@@ -52,33 +57,15 @@ const LoginPage = () => {
       if (accessToken) {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        // window.location.reload(false);
         navigate("/profile");
       }
       setLoader(false);
     } catch (err) {
       console.log(err);
-      if (!err.response) {
-        toast({
-          title: "Error",
-          description: "no server response",
-        });
-      } else if (err.response?.status === 400) {
-        toast({
-          title: "Error",
-          description: "missing username or password",
-        });
-      } else if (err.response?.status === 401) {
-        toast({
-          title: "Error",
-          description: "U are not authorized",
-        });
-      } else {
-        toast({
-          title: "Error",
-          description: "login failed",
-        });
-      }
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
       setLoader(false);
     }
   };
@@ -140,12 +127,18 @@ const LoginPage = () => {
               </Link>
             </div>
             <div>
-              <Button disabled={loader} className="w-full">
+              <Button disabled={isSubmitting} className="w-full">
                 {loader && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
                 login
               </Button>
             </div>
           </form>
+          <div className="flex justify-center items-center space-x-3 my-2">
+            <Separator className="w-32" />
+            <span className="text-gray-400">or</span>
+            <Separator className="w-32" />
+          </div>
+          {/* <GoogleSignin /> */}
         </CardContent>
         <CardFooter className="justify-center">
           <p>not a member? </p>
