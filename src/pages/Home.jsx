@@ -49,7 +49,7 @@ export default function Home() {
                     <img
                       className="w-full"
                       src="https://i.postimg.cc/Dzpfs45w/image.png"
-                      alt=""
+                      alt="carousalImage"
                     />
                   </CardContent>
                 </Card>

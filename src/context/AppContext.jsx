@@ -334,6 +334,7 @@ export default function AppContextProvider({ children }) {
   const getProfile = async () => {
     try {
       setLoader(true);
+      setProgress(progress + 10);
       const response = await axios.get("/users/current-user");
       // console.log(response.data.data.avatar.url);
       setProfileInfo({
@@ -343,9 +344,11 @@ export default function AppContextProvider({ children }) {
         role: response.data.data.role,
       });
       setLoader(false);
+      setProgress(progress + 100);
     } catch (err) {
       console.log(err);
       setLoader(false);
+      setProgress(progress + 100);
     }
   };
 

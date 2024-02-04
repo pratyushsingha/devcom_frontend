@@ -1,20 +1,11 @@
-import { useEffect, useRef, useContext, useState } from "react";
+import { useEffect, useRef, useContext, useState, useCallback } from "react";
 import { AppContext } from "../../../context/AppContext";
 import Container from "../../../components/Container";
 import axios from "axios";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
-import { useSortBy, useTable } from "react-table";
-import usePagination from "@/hooks/usePagination";
+import { MdContentCopy } from "react-icons/md";
 
-import {
-  Table,
-  TableCell,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -41,15 +32,44 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import useCategory from "@/hooks/useCategory";
+import { TiTick } from "react-icons/ti";
+import AdminTable from "@/components/admin/AdminTable";
 
 export const columns = [
+  {
+    Header: "Category Id",
+    accessor: "_id",
+    Cell: ({ row }) => {
+      const copyRef = useRef(null);
+      const [isCopied, setIsCopied] = useState(false);
+
+      const copyToClipboard = () => {
+        window.navigator.clipboard.writeText(row.values._id);
+        setIsCopied(true);
+      };
+      return (
+        <div className="flex space-x-2">
+          <span className="self-center" ref={copyRef}>
+            {row.values._id}
+          </span>
+          <Button variant="ghost" onClick={copyToClipboard}>
+            {isCopied ? (
+              <TiTick className="self-center text-green-500 w-4 h-4" />
+            ) : (
+              <MdContentCopy className="self-center" />
+            )}
+          </Button>
+        </div>
+      );
+    },
+  },
   {
     Header: "Category Name",
     accessor: "name",
   },
   {
     Header: "Action",
-    accessor: "_id",
+    accessor: "actions",
     Cell: ({ row }) => {
       const [aOpen, setAopen] = useState(false);
       const [dOpen, setDopen] = useState(false);
@@ -177,78 +197,23 @@ export const columns = [
 ];
 
 const Categories = () => {
-  const dialogRef = useRef(null);
-  const { categories, getCategory, page, hastNextPage, dOpen, setDopen } =
+  const { categories, getCategory, page, dOpen, setDopen } =
     useContext(AppContext);
   const { createCategory, newCategory, setNewCategory } = useCategory();
-
-  const { handlePrevClick, handleNextClick } = usePagination();
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    rows,
-    headerGroups,
-    prepareRow,
-    getRowProps,
-  } = useTable(
-    {
-      columns,
-      data: categories,
-    },
-    useSortBy
-  );
 
   useEffect(() => {
     getCategory();
   }, [page]);
 
   return (
-    <Container className="flex">
+    <Container className="flex space-x-5">
       <AdminSidebar />
-      <div className="mx-auto w-full">
-        <Table {...getTableProps()} className="">
-          <TableHeader>
-            {headerGroups.map((headerGroup) => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <TableHead
-                    className="px-10"
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
-                    {column.render("Header")}
-                    {column.isSorted && (
-                      <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <TableRow {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <TableCell className="px-10" {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        <div className="flex space-x-3 justify-center my-4">
-          <Button disabled={page <= 1} onClick={handlePrevClick}>
-            &laquo; Previous
-          </Button>
-          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
-            Next &raquo;
-          </Button>
-        </div>
-      </div>
+      <AdminTable
+        columns={columns}
+        data={categories}
+        cardLabel="Categories"
+        inputPlaceholder="Filter categories..."
+      />
       <Dialog open={dOpen} onOpenChange={setDopen}>
         <DialogTrigger asChild>
           <Button variant="ghost" className="text-4xl">
@@ -280,47 +245,6 @@ const Categories = () => {
         </DialogContent>
       </Dialog>
     </Container>
-    // <Container>
-    //   <div className="flex space-x-3">
-    //     <AdminSidebar />
-    //     <Table columns={columns} data={categories}/>
-    //     <dialog ref={dialogRef}>
-    //       <div className="flex">
-    //         <h1 className="uppercase text-gray-500 mx-20 my-5 font-semibold">
-    //           Create Category
-    //         </h1>
-    //         <button
-    //           className="text-3xl"
-    //           type="button"
-    //           onClick={() => dialogRef.current.close()}
-    //         >
-    //           <RxCross2 />
-    //         </button>
-    //       </div>
-    //       <Input
-    //         placeholder="enter category"
-    //         label="Category name"
-    //         value={newCategory}
-    //         onChange={(e) => setNewCategory(e.target.value)}
-    //       />{" "}
-    //       <Button
-    //         onClick={(e) => {
-    //           createCategory(e);
-    //           dialogRef.current.close();
-    //         }}
-    //         type="submit"
-    //       >
-    //         update
-    //       </Button>
-    //     </dialog>
-    //     <button
-    //       onClick={() => dialogRef.current.showModal()}
-    //       className="text-4xl"
-    //     >
-    //       <CiCirclePlus />
-    //     </button>
-    //   </div>
-    // </Container>
   );
 };
 

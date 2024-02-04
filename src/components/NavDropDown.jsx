@@ -10,6 +10,10 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import { FaGithub } from "react-icons/fa";
+import { MdContactMail } from "react-icons/md";
+import { IoLogOut } from "react-icons/io5";
+import { RiAdminLine } from "react-icons/ri";
 
 const DropdownMenu = () => {
   const { logout } = useContext(AuthContext);
@@ -19,22 +23,48 @@ const DropdownMenu = () => {
       <DropdownMenuLabel>Hii {profileInfo.username} 👋</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuGroup>
-        {DropDownOptions.map((option) => (
-          <Link to={`/${option.name}`}>
-            <DropdownMenuItem key={option.id}>{option.name}</DropdownMenuItem>
+        {DropDownOptions.map(({ id, name, path, logo }) => (
+          <Link to={`${path}`}>
+            <DropdownMenuItem className="gap-2" key={id}>
+              {logo}
+              <span>{name}</span>
+            </DropdownMenuItem>
           </Link>
         ))}
       </DropdownMenuGroup>
       <DropdownMenuSeparator />
+      {profileInfo.role === "ADMIN" && (
+        <>
+          <Link to="/admin/dashboard">
+            <DropdownMenuItem className="flex space-x-3">
+              <RiAdminLine className="w-5 h-5" />
+              <span>Admin Dashboard</span>
+            </DropdownMenuItem>
+          </Link>
+          <DropdownMenuSeparator />
+        </>
+      )}
       <DropdownMenuItem>
-        <a href="https://github.com/pratyushsingha/react_ecommerce" target="_blank">
-          GitHub
+        <a
+          className="flex space-x-2"
+          href="https://github.com/pratyushsingha/react_ecommerce"
+          target="_blank"
+        >
+          <FaGithub className="w-5 h-5" />
+          <span>Github</span>
         </a>
       </DropdownMenuItem>
-      <DropdownMenuItem>Support</DropdownMenuItem>
+      <DropdownMenuItem className="flex space-x-3">
+        <MdContactMail className="w-5 h-5" />
+        <span>Support</span>
+      </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem className="text-red-600" onClick={logout}>
-        Log out
+      <DropdownMenuItem
+        className="text-red-600 flex space-x-3"
+        onClick={logout}
+      >
+        <IoLogOut className="w-5 h-5" />
+        <span>Log out</span>
       </DropdownMenuItem>
     </DropdownMenuContent>
   );
