@@ -1,3 +1,4 @@
+import AdminNavbar from "@/components/admin/AdminNavbar";
 import { AppContext } from "@/context/AppContext";
 import React, { useContext } from "react";
 import { Outlet } from "react-router-dom";
@@ -14,6 +15,7 @@ const Admin = () => {
         shadow="true"
         className="pb-1"
       />
+      <AdminNavbar />
       <Outlet />
     </>
   );
