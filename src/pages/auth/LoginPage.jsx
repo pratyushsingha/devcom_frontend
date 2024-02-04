@@ -49,7 +49,7 @@ const LoginPage = () => {
         password: password,
         username: username,
       });
-  
+      console.log();
       const accessToken = response.data.data.accessToken;
       const refreshToken = response.data.data.refreshToken;
       // console.log(accessToken);
@@ -57,7 +57,15 @@ const LoginPage = () => {
       if (accessToken) {
         localStorage.setItem("accessToken", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
-        navigate("/profile");
+        toast({
+          title: "success",
+          description: `welcome back ${response.data.data.user.username}`,
+        });
+        if (response.data.data.user.role === "ADMIN") {
+          navigate("/admin/dashboard");
+        } else {
+          navigate("/profile");
+        }
       }
       setLoader(false);
     } catch (err) {

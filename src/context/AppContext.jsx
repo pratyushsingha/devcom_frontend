@@ -62,6 +62,7 @@ export default function AppContextProvider({ children }) {
   const [orders, setOrders] = useState([]);
   const [cHasNextPage, setChasNextPage] = useState();
   const [dOpen, setDopen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState("");
 
   const getProducts = async () => {
     try {
@@ -425,12 +426,16 @@ export default function AppContextProvider({ children }) {
 
   const result = filterData(products, selectedPrice, query);
 
+  const handleStatus = (value) => {
+    setStatusFilter(value);
+  };
+
   const getOrders = async () => {
     try {
       setProgress(progress + 10);
       setLoader(true);
       const response =
-        await axios.get(`/ecommerce/orders/list/admin?&page=${page}&limit=15
+        await axios.get(`/ecommerce/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
       `);
 
       // console.log(response.data.data.orders);
@@ -514,6 +519,9 @@ export default function AppContextProvider({ children }) {
     cHasNextPage,
     dOpen,
     setDopen,
+    statusFilter,
+    setStatusFilter,
+    handleStatus,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

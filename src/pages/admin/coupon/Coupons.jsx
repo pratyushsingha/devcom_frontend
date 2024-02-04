@@ -33,6 +33,7 @@ export const columns = [
   {
     Header: "Discount",
     accessor: "discountValue",
+    Cell: ({ row }) => <span> &#8377; {row.values.discountValue}</span>,
   },
   {
     Header: "Expiry",

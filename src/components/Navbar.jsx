@@ -14,7 +14,7 @@ import {
 import DropDown from "./NavDropDown";
 
 const Navbar = () => {
-  const { cartProducts, loader, profileInfo, getCart } = useContext(AppContext);
+  const { cartProducts, loader, profileInfo } = useContext(AppContext);
   return (
     <div className="flex relative">
       <Container>

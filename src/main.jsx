@@ -35,7 +35,6 @@ import Orders from "./pages/admin/order/Orders.jsx";
 import ManageOrder from "./pages/admin/order/ManageOrder.jsx";
 import Admin from "./pages/admin/Admin.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
-import AdminAuthLayout from "./components/admin/AdminAuthLayout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -156,73 +155,73 @@ const router = createBrowserRouter([
       {
         path: "dashboard",
         element: (
-          <AdminAuthLayout authentication adminAuth>
+          <AuthLayout authentication>
             <Dashboard />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "products",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <Products />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "product/:id",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <ManageProduct />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "product/new",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <NewProduct />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "categories",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <Categories />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "coupons",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <Coupons />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "coupon/new",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <NewCoupon />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "orders",
         element: (
-          <AdminAuthLayout adminAuth>
+          <AuthLayout authentication>
             <Orders />
-          </AdminAuthLayout>
+          </AuthLayout>
         ),
       },
       {
         path: "order/:id",
         element: (
-          <AdminAuthLayout adminAuth>
-            <ManageOrder />
-          </AdminAuthLayout>
+          <AuthLayout authentication>
+            <ManageOrder />,
+          </AuthLayout>
         ),
       },
     ],

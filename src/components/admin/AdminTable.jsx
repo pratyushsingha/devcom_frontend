@@ -66,13 +66,12 @@ const AdminTable = forwardRef(function table(
         />
       </CardHeader>
       <CardContent>
-        <Table {...getTableProps()} className="">
+        <Table {...getTableProps()}>
           <TableHeader>
             {headerGroups.map((headerGroup) => (
               <TableRow {...headerGroup.getHeaderGroupProps()}>
                 {headerGroup.headers.map((column) => (
                   <TableHead
-                    className="px-10"
                     {...column.getHeaderProps(column.getSortByToggleProps())}
                   >
                     {column.render("Header")}
@@ -90,7 +89,7 @@ const AdminTable = forwardRef(function table(
               return (
                 <TableRow {...row.getRowProps()}>
                   {row.cells.map((cell) => (
-                    <TableCell className="px-10" {...cell.getCellProps()}>
+                    <TableCell {...cell.getCellProps()}>
                       {cell.render("Cell")}
                     </TableCell>
                   ))}
