@@ -1,28 +1,16 @@
 import axios from "axios";
 import Container from "../../../components/Container";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
 import { Link } from "react-router-dom";
-import { useSortBy, useTable } from "react-table";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import moment from "moment";
-import usePagination from "@/hooks/usePagination";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -31,6 +19,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/components/ui/use-toast";
+import AdminTable from "@/components/admin/AdminTable";
 
 export const columns = [
   {
@@ -48,9 +37,11 @@ export const columns = [
   {
     Header: "Expiry",
     accessor: (row) =>
-      "isActive"
-        ? moment(row.expiryDate).format("YYYY-MM-DD HH:mm:ss")
-        : "Expired",
+      "isActive" ? (
+        <span className="w-full">{moment(row.expiryDate).format("LL")}</span>
+      ) : (
+        "Expired"
+      ),
   },
   {
     Header: "Action",
@@ -97,9 +88,12 @@ export const columns = [
         try {
           setProgress(progress + 10);
           setLoader(true);
-          const response=await axios.delete(`/ecommerce/coupons/${couponId}`, {
-            withCredentials: true,
-          });
+          const response = await axios.delete(
+            `/ecommerce/coupons/${couponId}`,
+            {
+              withCredentials: true,
+            }
+          );
           setProgress(progress + 100);
           setLoader(false);
           toast({
@@ -119,7 +113,7 @@ export const columns = [
       };
 
       return (
-        <div className="space-x-3">
+        <div className="flex space-x-3">
           <Dialog>
             <DialogTrigger asChild>
               <Button>update</Button>
@@ -205,73 +199,20 @@ export const columns = [
 ];
 
 const Coupons = () => {
-  const { getCoupon, allCoupons, page, cHasNextPage } = useContext(AppContext);
-  const { handleNextClick, handlePrevClick } = usePagination();
-
-  const {
-    getTableProps,
-    getTableBodyProps,
-    rows,
-    headerGroups,
-    prepareRow,
-    getRowProps,
-  } = useTable(
-    {
-      columns,
-      data: allCoupons,
-    },
-    useSortBy
-  );
+  const { getCoupon, allCoupons, page } = useContext(AppContext);
 
   useEffect(() => {
     getCoupon();
-  }, []);
+  }, [page]);
   return (
-    <Container className="flex">
+    <Container className="flex space-x-5">
       <AdminSidebar />
-      <div className="mx-auto w-full">
-        <Table {...getTableProps()} className="">
-          <TableHeader>
-            {headerGroups.map((headerGroup) => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <TableHead
-                    className="px-10"
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
-                    {column.render("Header")}
-                    {column.isSorted && (
-                      <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <TableRow {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <TableCell className="px-10" {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        <div className="flex space-x-3 justify-center my-4">
-          <Button disabled={page <= 1} onClick={handlePrevClick}>
-            &laquo; Previous
-          </Button>
-          <Button disabled={cHasNextPage == false} onClick={handleNextClick}>
-            Next &raquo;
-          </Button>
-        </div>
-      </div>
+      <AdminTable
+        columns={columns}
+        data={allCoupons}
+        cardLabel="Coupons"
+        inputPlaceholder="Filter coupons..."
+      />
       <Link to="/admin/coupon/new">
         <Button variant="ghost" className="text-4xl">
           <CiCirclePlus />

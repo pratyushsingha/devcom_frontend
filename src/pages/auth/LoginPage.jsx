@@ -49,7 +49,7 @@ const LoginPage = () => {
         password: password,
         username: username,
       });
-      console.log(response.data.data);
+  
       const accessToken = response.data.data.accessToken;
       const refreshToken = response.data.data.refreshToken;
       // console.log(accessToken);

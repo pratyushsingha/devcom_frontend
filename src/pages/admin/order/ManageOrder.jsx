@@ -76,21 +76,23 @@ const ManageOrder = () => {
             <div className="my-2">
               <div className="flex-col space-y-2">
                 {orderedProducts.map((product) => (
-                  <div className="space-y-2" key={product._id}>
-                    <div className="flex justify-between">
-                      <div className="flex space-x-3">
-                        <img
-                          className="w-20 h-20 rounded"
-                          src={product.product.mainImage.url}
-                          alt={product.product.name}
-                        />
-                        <p className="self-center">{product.product.name}</p>
+                  <div key={product._id} className="space-y-2">
+                    {product.product && (
+                      <div className="flex justify-between">
+                        <div className="flex space-x-3">
+                          <img
+                            className="w-20 h-20 rounded"
+                            src={product.product.mainImage.url}
+                            alt={product.product.name}
+                          />
+                          <p className="self-center">{product.product.name}</p>
+                        </div>
+                        <p className="self-center">
+                          ₹ {product.product.price} X {product.quantity}= ₹{" "}
+                          {product.product.price * product.quantity}
+                        </p>
                       </div>
-                      <p className="self-center">
-                        ₹ {product.product.price} X {product.quantity}= ₹{" "}
-                        {product.product.price * product.quantity}
-                      </p>
-                    </div>
+                    )}
                     <Separator />
                   </div>
                 ))}

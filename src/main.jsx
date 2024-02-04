@@ -33,6 +33,9 @@ import NewCoupon from "./pages/admin/coupon/NewCoupon.jsx";
 import { ThemeProvider } from "./context/theme-provider.jsx";
 import Orders from "./pages/admin/order/Orders.jsx";
 import ManageOrder from "./pages/admin/order/ManageOrder.jsx";
+import Admin from "./pages/admin/Admin.jsx";
+import Dashboard from "./pages/admin/Dashboard.jsx";
+import AdminAuthLayout from "./components/admin/AdminAuthLayout.jsx";
 
 const router = createBrowserRouter([
   {
@@ -141,72 +144,86 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/admin/product",
-        element: (
-          <AuthLayout authentication>
-            <Products />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/product/:id",
-        element: (
-          <AuthLayout authentication>
-            <ManageProduct />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/product/new",
-        element: (
-          <AuthLayout authentication>
-            <NewProduct />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/categories",
-        element: (
-          <AuthLayout authentication>
-            <Categories />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/coupons",
-        element: (
-          <AuthLayout authentication>
-            <Coupons />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/coupon/new",
-        element: (
-          <AuthLayout authentication>
-            <NewCoupon />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/orders",
-        element: (
-          <AuthLayout authentication>
-            <Orders />
-          </AuthLayout>
-        ),
-      },
-      {
-        path: "/admin/order/:id",
-        element: (
-          <AuthLayout authentication>
-            <ManageOrder />
-          </AuthLayout>
-        ),
-      },
-      {
         path: "*",
         element: <Error />,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    element: <Admin />,
+    children: [
+      {
+        path: "dashboard",
+        element: (
+          <AdminAuthLayout authentication adminAuth>
+            <Dashboard />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "products",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <Products />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "product/:id",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <ManageProduct />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "product/new",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <NewProduct />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "categories",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <Categories />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "coupons",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <Coupons />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "coupon/new",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <NewCoupon />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <Orders />
+          </AdminAuthLayout>
+        ),
+      },
+      {
+        path: "order/:id",
+        element: (
+          <AdminAuthLayout adminAuth>
+            <ManageOrder />
+          </AdminAuthLayout>
+        ),
       },
     ],
   },

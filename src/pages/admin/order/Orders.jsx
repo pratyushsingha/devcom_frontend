@@ -1,27 +1,18 @@
+import { useContext, useEffect } from "react";
 import Container from "@/components/Container";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Button } from "@/components/ui/button";
 import { AppContext } from "@/context/AppContext";
-import { useContext, useEffect } from "react";
-
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { useSortBy, useTable } from "react-table";
-import usePagination from "@/hooks/usePagination";
 import { Link } from "react-router-dom";
 import { Badge } from "@/components/ui/badge";
+
+import AdminTable from "@/components/admin/AdminTable";
 
 const columns = [
   {
     Header: "Customer",
     accessor: "customer",
-    Cell: ({ row }) => <p>{row.values.customer.username}</p>,
+    Cell: ({ row }) => <span>{row.values.customer.username}</span>,
   },
   {
     Header: "Amount",
@@ -55,72 +46,20 @@ const columns = [
 ];
 
 const Orders = () => {
-  const { getOrders, orders, page, hastNextPage } = useContext(AppContext);
-  const { handleNextClick, handlePrevClick } = usePagination();
-  const {
-    getTableProps,
-    getTableBodyProps,
-    rows,
-    headerGroups,
-    prepareRow,
-    getRowProps,
-  } = useTable(
-    {
-      columns,
-      data: orders,
-    },
-    useSortBy
-  );
+  const { getOrders, orders, page } = useContext(AppContext);
 
   useEffect(() => {
     getOrders();
   }, [page]);
   return (
-    <Container className="flex">
+    <Container className="flex space-x-5">
       <AdminSidebar />
-      <div className="mx-auto w-full">
-        <Table {...getTableProps()} className="">
-          <TableHeader>
-            {headerGroups.map((headerGroup) => (
-              <TableRow {...headerGroup.getHeaderGroupProps()}>
-                {headerGroup.headers.map((column) => (
-                  <TableHead
-                    className="px-10"
-                    {...column.getHeaderProps(column.getSortByToggleProps())}
-                  >
-                    {column.render("Header")}
-                    {column.isSorted && (
-                      <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
-                    )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody {...getTableBodyProps()}>
-            {rows.map((row) => {
-              prepareRow(row);
-              return (
-                <TableRow {...row.getRowProps()}>
-                  {row.cells.map((cell) => (
-                    <TableCell className="px-10" {...cell.getCellProps()}>
-                      {cell.render("Cell")}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-        <div className="flex space-x-3 justify-center my-4">
-          <Button disabled={page <= 1} onClick={handlePrevClick}>
-            &laquo; Previous
-          </Button>
-          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
-            Next &raquo;
-          </Button>
-        </div>
-      </div>
+      <AdminTable
+        columns={columns}
+        data={orders}
+        cardLabel="Orders"
+        inputPlaceholder="Filter orders..."
+      />
     </Container>
   );
 };

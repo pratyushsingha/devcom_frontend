@@ -125,17 +125,17 @@ const ManageProduct = () => {
     try {
       const response = await axios.delete(`/ecommerce/products/${id}
 `);
-      console.log(response);
+      // console.log(response);
       toast({
         title: "success",
-        description: "product deleted successfully",
+        description: response.data.message,
       });
-      navigate("/admin/product");
+      navigate("/admin/products");
     } catch (err) {
       console.log(err);
       toast({
         title: "error",
-        description: "something went wrong",
+        description: err.response.data.message,
       });
     }
   };
