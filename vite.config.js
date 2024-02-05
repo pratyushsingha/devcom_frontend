@@ -7,11 +7,11 @@ export default defineConfig({
   server: {
     proxy: {
       "/ecommerce": {
-        target: "http://localhost:8080/api/v1",
+        target: "https://devcombackend-33y7.onrender.com/api/v1",
         changeOrigin: true,
       },
       "/users": {
-        target: "http://localhost:8080/api/v1",
+        target: "https://devcombackend-33y7.onrender.com/api/v1",
         changeOrigin: true,
       },
     },
