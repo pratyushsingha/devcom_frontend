@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import { sortFilter } from "../utils";
 import { Slider } from "@/components/ui/slider";
@@ -12,7 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
+import { FcClearFilters } from "react-icons/fc";
+import { Button } from "./ui/button";
 const Sidebar = () => {
   const {
     categories,
@@ -23,14 +24,28 @@ const Sidebar = () => {
     getCategory,
     handleSort,
     selectedSort,
+    setSelectedCategory,
+    setSelectedPrice,
+    setQuery,
+    setSelectedSort,
   } = useContext(AppContext);
+
+  const clearFilter = () => {
+    setSelectedSort("");
+    setSelectedCategory("");
+    setQuery("");
+    setSelectedPrice(1000);
+  };
 
   return (
     <Card className="w-80">
-      <CardHeader className="flex justify-between">
+      <CardHeader className="flex flex-row justify-between">
         <CardTitle className=" scroll-m-20 text-2xl font-semibold tracking-tight uppercase">
           filters
         </CardTitle>
+        <Button onClick={clearFilter} variant="ghost">
+          <FcClearFilters className="w-7 h-7" />
+        </Button>
       </CardHeader>
       <CardContent className="space-y-5">
         <p className="font-bold hover:underline hover:text-purple-700">Sort</p>

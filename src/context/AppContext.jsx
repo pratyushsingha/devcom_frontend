@@ -337,7 +337,7 @@ export default function AppContextProvider({ children }) {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get("/users/current-user");
-      // console.log(response.data.data.avatar.url);
+      console.log(response.data.data.avatar);
       setProfileInfo({
         avatar: response.data.data.avatar.url,
         email: response.data.data.email,
@@ -374,7 +374,7 @@ export default function AppContextProvider({ children }) {
     setSelectedPrice(value);
   }
 
-  function filterData(products, selectedPrice, query) {
+  function filterData(products, selectedPrice, selectedCategory, query) {
     let filteredProducts = products;
     if (query) {
       filteredProducts = filteredProducts.filter(function (product) {
@@ -382,11 +382,11 @@ export default function AppContextProvider({ children }) {
       });
     }
 
-    // if (selectedCategory) {
-    //   filteredProducts = filteredProducts.filter(function (product) {
-    //     return product.category.includes(selectedCategory);
-    //   });
-    // }
+    if (selectedCategory) {
+      filteredProducts = filteredProducts.filter(function (product) {
+        return product.category == selectedCategory;
+      });
+    }
     if (selectedSort === "Sort: Z-A") {
       filteredProducts = filteredProducts.sort((a, b) => {
         return b.name.localeCompare(a.name);
@@ -424,7 +424,7 @@ export default function AppContextProvider({ children }) {
     });
   }
 
-  const result = filterData(products, selectedPrice, query);
+  const result = filterData(products, selectedPrice, selectedCategory, query);
 
   const handleStatus = (value) => {
     setStatusFilter(value);
@@ -522,6 +522,10 @@ export default function AppContextProvider({ children }) {
     statusFilter,
     setStatusFilter,
     handleStatus,
+    setSelectedCategory,
+    setSelectedPrice,
+    setSelectedSort,
+    setQuery,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
