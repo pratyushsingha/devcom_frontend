@@ -155,7 +155,7 @@ export default function AppContextProvider({ children }) {
     try {
       setLoader(true);
       setProgress(progress + 10);
-      const response = await axios.get("ecommerce/cart", {
+      const response = await axios.get("/ecommerce/cart", {
         withCredentials: true,
       });
       console.log(response.data.data.items);
@@ -198,7 +198,7 @@ export default function AppContextProvider({ children }) {
   const clearCart = async () => {
     try {
       setLoader(true);
-      const response = await axios.delete("ecommerce/cart/clear");
+      const response = await axios.delete("/ecommerce/cart/clear");
       console.log(response);
       getCart();
       setLoader(false);
