@@ -34,7 +34,9 @@ const ProductDetails = () => {
     try {
       setProgress(progress + 10);
       setLoader(true);
-      const response = await axios.get(`/ecommerce/products/${id}`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/products/${id}`
+      );
       setProductDetails([response.data.data]);
       // console.log(response.data.data.category);
       setCategoryId(response.data.data.category);
@@ -50,7 +52,7 @@ const ProductDetails = () => {
   const similarProducts = async (categoryId) => {
     try {
       const response = await axios.get(
-        `/ecommerce/products/category/${categoryId}?page=1&limit=5`
+        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/products/category/${categoryId}?page=1&limit=5`
       );
       setProductCategory(response.data.data.products);
       setCategory(response.data.data.category.name);

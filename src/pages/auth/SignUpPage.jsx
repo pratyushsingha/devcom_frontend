@@ -78,12 +78,15 @@ const SignUpPage = () => {
   const signUp = async ({ email, password, role, username }) => {
     setLoader(true);
     try {
-      const response = await axios.post("/users/register", {
-        email: email,
-        password: password,
-        role: role,
-        username: username,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/users/register`,
+        {
+          email: email,
+          password: password,
+          role: role,
+          username: username,
+        }
+      );
       setLoader(false);
       console.log(response);
       if (response.status === 201) {

@@ -68,9 +68,12 @@ const EditProfile = () => {
     try {
       setProgress(progress + 10);
       setLoader(true);
-      const response = await axios.get("/ecommerce/profile", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/profile`,
+        {
+          withCredentials: true,
+        }
+      );
       setValue("firstName", response.data.data.firstName);
       setValue("lastName", response.data.data.lastName);
       setValue("countryCode", response.data.data.countryCode);
@@ -81,7 +84,7 @@ const EditProfile = () => {
       console.log(err);
       toast({
         title: "error",
-        description: err.response.data.message,
+        description: "err.response.data.message",
       });
       setLoader(false);
       setProgress(progress + 100);
@@ -98,7 +101,7 @@ const EditProfile = () => {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.patch(
-        "/ecommerce/profile",
+        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/profile`,
         {
           firstName: firstName,
           lastName: lastName,
@@ -133,9 +136,13 @@ const EditProfile = () => {
         const formData = new FormData();
         formData.append("avatar", files);
         console.log(formData);
-        const data = await axios.patch("/users/avatar", formData, {
-          withCredentials: true,
-        });
+        const data = await axios.patch(
+          `${import.meta.env.VITE_BACKEND_URL}/users/avatar`,
+          formData,
+          {
+            withCredentials: true,
+          }
+        );
         // console.log(data);
         toast({
           title: "success",

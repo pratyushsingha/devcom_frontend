@@ -45,7 +45,7 @@ const LoginPage = () => {
   const login = async ({ username, password }) => {
     try {
       setLoader(true);
-      const response = await axios.post("/users/login", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/login`, {
         password: password,
         username: username,
       });
