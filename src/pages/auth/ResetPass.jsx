@@ -55,7 +55,7 @@ const ResetPass = () => {
     setLoader(true);
     try {
       const data = await axios.post(
-        `/users/reset-password/${resetToken}`,
+        `${import.meta.env.VITE_BACKEND_URL}/users/reset-password/${resetToken}`,
         { newPassword: resetPass },
         { withCredentials: true }
       );

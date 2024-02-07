@@ -9,7 +9,7 @@ export default function AuthContextProvider({ children }) {
   const [auth, setAuth] = useState({});
   const refreshAccessToken = async () => {
     try {
-      const response = await axios.post("/users/refresh-token", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/refresh-token`, {
         withCredentials: true,
       });
       if (response.status === 200) {
@@ -38,7 +38,7 @@ export default function AuthContextProvider({ children }) {
   const logout = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("/users/logout", {
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/users/logout`, {
         withCredentials: true,
       });
 
