@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import "../index.css";
 import { FaSearch } from "react-icons/fa";
 import { FaCartShopping } from "react-icons/fa6";
@@ -14,7 +14,12 @@ import {
 import DropDown from "./NavDropDown";
 
 const Navbar = () => {
-  const { cartProducts, loader, profileInfo } = useContext(AppContext);
+  const { cartProducts, loader, profileInfo, getProfile } =
+    useContext(AppContext);
+
+  useEffect(() => {
+    getProfile();
+  });
   return (
     <div className="flex relative">
       <Container>
