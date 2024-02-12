@@ -21,9 +21,7 @@ const OrderPage = () => {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get(
-        `${
-          import.meta.env.VITE_BACKEND_URL
-        }/ecommerce/profile/my-orders?page=${page}&limit=${orderPerPage}`,
+        `/ecommerce/profile/my-orders?page=${page}&limit=${orderPerPage}`,
         {
           withCredentials: true,
         }
