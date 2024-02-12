@@ -40,8 +40,6 @@ import { defineConfig } from "vite";
 // });
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), "");
-
   return {
     plugins: [react()],
     server: {
@@ -49,13 +47,13 @@ export default defineConfig(({ mode }) => {
         port: 8080,
         proxy: {
           "/ecommerce": {
-            target: env.VITE_BACKEND_URL,
+            target: "https://devcombackend-33y7.onrender.com/api/v1",
             changeOrigin: true,
             secure: false,
             agent: new http.Agent(),
           },
           "/users": {
-            target: env.VITE_BACKEND_URL,
+            target: "https://devcombackend-33y7.onrender.com/api/v1",
             changeOrigin: true,
             secure: false,
             agent: new http.Agent(),
