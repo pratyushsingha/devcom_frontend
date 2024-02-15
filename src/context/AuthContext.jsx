@@ -9,9 +9,12 @@ export default function AuthContextProvider({ children }) {
   const [auth, setAuth] = useState({});
   const refreshAccessToken = async () => {
     try {
-      const response = await axios.post(`/users/refresh-token`, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/users/refresh-token`,
+        {
+          withCredentials: true,
+        }
+      );
       if (response.status === 200) {
         localStorage.setItem("accessToken", response.data.data.accessToken);
         localStorage.setItem("refreshToken", response.data.data.refreshToken);
@@ -38,9 +41,12 @@ export default function AuthContextProvider({ children }) {
   const logout = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post(`/users/logout`, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/users/logout`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.status == 200) {
         localStorage.removeItem("accessToken");
