@@ -17,6 +17,9 @@ const Navbar = () => {
   const { cartProducts, loader, profileInfo, getProfile } =
     useContext(AppContext);
 
+  useEffect(() => {
+    getProfile();
+  });
   return (
     <div className="flex relative">
       <Container>
