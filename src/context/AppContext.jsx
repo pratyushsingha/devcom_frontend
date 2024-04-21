@@ -69,10 +69,10 @@ export default function AppContextProvider({ children }) {
       setProgress(progress + 10);
       setLoader(true);
       const response = await axios.get(
-        `/ecommerce/products?page=${page}&limit=12`
+        `${import.meta.env.VITE_BACKEND_URL}/products?page=${page}&limit=12`
       );
-      setProducts(response.data.data.products);
-      // console.log(response)
+      setProducts(response.data.data.Products);
+      console.log(response.data.data.Products)
       setHasNextPage(response.data.data.hasNextPage);
       setProgress(progress + 100);
       setLoader(false);
@@ -338,8 +338,9 @@ export default function AppContextProvider({ children }) {
       setProgress(progress + 10);
       const response = await axios.get("/users/current-user");
       // console.log(response.data.data.avatar.url);
+      console.log(response.data.data);
       setProfileInfo({
-        avatar: response.data.data.avatar.url,
+        avatar: response.data.data.avatar,
         email: response.data.data.email,
         username: response.data.data.username,
         role: response.data.data.role,
