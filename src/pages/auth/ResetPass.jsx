@@ -1,20 +1,58 @@
 import axios from "axios";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Container from "../../components/Container";
+import { z } from "zod";
+import { useToast } from "@/components/ui/use-toast";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import InputDiv from "@/components/InputDiv";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { AppContext } from "@/context/AppContext";
+
+const passwordSchema = z
+  .object({
+    resetPass: z
+      .string()
+      .nonempty("Password is required")
+      .min(8, { message: "Password must be 8 or more characters long" })
+      .regex(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      ),
+    cnfPass: z.string(),
+  })
+  .refine((data) => data.resetPass === data.cnfPass, {
+    message: "Password does not match",
+    path: ["cnfPass"],
+  });
 
 const ResetPass = () => {
-  const userRef = useRef();
-  const errRef = useRef();
+  const { setLoader } = useContext(AppContext);
+  const { toast } = useToast();
   const navigate = useNavigate();
   const { resetToken } = useParams();
-  const [resetPass, setResetPass] = useState("");
-  const [cnfPass, setCnfPass] = useState("");
-  const [errMsg, setErrMsg] = useState("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting, isDirty, isSubmitSuccessful },
+    reset,
+  } = useForm({
+    defaultValues: {
+      resetPass: "",
+      cnfPass: "",
+    },
+    resolver: zodResolver(passwordSchema),
+  });
 
-  const passWordReset = async (e) => {
-    e.preventDefault();
-
+  const passWordReset = async ({ resetPass }) => {
+    setLoader(true);
     try {
       if (resetPass === cnfPass) {
         const data = await axios.post(
@@ -31,71 +69,59 @@ const ResetPass = () => {
         setErrMsg("password didn't match");
       }
     } catch (err) {
-      console.log(err);
+      toast({
+        title: "error",
+        description: "something went wrong",
+      });
+      console.log(err.response.data.message);
+      setLoader(false);
     }
   };
-
   useEffect(() => {
-    userRef.current.focus();
-  }, []);
-
-  useEffect(() => {
-    setErrMsg("");
-  }, [cnfPass, resetPass]);
+    reset();
+  }, [isSubmitSuccessful]);
 
   return (
     <Container className="flex justify-center items-center h-screen">
-      <form onSubmit={passWordReset}>
-        <div className="">
-          <label
-            htmlFor="password"
-            className="block text-sm font-medium leading-6 text-gray-900"
-          >
-            new password
-          </label>
-          <div className="mt-2">
-            <input
-              ref={userRef}
-              value={resetPass}
-              onChange={(e) => setResetPass(e.target.value)}
-              id="password"
-              name="password"
-              type="password"
-              required
-              autoComplete="new-password"
-              className="block rounded-md border-0 px-2 py-1.5 my-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="cnfPassword"
-              className="block text-sm font-medium leading-6 text-gray-900"
-            >
-              confirm password
-            </label>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl">Reset Password</CardTitle>
+        </CardHeader>
+
+        <form onSubmit={handleSubmit(passWordReset)}>
+          <CardContent>
             <div className="mt-2">
-              <input
-                value={cnfPass}
-                onChange={(e) => setCnfPass(e.target.value)}
-                id="cnfPassword"
-                name="cnfPassword"
-                type="password"
-                required
-                className="block rounded-md border-0 px-2 py-1.5 my-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
+              <InputDiv
+                label="new password"
+                placeholder="enter new password"
+                {...register("resetPass", {
+                  required: true,
+                })}
               />
             </div>
-          </div>
-          <p ref={errRef} aria-live="assertive">
-            {errMsg}
-          </p>
-          <button
-            type="submit"
-            className="flex w-full justify-center rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          >
-            confirm
-          </button>
-        </div>
-      </form>
+            <p className="text-red-600">{errors.resetPass?.message}</p>
+            <div className="mt-2">
+              <InputDiv
+                label="confirm password"
+                placeholder="enter confirm password"
+                {...register("cnfPass", {
+                  required: true,
+                })}
+              />
+            </div>
+            <p className="text-red-600">{errors.cnfPass?.message}</p>
+          </CardContent>
+          <CardFooter>
+            <Button
+              disabled={isSubmitting || !isDirty}
+              className="w-full"
+              type="submit"
+            >
+              Submit
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
     </Container>
   );
 };

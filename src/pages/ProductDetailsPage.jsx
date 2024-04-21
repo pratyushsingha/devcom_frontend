@@ -35,6 +35,7 @@ const ProductDetails = () => {
       setProgress(progress + 10);
       setLoader(true);
       const response = await axios.get(
+
         `${import.meta.env.VITE_BACKEND_URL}/products/${id}`
       );
       console.log(response.data.data);
@@ -53,6 +54,7 @@ const ProductDetails = () => {
   const similarProducts = async (categoryId) => {
     try {
       const response = await axios.get(
+
         `${
           import.meta.env.VITE_BACKEND_URL
         }/products/category/${categoryId}?page=1&limit=5`,

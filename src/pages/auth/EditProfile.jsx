@@ -44,7 +44,8 @@ const profileDetailsSchema = z.object({
 
 const EditProfile = () => {
   const { toast } = useToast();
-  const { loader, setLoader, progress, setProgress } = useContext(AppContext);
+  const { loader, setLoader, progress, setProgress, getProfile } =
+    useContext(AppContext);
   const [files, setFiles] = useState([]);
   const {
     register,
@@ -84,7 +85,7 @@ const EditProfile = () => {
       console.log(err);
       toast({
         title: "error",
-        description: err.response.data.message,
+        description: "err.response.data.message",
       });
       setLoader(false);
       setProgress(progress + 100);
@@ -148,6 +149,7 @@ const EditProfile = () => {
           title: "success",
           description: data.data.message,
         });
+        getProfile();
         setLoader(false);
       } catch (err) {
         console.log(err);

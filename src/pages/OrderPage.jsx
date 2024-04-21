@@ -21,6 +21,7 @@ const OrderPage = () => {
       setProgress(progress + 10);
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/orders/my-orders`,
+
         {
           withCredentials: true,
         }

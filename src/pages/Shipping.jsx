@@ -8,17 +8,22 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 const Shipping = () => {
   const { setLoader, getAddress } = useContext(AppContext);
-  const dialogRef = useRef(null);
   const { allAddress, profileInfo } = useContext(AppContext);
   const [selectedAddress, setSelectedAddress] = useState();
   const [generatedOrder, setGeneratedOrder] = useState([]);
@@ -28,6 +33,7 @@ const Shipping = () => {
       setLoader(true);
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/orders/provider/razorpay`,
+
         { addressId: selectedAddress },
         { withCredentials: true }
       );
@@ -64,58 +70,71 @@ const Shipping = () => {
       setLoader(false);
     }
   };
+
   useEffect(() => {
     getAddress();
   }, []);
 
   return (
     <Container className="my-10 flex flex-col justify-center items-center">
-      <h1 className="text-2xl uppercase">Delivery address</h1>
-      {allAddress.length > 0 ? (
-        allAddress.map((item) => (
-          <RadioGroup
-            key={item._id}
-            defaultValue={selectedAddress}
-            onValueChange={(value) => setSelectedAddress(value)}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl uppercase">Delivery address</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col justify-between">
+          {allAddress.length > 0 ? (
+            allAddress.map((item) => (
+              <div key={item._id}>
+                <RadioGroup
+                  value={selectedAddress}
+                  defaultValue={selectedAddress}
+                  onValueChange={(value) => setSelectedAddress(value)}
+                >
+                  <div>
+                    <div className="flex my-2 space-x-2">
+                      <RadioGroupItem
+                        checked={selectedAddress == item._id}
+                        value={item._id}
+                        id={item._id}
+                      />
+                      <Label htmlFor={item._id}>
+                        {item.addressLine1},{item.addressLine2},{item.city},
+                        {item.state},{item.country},pin-
+                        {item.pincode}
+                      </Label>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+            ))
+          ) : (
+            <p>no address found...</p>
+          )}
+        </CardContent>
+        <CardFooter className="flex-col">
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button className="my-2">Add New Address</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Add Address</DialogTitle>
+                <DialogDescription>
+                  add a new address,where u want to ship
+                </DialogDescription>
+              </DialogHeader>
+              <AddressForm />
+            </DialogContent>
+          </Dialog>
+
+          <Button
+            disabled={!selectedAddress}
+            onClick={() => razorpayPayment(selectedAddress)}
           >
-            <div className="flex my-2 space-x-2">
-              <RadioGroupItem
-                checked={selectedAddress == item._id}
-                value={item._id}
-                id={item._id}
-              />
-              <Label htmlFor={item._id}>
-                {item.addressLine1},{item.addressLine2},{item.city},{item.state}
-                ,{item.country},pin-
-                {item.pincode}
-              </Label>
-            </div>
-          </RadioGroup>
-        ))
-      ) : (
-        <p>no address found...</p>
-      )}
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button className="my-2">Add New Address</Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Address</DialogTitle>
-            <DialogDescription>
-              add a new address,where u want to ship
-            </DialogDescription>
-          </DialogHeader>
-          <AddressForm />
-        </DialogContent>
-      </Dialog>
-      {selectedAddress && (
-        <div>
-          <Button onClick={() => razorpayPayment(selectedAddress)}>
             Pay Now
           </Button>
-        </div>
-      )}
+        </CardFooter>
+      </Card>
     </Container>
   );
 };

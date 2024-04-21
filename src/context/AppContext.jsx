@@ -67,31 +67,29 @@ export default function AppContextProvider({ children }) {
 
   const { toast } = useToast();
 
-  const getProducts = async () => {
-    try {
-      setProgress(progress + 10);
-      setLoader(true);
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/products?page=${page}&limit=12`
-      );
-      setProducts(response.data.data.Products);
-      console.log(response.data.data.Products);
-      setHasNextPage(response.data.data.hasNextPage);
-      setProgress(progress + 100);
-      setLoader(false);
-    } catch (err) {
-      // alert(err);
-      toast.error("Something went wrong while fetching products", err.message);
-      setProgress(progress + 100);
-      setLoader(false);
-    }
-  };
+ const getProducts = async () => {
+  try {
+    setProgress(progress + 10);
+    setLoader(true);
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/products?page=${page}&limit=12`);
+    setProducts(response.data.data.Products);
+    console.log(response.data.data.Products);
+    setHasNextPage(response.data.data.hasNextPage);
+    setProgress(progress + 100);
+    setLoader(false);
+  } catch (err) {
+    toast.error("Something went wrong while fetching products", err.message);
+    setProgress(progress + 100);
+    setLoader(false);
+  }
+};
 
   const getCategory = async () => {
     try {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get(
+
         `${import.meta.env.VITE_BACKEND_URL}/categories?page=${page}&limit=15`
       );
       setCategories(response.data.data.Categories);
@@ -149,7 +147,6 @@ export default function AppContextProvider({ children }) {
           withCredentials: true,
         }
       );
-      // console.log(response);
     } catch (err) {
       console.error(err);
     }
@@ -161,6 +158,7 @@ export default function AppContextProvider({ children }) {
       setProgress(progress + 10);
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/cart`,
+
         {
           withCredentials: true,
         }
@@ -192,6 +190,7 @@ export default function AppContextProvider({ children }) {
       setLoader(true);
       const response = await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/cart/item/${id}`,
+
         {
           withCredentials: true,
         }
@@ -210,10 +209,12 @@ export default function AppContextProvider({ children }) {
       setLoader(true);
       const response = await axios.delete(
         `${import.meta.env.VITE_BACKEND_URL}/cart/clear`,
+
         {
           withCredentials: true,
         }
       );
+
       console.log(response);
       toast({
         title: "Success",
@@ -230,7 +231,6 @@ export default function AppContextProvider({ children }) {
   function addToWish(id) {
     if (localStorage.getItem("accessToken")) {
       const updatedWish = products.find((item) => item._id === id);
-      console.log(updatedWish);
       setWishList([...wishList, updatedWish]);
       toast({
         title: "Success",
@@ -259,6 +259,7 @@ export default function AppContextProvider({ children }) {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/coupons?page=${page}&limit=15`,
         { withCredentials: true }
+
       );
       console.log(response);
       setAllCoupons(response.data.data.coupons);
@@ -295,6 +296,7 @@ export default function AppContextProvider({ children }) {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/coupons/c/apply`,
+
         {
           couponCode: couponCode,
         },
@@ -340,6 +342,7 @@ export default function AppContextProvider({ children }) {
       );
       console.log(response);
       setAllAddress(response.data.data);
+
     } catch (err) {
       console.log(err);
       setLoader(false);
@@ -351,12 +354,14 @@ export default function AppContextProvider({ children }) {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/addresses`,
+
         address,
         {
           withCredentials: true,
         }
       );
       console.log(response);
+
       getAddress();
     } catch (err) {
       console.log(err);
@@ -378,12 +383,14 @@ export default function AppContextProvider({ children }) {
       // console.log(response.data.data.avatar.url);
 
       console.log(response.data.data);
+
       setProfileInfo({
         avatar: response.data.data.avatar,
         email: response.data.data.email,
         username: response.data.data.username,
         role: response.data.data.role,
       });
+      console.log(response);
       setLoader(false);
       setProgress(progress + 100);
     } catch (err) {
@@ -399,7 +406,6 @@ export default function AppContextProvider({ children }) {
 
   function handleCategory(value) {
     setSelectedCategory(value);
-    // console.log(value);
   }
 
   function handleInputChange(e) {
@@ -414,7 +420,7 @@ export default function AppContextProvider({ children }) {
     setSelectedPrice(value);
   }
 
-  function filterData(products, selectedPrice, query) {
+  function filterData(products, selectedPrice, selectedCategory, query) {
     let filteredProducts = products;
     if (query) {
       filteredProducts = filteredProducts.filter(function (product) {
@@ -422,11 +428,11 @@ export default function AppContextProvider({ children }) {
       });
     }
 
-    // if (selectedCategory) {
-    //   filteredProducts = filteredProducts.filter(function (product) {
-    //     return product.category.includes(selectedCategory);
-    //   });
-    // }
+    if (selectedCategory) {
+      filteredProducts = filteredProducts.filter(function (product) {
+        return product.category == selectedCategory;
+      });
+    }
     if (selectedSort === "Sort: Z-A") {
       filteredProducts = filteredProducts.sort((a, b) => {
         return b.name.localeCompare(a.name);
@@ -464,7 +470,7 @@ export default function AppContextProvider({ children }) {
     });
   }
 
-  const result = filterData(products, selectedPrice, query);
+  const result = filterData(products, selectedPrice, selectedCategory, query);
 
   const handleStatus = (value) => {
     setStatusFilter(value);
@@ -479,7 +485,7 @@ export default function AppContextProvider({ children }) {
       }/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
       `);
 
-      // console.log(response.data.data.orders);
+
       setOrders(response.data.data.orders);
       setHasNextPage(response.data.data.hasNextPage);
       setProgress(progress + 100);
@@ -563,6 +569,10 @@ export default function AppContextProvider({ children }) {
     statusFilter,
     setStatusFilter,
     handleStatus,
+    setSelectedCategory,
+    setSelectedPrice,
+    setSelectedSort,
+    setQuery,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

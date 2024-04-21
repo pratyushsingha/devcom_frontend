@@ -84,6 +84,7 @@ export const columns = [
           setLoader(true);
           const data = await axios.patch(
             `${import.meta.env.VITE_BACKEND_URL}/categories/${row.values._id}`,
+
             { name: updatedCategoryRef.current },
             { withCredentials: true }
           );

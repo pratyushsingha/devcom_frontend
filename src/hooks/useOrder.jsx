@@ -26,6 +26,7 @@ const useOrder = () => {
       response.data.data.map((item) => setOrderedProducts([item.items]));
       setOrder(response.data.data);
       setCouponCode(response.data.data.coupon);
+
       setLoader(false);
     } catch (err) {
       console.log(err);

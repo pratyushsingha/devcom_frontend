@@ -16,6 +16,7 @@ const useCategory = () => {
       setLoader(true);
       const data = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/categories`,
+
         { name: newCategory },
         { withCredentials: true }
       );

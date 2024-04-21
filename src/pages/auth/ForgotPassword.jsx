@@ -40,7 +40,7 @@ const ForgotPassword = () => {
       console.log(data.data.message);
       toast({
         title: "success",
-        description: `${data.data.message}`,
+        description: data.data.message,
       });
       setLoader(false);
     } catch (err) {
