@@ -15,7 +15,8 @@ const useCategory = () => {
       setProgress(progress + 10);
       setLoader(true);
       const data = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/categories`,
+        `${import.meta.env.VITE_BACKEND_URL}/categories`,
+
         { name: newCategory },
         { withCredentials: true }
       );

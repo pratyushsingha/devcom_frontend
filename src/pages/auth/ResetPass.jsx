@@ -54,21 +54,20 @@ const ResetPass = () => {
   const passWordReset = async ({ resetPass }) => {
     setLoader(true);
     try {
-      const data = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/users/reset-password/${resetToken}`,
-        { newPassword: resetPass },
-        { withCredentials: true }
-      );
-      toast({
-        title: "success",
-        description: data.response.message,
-      });
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
-
-      // console.log(data);
-      setLoader(false);
+      if (resetPass === cnfPass) {
+        const data = await axios.post(
+          `${import.meta.env.VITE_BACKEND_URL}/users/reset-password/${resetToken}`,
+          { newPassword: resetPass },
+          { withCredentials: true }
+        );
+        if (data.status === 200) {
+          navigate("/login");
+        }
+        console.log(data);
+      } else {
+        console.log("password didn't match");
+        setErrMsg("password didn't match");
+      }
     } catch (err) {
       toast({
         title: "error",

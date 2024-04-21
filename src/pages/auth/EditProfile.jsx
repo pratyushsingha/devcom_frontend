@@ -69,11 +69,12 @@ const EditProfile = () => {
       setProgress(progress + 10);
       setLoader(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/profile`,
+        `${import.meta.env.VITE_BACKEND_URL}/users/profile`,
         {
           withCredentials: true,
         }
       );
+      console.log(response);
       setValue("firstName", response.data.data.firstName);
       setValue("lastName", response.data.data.lastName);
       setValue("countryCode", response.data.data.countryCode);
@@ -101,7 +102,7 @@ const EditProfile = () => {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/profile`,
+        `${import.meta.env.VITE_BACKEND_URL}/users/profile`,
         {
           firstName: firstName,
           lastName: lastName,

@@ -32,7 +32,8 @@ const Shipping = () => {
     try {
       setLoader(true);
       const response = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/orders/provider/razorpay`,
+        `${import.meta.env.VITE_BACKEND_URL}/orders/provider/razorpay`,
+
         { addressId: selectedAddress },
         { withCredentials: true }
       );
@@ -47,7 +48,9 @@ const Shipping = () => {
         description: "payment integration with razorpay",
         image: "https://i.postimg.cc/9FLrHVRz/image-removebg-preview.png",
         order_id: generatedOrder.id,
-        callback_url: `${import.meta.env.VITE_BACKEND_URL}/ecommerce/orders/provider/razorpay/verify-payment`,
+        callback_url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }/orders/provider/razorpay/verify-payment`,
         prefill: {
           name: profileInfo.username,
           email: profileInfo.email,

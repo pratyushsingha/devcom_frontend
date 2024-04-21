@@ -11,6 +11,7 @@ export default function AuthContextProvider({ children }) {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/users/refresh-token`,
+        {},
         {
           withCredentials: true,
         }
@@ -43,23 +44,22 @@ export default function AuthContextProvider({ children }) {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/users/logout`,
+        {},
         {
           withCredentials: true,
         }
       );
 
-      if (response.status == 200) {
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        // window.location.reload();
-        toast({
-          title: "loging out",
-          description: "successfully logging out",
-        });
-        setTimeout(() => {
-          window.location.reload(false);
-        }, 1500);
-      }
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      // window.location.reload();
+      toast({
+        title: "loging out",
+        description: "successfully logging out",
+      });
+      setTimeout(() => {
+        window.location.reload(false);
+      }, 1500);
     } catch (err) {
       toast({
         variant: "destructive",

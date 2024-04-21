@@ -5,7 +5,7 @@ import axios from "axios";
 
 const useOrder = () => {
   const { toast } = useToast();
-  const { setLoader, progress, setProgress } = useContext(AppContext);
+  const { setLoader } = useContext(AppContext);
   const [orderedProducts, setOrderedProducts] = useState([]);
   const [customer, setCustomer] = useState({});
   const [address, setAddress] = useState({});
@@ -14,23 +14,24 @@ const useOrder = () => {
 
   const orderDetails = async (id) => {
     try {
-      setProgress(progress + 10);
       setLoader(true);
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ecommerce/orders/${id}`, {
-        withCredentials: true,
-      });
-      setAddress(response.data.data.order.address);
-      setCustomer(response.data.data.order.customer);
-      setOrderedProducts(response.data.data.order.items);
-      // console.log(response.data.data.order.coupon);
-      setOrder(response.data.data.order);
-      setCouponCode(response.data.data.order.coupon);
-      setProgress(progress + 100);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/orders/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
+      setAddress(response.data.data.address);
+      setCustomer(response.data.data.customer);
+      response.data.data.map((item) => setOrderedProducts([item.items]));
+      setOrder(response.data.data);
+      setCouponCode(response.data.data.coupon);
+
       setLoader(false);
     } catch (err) {
       console.log(err);
-      setProgress(progress + 100);
       setLoader(false);
+
       toast({
         variant: "destructive",
         title: "error",

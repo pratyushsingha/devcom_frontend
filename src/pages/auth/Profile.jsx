@@ -49,11 +49,11 @@ const Profile = () => {
 
   const changePassword = async ({ newPassword, oldPassword }) => {
     try {
-      const response = await axios.post(
+      const response = await axios.patch(
         `${import.meta.env.VITE_BACKEND_URL}/users/change-password`,
         {
-          newPassword: newPassword,
-          oldPassword: oldPassword,
+          newPassword,
+          oldPassword,
         },
         { withCredentials: true }
       );
@@ -64,12 +64,11 @@ const Profile = () => {
         status: "success",
       });
     } catch (err) {
+      // console.log(err.response)
       toast({
+        variant: "destructive",
         title: "Error",
-        description: err.response
-          ? err.response.data.message
-          : "Something went wrong",
-        status: "error",
+        description: `${err.response.data.message}`,
       });
     }
   };

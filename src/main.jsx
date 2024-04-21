@@ -224,6 +224,7 @@ const router = createBrowserRouter([
           </AuthLayout>
         ),
       },
+      
     ],
   },
 ]);

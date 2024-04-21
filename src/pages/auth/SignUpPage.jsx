@@ -40,7 +40,7 @@ const signupSchema = z
       .regex(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
       ),
-    role: z.enum(["USER", "ADMIN"]),
+    role: z.enum(["User", "Admin"]),
     username: z
       .string()
       .nonempty("Username is required")
@@ -65,7 +65,7 @@ const SignUpPage = () => {
     defaultValues: {
       email: "",
       password: "",
-      role: "USER",
+      role: "User",
       username: "",
       cnfPassword: "",
     },
@@ -92,17 +92,19 @@ const SignUpPage = () => {
       if (response.status === 201) {
         toast({
           title: "success",
-          description: `welcome ${response.data.data.user.username} `,
+          description: `welcome ${response.data.data.username} `,
         });
         navigate("/login");
       }
       console.log(response);
     } catch (err) {
       console.log(err);
-      toast({
-        title: "error",
-        description: err.response.data.message,
-      });
+      // toast({
+      //   variant: "destructive",
+      //   title: "error",
+      //   description: `${err.response.data.message}`,
+      // });
+      console.log(err)
       setLoader(false);
     }
   };
@@ -191,7 +193,7 @@ const SignUpPage = () => {
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
-                    value="USER"
+                    value="User"
                     {...register("role", { required: true })}
                     id="r1"
                   />
@@ -199,7 +201,7 @@ const SignUpPage = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem
-                    value="ADMIN"
+                    value="Admin"
                     {...register("role", { required: true })}
                     id="r2"
                   />

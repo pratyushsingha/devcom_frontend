@@ -1,13 +1,15 @@
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import Spinner from "./loader/Spinner";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
+import useCart from "@/hooks/useCart";
 
 const CartItem = ({ item }) => {
   const { cartItemIncrement, DeleteFromCart, addToWish } =
     useContext(AppContext);
+  const { addToCart } = useCart();
   return (
     <>
       <div className="flex items-center hover:bg-[#00001e]  px-6 py-5">
@@ -17,7 +19,7 @@ const CartItem = ({ item }) => {
             <div className="w-20">
               <img
                 className="h-24 rounded"
-                src={item.product.mainImage.url}
+                src={item.product.mainImage}
                 alt={item.product.name}
               />
             </div>
@@ -36,9 +38,7 @@ const CartItem = ({ item }) => {
           <Button
             variant="ghost"
             onClick={() => {
-              item.quantity > 1
-                ? cartItemIncrement(item.product._id, item.quantity - 1)
-                : DeleteFromCart(item.product._id);
+              DeleteFromCart(item.product._id);
             }}
           >
             <svg
@@ -52,7 +52,7 @@ const CartItem = ({ item }) => {
           <Button
             variant="ghost"
             onClick={() => {
-              cartItemIncrement(item.product._id, item.quantity + 1);
+              cartItemIncrement(item.product._id);
             }}
           >
             <svg

@@ -10,6 +10,7 @@ import {
 import useOrder from "@/hooks/useOrder";
 import { Separator } from "./ui/separator";
 import { Link } from "react-router-dom";
+import { useEffect } from "react";
 
 const OrderItem = ({ item }) => {
   const {
@@ -32,14 +33,14 @@ const OrderItem = ({ item }) => {
         </Badge>
       </div>
       <span className="text-center w-1/5 font-semibold text-sm">
-        ₹ {item.discountedOrderPrice}
+        ₹ {item.disCountedOrderPrice}
       </span>
       <div className="text-center w-1/5 font-semibold text-sm">
-        {item.orderPrice - item.discountedOrderPrice === 0 ? (
+        {item.orderPrice - item.disCountedOrderPrice === 0 ? (
           <span className="text-red-500">none</span>
         ) : (
           <span className="text-green-800">
-            - ₹ {item.orderPrice - item.discountedOrderPrice}
+            - ₹ {item.orderPrice - item.disCountedOrderPrice}
           </span>
         )}
       </div>
@@ -54,31 +55,34 @@ const OrderItem = ({ item }) => {
           </Button>
         </HoverCardTrigger>
         <HoverCardContent className="w-80">
-          {orderedProducts.map((product) => (
-            <Link to={`/product/${product.product._id}`} key={product._id}>
-              <div className="flex justify-between space-x-4">
-                <img
-                  className="w-10 h-10 rounded-full"
-                  src={product.product.mainImage.url}
-                  alt={product.product.name}
-                />
-                <div className="space-y-1">
-                  <h4 className="text-sm font-semibold">
-                    {product.product.name}
-                  </h4>
-                  <p className="text-sm">
-                    {product.product.description.slice(0, 54)}...
-                  </p>
-                  <div className="flex items-center pt-2">
-                    <span className="text-xs text-muted-foreground">
-                      ₹ {product.product.price}
-                    </span>
+          {orderedProducts.map((item) =>
+            item.map((product) => (
+              <Link to={`/product/${product.product._id}`} key={product._id}>
+                <div className="flex justify-between space-x-4">
+                  <img
+                    className="w-10 h-10 rounded-full"
+                    src={product.product.mainImage}
+                    alt={product.name}
+                  />
+                  <div className="space-y-1">
+                    <h4 className="text-sm font-semibold">
+                      {product.product.name}
+                    </h4>
+                    <p className="text-sm">
+                      {product.product.description.slice(0, 54)}...
+                    </p>
+                    <div className="flex items-center pt-2">
+                      <span className="text-xs text-muted-foreground">
+                        ₹ {product.product.price} * {product.quantity} ={" "}
+                        {product.product.price * product.quantity}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-              <Separator className="my-2" />
-            </Link>
-          ))}
+                <Separator className="my-2" />
+              </Link>
+            ))
+          )}
         </HoverCardContent>
       </HoverCard>
     </div>

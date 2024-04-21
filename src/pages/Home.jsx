@@ -73,7 +73,7 @@ export default function Home() {
           <ProductItem
             key={item._id}
             _id={item._id}
-            mainImage={item.mainImage.url}
+            mainImage={item.mainImage}
             price={item.price}
             name={item.name}
           />
