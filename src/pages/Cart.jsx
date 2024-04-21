@@ -203,9 +203,7 @@ const Cart = () => {
           <div className="flex flex-col justify-center items-center h-screen">
             <h1 className="text-2xl mb-4">cart is empty</h1>
             <Link to="/products">
-              <Button>
-                Buy now
-              </Button>
+              <Button>Buy now</Button>
             </Link>
           </div>
         </>

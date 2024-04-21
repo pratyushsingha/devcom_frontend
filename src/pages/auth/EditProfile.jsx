@@ -67,9 +67,13 @@ const EditProfile = () => {
     try {
       setProgress(progress + 10);
       setLoader(true);
-      const response = await axios.get("/ecommerce/profile", {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/users/profile`,
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(response);
       setValue("firstName", response.data.data.firstName);
       setValue("lastName", response.data.data.lastName);
       setValue("countryCode", response.data.data.countryCode);
@@ -97,7 +101,7 @@ const EditProfile = () => {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.patch(
-        "/ecommerce/profile",
+        `${import.meta.env.VITE_BACKEND_URL}/users/profile`,
         {
           firstName: firstName,
           lastName: lastName,
@@ -132,9 +136,13 @@ const EditProfile = () => {
         const formData = new FormData();
         formData.append("avatar", files);
         console.log(formData);
-        const data = await axios.patch("/users/avatar", formData, {
-          withCredentials: true,
-        });
+        const data = await axios.patch(
+          `${import.meta.env.VITE_BACKEND_URL}/users/avatar`,
+          formData,
+          {
+            withCredentials: true,
+          }
+        );
         // console.log(data);
         toast({
           title: "success",

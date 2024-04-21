@@ -7,8 +7,9 @@ import {
 } from "react";
 import axios from "axios";
 import { AuthContext } from "./AuthContext";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import ProductItem from "../components/ProductItem";
+import { useToast } from "@/components/ui/use-toast";
 
 export const AppContext = createContext();
 
@@ -64,6 +65,8 @@ export default function AppContextProvider({ children }) {
   const [dOpen, setDopen] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
 
+  const { toast } = useToast();
+
   const getProducts = async () => {
     try {
       setProgress(progress + 10);
@@ -72,7 +75,7 @@ export default function AppContextProvider({ children }) {
         `${import.meta.env.VITE_BACKEND_URL}/products?page=${page}&limit=12`
       );
       setProducts(response.data.data.Products);
-      console.log(response.data.data.Products)
+      console.log(response.data.data.Products);
       setHasNextPage(response.data.data.hasNextPage);
       setProgress(progress + 100);
       setLoader(false);
@@ -89,9 +92,9 @@ export default function AppContextProvider({ children }) {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get(
-        `/ecommerce/categories?page=${page}&limit=15`
+        `${import.meta.env.VITE_BACKEND_URL}/categories?page=${page}&limit=15`
       );
-      setCategories(response.data.data.categories);
+      setCategories(response.data.data.Categories);
       console.log(response);
       setHasNextPage(response.data.data.hasNextPage);
       setLoader(false);
@@ -103,44 +106,45 @@ export default function AppContextProvider({ children }) {
     }
   };
 
-  const addToCart = async (productId) => {
-    try {
-      if (localStorage.getItem("accessToken")) {
-        const cartItems = await axios.get("/ecommerce/cart", {
-          withCredentials: true,
-        });
+  // const addToCart = async (productId) => {
+  //   try {
+  //     if (localStorage.getItem("accessToken")) {
+  //       const cartItems = await axios.get(
+  //         `${import.meta.env.VITE_BACKEND_URL}/cart`,
+  //         {
+  //           withCredentials: true,
+  //         }
+  //       );
 
-        const cartProductIds = cartItems.data.data.items.map(
-          (item) => item.product._id
-        );
+  //       const cartProductIds = cartItems.data.data.items.map(
+  //         (item) => item.product._id
+  //       );
 
-        if (cartProductIds.includes(productId)) {
-          toast.success("already added to cart");
-        } else {
-          const response = await axios.post(
-            `/ecommerce/cart/item/${productId}`,
-            {
-              withCredentials: true,
-            }
-          );
-          toast.success("Item added to cart");
-        }
-      } else {
-        toast.error("please login to add item in cart");
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error("something went wrong");
-    }
-  };
+  //       if (cartProductIds.includes(productId)) {
+  //         toast.success("already added to cart");
+  //       } else {
+  //         const response = await axios.post(
+  //           `${import.meta.env.VITE_BACKEND_URL}/cart/item/${productId}`,
+  //           {
+  //             withCredentials: true,
+  //           }
+  //         );
+  //         toast.success("Item added to cart");
+  //       }
+  //     } else {
+  //       toast.error("please login to add item in cart");
+  //     }
+  //   } catch (err) {
+  //     console.error(err);
+  //     toast.error("something went wrong");
+  //   }
+  // };
 
-  const cartItemUpdate = async (id, qty) => {
+  const cartItemUpdate = async (id) => {
     try {
       const response = await axios.post(
-        `/ecommerce/cart/item/${id}`,
-        {
-          quantity: qty,
-        },
+        `${import.meta.env.VITE_BACKEND_URL}/cart/item/${id}`,
+        {},
         {
           withCredentials: true,
         }
@@ -155,13 +159,16 @@ export default function AppContextProvider({ children }) {
     try {
       setLoader(true);
       setProgress(progress + 10);
-      const response = await axios.get("ecommerce/cart", {
-        withCredentials: true,
-      });
-      console.log(response.data.data.items);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/cart`,
+        {
+          withCredentials: true,
+        }
+      );
+      // console.log(response.data.data.items);
       setCartProducts(response.data.data.items);
       setCartTotal(response.data.data.cartTotal);
-      setDisCountedTotal(response.data.data.discountedTotal);
+      setDisCountedTotal(response.data.data.discountCartValue);
       setLoader(false);
       setProgress(progress + 100);
     } catch (err) {
@@ -183,9 +190,12 @@ export default function AppContextProvider({ children }) {
   const DeleteFromCart = async (id) => {
     try {
       setLoader(true);
-      const response = await axios.delete(`/ecommerce/cart/item/${id}`, {
-        withCredentials: true,
-      });
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/cart/item/${id}`,
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response);
       getCart();
       setLoader(false);
@@ -198,8 +208,17 @@ export default function AppContextProvider({ children }) {
   const clearCart = async () => {
     try {
       setLoader(true);
-      const response = await axios.delete("ecommerce/cart/clear");
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/cart/clear`,
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response);
+      toast({
+        title: "Success",
+        description: `${response.data.message}`,
+      });
       getCart();
       setLoader(false);
     } catch (err) {
@@ -213,7 +232,10 @@ export default function AppContextProvider({ children }) {
       const updatedWish = products.find((item) => item._id === id);
       console.log(updatedWish);
       setWishList([...wishList, updatedWish]);
-      toast.success("Item added to wishlist");
+      toast({
+        title: "Success",
+        description: "Item added to wishlist",
+      });
     } else {
       toast.error("please login add in wishlist");
       setLoader(false);
@@ -235,8 +257,10 @@ export default function AppContextProvider({ children }) {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get(
-        `/ecommerce/coupons?page=${page}&limit=15`
+        `${import.meta.env.VITE_BACKEND_URL}/coupons?page=${page}&limit=15`,
+        { withCredentials: true }
       );
+      console.log(response);
       setAllCoupons(response.data.data.coupons);
       setChasNextPage(response.data.data.hasNextPage);
       setLoader(false);
@@ -251,13 +275,15 @@ export default function AppContextProvider({ children }) {
     try {
       setLoader(true);
       const response = await axios.get(
-        "/ecommerce/coupons/customer/available?page=1&limit=10",
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/coupons/customer/available?page=1&limit=10`,
         {
           withCredentials: true,
         }
       );
       console.log(response);
-      setAllCoupon(response.data.data.coupons);
+      setAllCoupon(response.data.data);
       setLoader(false);
     } catch (err) {
       console.log(err);
@@ -268,7 +294,7 @@ export default function AppContextProvider({ children }) {
   const applyCoupon = async (couponCode) => {
     try {
       const response = await axios.post(
-        "/ecommerce/coupons/c/apply",
+        `${import.meta.env.VITE_BACKEND_URL}/coupons/c/apply`,
         {
           couponCode: couponCode,
         },
@@ -277,6 +303,7 @@ export default function AppContextProvider({ children }) {
         }
       );
       setCoupon(true);
+      console.log(couponCode);
       getCart();
       setCouponCode("");
       setError(false);
@@ -289,11 +316,12 @@ export default function AppContextProvider({ children }) {
 
   const removeCoupon = async (couponCode) => {
     try {
-      const response = await axios.post(
-        "/ecommerce/coupons/c/remove",
-        { couponCode: couponCode },
-        { withCredentials: true }
-      );
+      // const response = await axios.post(
+      //   `${import.meta.env.VITE_BACKEND_URL}/coupons/c/remove`,
+      //   { couponCode: couponCode },
+      //   { withCredentials: true }
+      // );
+      console.log(couponCode);
       // console.log(response);
       getCart();
       setCoupon(false);
@@ -306,9 +334,12 @@ export default function AppContextProvider({ children }) {
 
   const getAddress = async () => {
     try {
-      const response = await axios.get("/ecommerce/addresses");
-      // console.log(response);
-      setAllAddress(response.data.data.addresses);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/addresses`,
+        { withCredentials: true }
+      );
+      console.log(response);
+      setAllAddress(response.data.data);
     } catch (err) {
       console.log(err);
       setLoader(false);
@@ -318,9 +349,13 @@ export default function AppContextProvider({ children }) {
   const saveAddress = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post("ecommerce/addresses", address, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/addresses`,
+        address,
+        {
+          withCredentials: true,
+        }
+      );
       console.log(response);
       getAddress();
     } catch (err) {
@@ -336,8 +371,12 @@ export default function AppContextProvider({ children }) {
     try {
       setLoader(true);
       setProgress(progress + 10);
-      const response = await axios.get("/users/current-user");
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/users/current-user`,
+        { withCredentials: true }
+      );
       // console.log(response.data.data.avatar.url);
+
       console.log(response.data.data);
       setProfileInfo({
         avatar: response.data.data.avatar,
@@ -418,7 +457,7 @@ export default function AppContextProvider({ children }) {
           key={product._id}
           _id={product._id}
           name={product.name}
-          mainImage={product.mainImage.url}
+          mainImage={product.mainImage}
           price={product.price}
         />
       );
@@ -435,8 +474,9 @@ export default function AppContextProvider({ children }) {
     try {
       setProgress(progress + 10);
       setLoader(true);
-      const response =
-        await axios.get(`/ecommerce/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
+      const response = await axios.get(`${
+        import.meta.env.VITE_BACKEND_URL
+      }/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
       `);
 
       // console.log(response.data.data.orders);
@@ -463,7 +503,7 @@ export default function AppContextProvider({ children }) {
   const value = {
     getProducts,
     products,
-    addToCart,
+    // addToCart,
     quantity,
     setQuantity,
     cartItemUpdate,

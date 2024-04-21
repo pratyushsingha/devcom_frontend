@@ -27,11 +27,11 @@ const Shipping = () => {
     try {
       setLoader(true);
       const response = await axios.post(
-        "/ecommerce/orders/provider/razorpay",
+        `${import.meta.env.VITE_BACKEND_URL}/orders/provider/razorpay`,
         { addressId: selectedAddress },
         { withCredentials: true }
       );
-      console.log(response.data.data.amount);
+      // console.log(response.data.data.amount);
       setGeneratedOrder(response.data.data);
 
       const options = {
@@ -42,7 +42,9 @@ const Shipping = () => {
         description: "payment integration with razorpay",
         image: "https://i.postimg.cc/9FLrHVRz/image-removebg-preview.png",
         order_id: generatedOrder.id,
-        callback_url: "/ecommerce/orders/provider/razorpay/verify-payment",
+        callback_url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }/orders/provider/razorpay/verify-payment`,
         prefill: {
           name: profileInfo.username,
           email: profileInfo.email,

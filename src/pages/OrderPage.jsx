@@ -8,7 +8,6 @@ import { AppContext } from "../context/AppContext";
 import usePagination from "../hooks/usePagination";
 import { Button } from "@/components/ui/button";
 
-
 const OrderPage = () => {
   const { setLoader, page, progress, setProgress } = useContext(AppContext);
   const { handlePrevClick, handleNextClick } = usePagination();
@@ -21,17 +20,17 @@ const OrderPage = () => {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get(
-        `/ecommerce/profile/my-orders?page=${page}&limit=${orderPerPage}`,
+        `${import.meta.env.VITE_BACKEND_URL}/orders/my-orders`,
         {
           withCredentials: true,
         }
       );
-      setOrders(response.data.data.orders);
-      // console.log(response.data.data)
+      setOrders(response.data.data);
       setTotalOrders(response.data.data.totalOrders);
       setLoader(false);
       setProgress(progress + 100);
     } catch (err) {
+      console.log(err);
       toast({
         varinat: "destructive",
         title: "error",
@@ -66,7 +65,7 @@ const OrderPage = () => {
               </div>
               <div className="flex mt-10 mb-5 ml-8">
                 <h3 className="font-semibold text-gray-600 text-xs uppercase w-2/5">
-                  Order ID
+                  Date
                 </h3>
                 <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">
                   Quantity

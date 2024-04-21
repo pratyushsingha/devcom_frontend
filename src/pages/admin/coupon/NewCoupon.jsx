@@ -58,9 +58,13 @@ const NewCoupon = () => {
     try {
       setLoader(true);
       setProgress(progress + 10);
-      const data = await axios.post("/ecommerce/coupons", newCoupon, {
-        withCredentials: true,
-      });
+      const data = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/coupons`,
+        newCoupon,
+        {
+          withCredentials: true,
+        }
+      );
       // console.log(data);
       toast({
         title: "success",

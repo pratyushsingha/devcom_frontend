@@ -83,7 +83,7 @@ export const columns = [
           setProgress(progress + 10);
           setLoader(true);
           const data = await axios.patch(
-            `/ecommerce/categories/${row.values._id}`,
+            `${import.meta.env.VITE_BACKEND_URL}/categories/${row.values._id}`,
             { name: updatedCategoryRef.current },
             { withCredentials: true }
           );
@@ -112,7 +112,7 @@ export const columns = [
           setProgress(progress + 10);
           setLoader(true);
           const data = await axios.delete(
-            `/ecommerce/categories/${row.values._id}`,
+            `${import.meta.env.VITE_BACKEND_URL}/categories/${row.values._id}`,
             { name: updatedCategoryRef.current },
             { withCredentials: true }
           );

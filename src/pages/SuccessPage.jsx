@@ -4,7 +4,7 @@ import { TiTick } from "react-icons/ti";
 
 const SuccessPage = () => {
   const searchQuery = useSearchParams()[0];
-  const refNo = searchQuery.get("reference");
+  const refNo = searchQuery.get("ref");
   return (
     <div className="h-screen flex flex-col justify-center items-center">
       <TiTick className="text-green-500 text-9xl" />

@@ -33,7 +33,7 @@ const ForgotPassword = () => {
     setLoader(true);
     try {
       const data = await axios.post(
-        "/users/forgot-password",
+        `${import.meta.env.VITE_BACKEND_URL}/users/forgot-password`,
         { email: email },
         { withCredentials: true }
       );

@@ -49,11 +49,11 @@ const Profile = () => {
 
   const changePassword = async ({ newPassword, oldPassword }) => {
     try {
-      const response = await axios.post(
-        "/users/change-password",
+      const response = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/users/change-password`,
         {
-          newPassword: newPassword,
-          oldPassword: oldPassword,
+          newPassword,
+          oldPassword,
         },
         { withCredentials: true }
       );
@@ -64,12 +64,11 @@ const Profile = () => {
         status: "success",
       });
     } catch (err) {
+      // console.log(err.response)
       toast({
+        variant: "destructive",
         title: "Error",
-        description: err.response
-          ? err.response.data.message
-          : "Something went wrong",
-        status: "error",
+        description: `${err.response.data.message}`,
       });
     }
   };
@@ -122,7 +121,8 @@ const Profile = () => {
               <div className="justify-center">
                 <div className="flex justify-center space-x-6">
                   <div className="relative">
-                    <InputDiv className="w-full"
+                    <InputDiv
+                      className="w-full"
                       label="Old password"
                       type={showPassword ? "text" : "password"}
                       {...register("oldPassword", {
@@ -145,7 +145,8 @@ const Profile = () => {
                     </div>
                   </div>
                   <div className="relative">
-                    <InputDiv className="w-full"
+                    <InputDiv
+                      className="w-full"
                       label="New password"
                       type={cnfShowPassword ? "text" : "password"}
                       {...register("newPassword", {

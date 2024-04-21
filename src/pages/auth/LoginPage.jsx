@@ -42,14 +42,18 @@ const LoginPage = () => {
 
   const [showPassword, setShowPassword] = useState(null);
 
-  const login = async ({ username, password }) => {
+  const login = async ({ email, password }) => {
     try {
       setLoader(true);
-      const response = await axios.post("/users/login", {
-        password: password,
-        username: username,
-      });
-  
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/users/login`,
+        {
+          password,
+          email,
+        },
+        { withCredentials: true }
+      );
+      console.log(response);
       const accessToken = response.data.data.accessToken;
       const refreshToken = response.data.data.refreshToken;
       // console.log(accessToken);
@@ -80,22 +84,17 @@ const LoginPage = () => {
         <CardContent>
           <form className="space-y-5" onSubmit={handleSubmit(login)}>
             <div className="grid w-full max-w-sm items-center gap-1.5">
-              <Label htmlFor="username">Username: </Label>
+              <Label htmlFor="email">Email: </Label>
               <Input
-                id="username"
+                id="email"
                 type="text"
-                placeholder="username"
-                {...register("username", {
+                placeholder="email"
+                {...register("email", {
                   required: true,
-                  validate: {
-                    matchPattern: (value) =>
-                      /^[a-zA-Z0-9]{3,20}$/.test(value) ||
-                      "username must be a valid",
-                  },
                 })}
               />
             </div>
-            <p className="text-red-600">{errors.username?.message}</p>
+            <p className="text-red-600">{errors.email?.message}</p>
             <div className="relative grid w-full max-w-sm items-center gap-1.5">
               <Label htmlFor="password">Password: </Label>
               <Input
