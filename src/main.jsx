@@ -36,6 +36,7 @@ import ManageOrder from "./pages/admin/order/ManageOrder.jsx";
 import Admin from "./pages/admin/Admin.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -224,18 +225,17 @@ const router = createBrowserRouter([
           </AuthLayout>
         ),
       },
-      
     ],
   },
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <AuthContextProvider>
-    <AppContextProvider>
-      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-        <RouterProvider router={router} />
-        <Toaster />
-      </ThemeProvider>
-    </AppContextProvider>
-  </AuthContextProvider>
+    <AuthContextProvider>
+      <AppContextProvider>
+        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+          <RouterProvider router={router} />
+          <Toaster />
+        </ThemeProvider>
+      </AppContextProvider>
+    </AuthContextProvider>
 );

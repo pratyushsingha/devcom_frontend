@@ -26,7 +26,7 @@ export default function AuthContextProvider({ children }) {
         );
       }
 
-      console.log(response);
+      console.log(response);        {/* ))} */}
     } catch (err) {
       console.log(err);
     }

@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AppContext } from "../context/AppContext";
 import { Link } from "react-router-dom";
 import WishItem from "../components/WishItem";
@@ -6,10 +6,14 @@ import Container from "../components/Container";
 import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const WishListPage = () => {
-  const { wishList } = useContext(AppContext);
+  const { wishList, getWishlist } = useContext(AppContext);
 
+  useEffect(() => {
+    getWishlist();
+  }, []);
   return (
     <Container>
       {wishList.length > 0 ? (
@@ -32,11 +36,9 @@ const WishListPage = () => {
                   Price
                 </h3>
               </div>
-              <ScrollArea className="h-72 w-full rounded-md border p-4">
-                {wishList.map((item, index) => (
-                  <WishItem item={item} key={index} />
-                ))}
-              </ScrollArea>
+              {wishList.map((item, index) => (
+                <WishItem item={item} key={index} />
+              ))}
               <Link
                 to={"/products"}
                 className="flex font-semibold text-indigo-600 text-sm mt-10"
@@ -56,7 +58,7 @@ const WishListPage = () => {
         <div className="flex flex-col justify-center items-center h-screen">
           <h1 className="text-2xl mb-4">Wishlist is empty</h1>
           <Link to="/products">
-            <Button className="bg-indigo-500 hover:bg-indigo-600 text-white px-4 py-2 rounded">
+            <Button >
               Buy now
             </Button>
           </Link>
