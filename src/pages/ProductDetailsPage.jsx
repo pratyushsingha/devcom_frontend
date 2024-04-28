@@ -23,6 +23,8 @@ const ProductDetails = () => {
     cartProducts,
     setProgress,
     progress,
+    getWishlist,
+    setWishlist,
   } = useContext(AppContext);
 
   const [productDetails, setProductDetails] = useState([]);
@@ -35,10 +37,8 @@ const ProductDetails = () => {
       setProgress(progress + 10);
       setLoader(true);
       const response = await axios.get(
-
         `${import.meta.env.VITE_BACKEND_URL}/products/${id}`
       );
-      console.log(response.data.data);
       setProductDetails(response.data.data);
       // console.log(response.data.data.category);
       setCategoryId(response.data.data.category);
@@ -54,13 +54,11 @@ const ProductDetails = () => {
   const similarProducts = async (categoryId) => {
     try {
       const response = await axios.get(
-
         `${
           import.meta.env.VITE_BACKEND_URL
         }/products/category/${categoryId}?page=1&limit=5`,
         { withCredentials: true }
       );
-      console.log(response);
       setProductCategory(response.data.data);
       setCategory(response.data.data.name);
     } catch (err) {
@@ -75,9 +73,13 @@ const ProductDetails = () => {
   }, [id, categoryId]);
 
   useEffect(() => {
-    getProducts();
     getProductDetails(id);
   }, []);
+
+  useEffect(() => {
+    getWishlist();
+  }, [setWishlist]);
+
   return (
     <>
       <Container>
@@ -181,7 +183,7 @@ const ProductDetails = () => {
                         )}
                       </Button>
                     )}
-                    {/* {wishList.some((item) => item._id === id) ? (
+                    {wishList.map((item) => item.product._id).includes(id) ? (
                       <button
                         onClick={() => removeFromWish(id)}
                         className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center ml-4"
@@ -195,7 +197,7 @@ const ProductDetails = () => {
                       >
                         <CiHeart className="text-2xl text-gray-600" />
                       </button>
-                    )} */}
+                    )}
                   </div>
                 </div>
               </div>
@@ -203,22 +205,21 @@ const ProductDetails = () => {
           </section>
           <h1 className="text-2xl -mt-16 mb-5">SIMILAR PRODUCTS</h1>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {/* {productCategory.length > 0 ? (
+            {productCategory.length > 0 ? (
               productCategory.map((item) => (
                 <ProductItem
                   key={item._id}
                   _id={item._id}
-                  mainImage={item.mainImage.url}
+                  mainImage={item.mainImage}
                   price={item.price}
                   name={item.name}
                 />
               ))
             ) : (
               <p>No products available</p>
-            )} */}
+            )}
           </div>
         </div>
-        {/* ))} */}
         <br />
       </Container>
     </>

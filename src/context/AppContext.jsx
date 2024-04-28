@@ -13,15 +13,6 @@ import { useToast } from "@/components/ui/use-toast";
 
 export const AppContext = createContext();
 
-function getLocalWish() {
-  let wishes = localStorage.getItem("wish");
-  if (wishes) {
-    return JSON.parse(wishes);
-  } else {
-    return [];
-  }
-}
-
 export default function AppContextProvider({ children }) {
   const { auth } = useContext(AuthContext);
   const [loader, setLoader] = useState(false);
@@ -32,7 +23,7 @@ export default function AppContextProvider({ children }) {
   const [hastNextPage, setHasNextPage] = useState();
   const [cartProducts, setCartProducts] = useState([]);
   const [cartTotal, setCartTotal] = useState();
-  const [wishList, setWishList] = useState(getLocalWish());
+  const [wishList, setWishList] = useState([]);
   const [couponCode, setCouponCode] = useState("");
   const [disCountedTotal, setDisCountedTotal] = useState();
   const [error, setError] = useState(false);
@@ -67,29 +58,30 @@ export default function AppContextProvider({ children }) {
 
   const { toast } = useToast();
 
- const getProducts = async () => {
-  try {
-    setProgress(progress + 10);
-    setLoader(true);
-    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/products?page=${page}&limit=12`);
-    setProducts(response.data.data.Products);
-    console.log(response.data.data.Products);
-    setHasNextPage(response.data.data.hasNextPage);
-    setProgress(progress + 100);
-    setLoader(false);
-  } catch (err) {
-    toast.error("Something went wrong while fetching products", err.message);
-    setProgress(progress + 100);
-    setLoader(false);
-  }
-};
+  const getProducts = async () => {
+    try {
+      setProgress(progress + 10);
+      setLoader(true);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/products?page=${page}&limit=12`
+      );
+      setProducts(response.data.data.Products);
+      console.log(response.data.data.Products);
+      setHasNextPage(response.data.data.hasNextPage);
+      setProgress(progress + 100);
+      setLoader(false);
+    } catch (err) {
+      toast.error("Something went wrong while fetching products", err.message);
+      setProgress(progress + 100);
+      setLoader(false);
+    }
+  };
 
   const getCategory = async () => {
     try {
       setLoader(true);
       setProgress(progress + 10);
       const response = await axios.get(
-
         `${import.meta.env.VITE_BACKEND_URL}/categories?page=${page}&limit=15`
       );
       setCategories(response.data.data.Categories);
@@ -103,40 +95,6 @@ export default function AppContextProvider({ children }) {
       setProgress(progress + 10);
     }
   };
-
-  // const addToCart = async (productId) => {
-  //   try {
-  //     if (localStorage.getItem("accessToken")) {
-  //       const cartItems = await axios.get(
-  //         `${import.meta.env.VITE_BACKEND_URL}/cart`,
-  //         {
-  //           withCredentials: true,
-  //         }
-  //       );
-
-  //       const cartProductIds = cartItems.data.data.items.map(
-  //         (item) => item.product._id
-  //       );
-
-  //       if (cartProductIds.includes(productId)) {
-  //         toast.success("already added to cart");
-  //       } else {
-  //         const response = await axios.post(
-  //           `${import.meta.env.VITE_BACKEND_URL}/cart/item/${productId}`,
-  //           {
-  //             withCredentials: true,
-  //           }
-  //         );
-  //         toast.success("Item added to cart");
-  //       }
-  //     } else {
-  //       toast.error("please login to add item in cart");
-  //     }
-  //   } catch (err) {
-  //     console.error(err);
-  //     toast.error("something went wrong");
-  //   }
-  // };
 
   const cartItemUpdate = async (id) => {
     try {
@@ -228,29 +186,29 @@ export default function AppContextProvider({ children }) {
     }
   };
 
-  function addToWish(id) {
-    if (localStorage.getItem("accessToken")) {
-      const updatedWish = products.find((item) => item._id === id);
-      setWishList([...wishList, updatedWish]);
-      toast({
-        title: "Success",
-        description: "Item added to wishlist",
-      });
-    } else {
-      toast.error("please login add in wishlist");
-      setLoader(false);
-    }
-  }
+  // function addToWish(id) {
+  //   if (localStorage.getItem("accessToken")) {
+  //     const updatedWish = products.find((item) => item._id === id);
+  //     setWishList([...wishList, updatedWish]);
+  //     toast({
+  //       title: "Success",
+  //       description: "Item added to wishlist",
+  //     });
+  //   } else {
+  //     toast.error("please login add in wishlist");
+  //     setLoader(false);
+  //   }
+  // }
 
-  function removeFromWish(id) {
-    const removeWish = wishList.filter((item) => item._id !== id);
-    setWishList(removeWish);
-    toast.success("Item removed from wishlist");
-  }
+  // function removeFromWish(id) {
+  //   const removeWish = wishList.filter((item) => item._id !== id);
+  //   setWishList(removeWish);
+  //   toast.success("Item removed from wishlist");
+  // }
 
-  useEffect(() => {
-    localStorage.setItem("wish", JSON.stringify(wishList));
-  }, [wishList]);
+  // useEffect(() => {
+  //   localStorage.setItem("wish", JSON.stringify(wishList));
+  // }, [wishList]);
 
   const getCoupon = async () => {
     try {
@@ -259,7 +217,6 @@ export default function AppContextProvider({ children }) {
       const response = await axios.get(
         `${import.meta.env.VITE_BACKEND_URL}/coupons?page=${page}&limit=15`,
         { withCredentials: true }
-
       );
       console.log(response);
       setAllCoupons(response.data.data.coupons);
@@ -342,7 +299,6 @@ export default function AppContextProvider({ children }) {
       );
       console.log(response);
       setAllAddress(response.data.data);
-
     } catch (err) {
       console.log(err);
       setLoader(false);
@@ -471,7 +427,6 @@ export default function AppContextProvider({ children }) {
   }
 
   const result = filterData(products, selectedPrice, selectedCategory, query);
-
   const handleStatus = (value) => {
     setStatusFilter(value);
   };
@@ -485,7 +440,6 @@ export default function AppContextProvider({ children }) {
       }/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
       `);
 
-
       setOrders(response.data.data.orders);
       setHasNextPage(response.data.data.hasNextPage);
       setProgress(progress + 100);
@@ -497,15 +451,77 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  const getWishlist = async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/wishlist`,
+        { withCredentials: true }
+      );
+      console.log(response.data.data.items);
+      if (response.data.data.items.length > 0) {
+        setWishList(response.data.data.items);
+      } else {
+        setWishList([]);
+      }
+    } catch (err) {
+      console.error("Error fetching wishlist:", err);
+      throw err;
+    }
+  };
+
+  const addToWish = async (productId) => {
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/wishlist/${productId}`,
+        {},
+        { withCredentials: true }
+      );
+      const product = products.find((item) => item._id == productId);
+      wishList.push({ product });
+      toast({
+        title: "success",
+        description: `${response.data.message}`,
+      });
+    } catch (err) {
+      console.log("error in adding to wishlist", err);
+      toast({
+        variant: "destructive",
+        title: "success",
+        description: `${err.response.data.message}`,
+      });
+    }
+  };
+
+  const removeFromWish = async (productId) => {
+    try {
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/wishlist/${productId}`,
+        { withCredentials: true }
+      );
+
+      setWishList(wishList.filter((item) => item.product._id !== productId));
+      toast({
+        title: "success",
+        description: `${response.data.message}`,
+      });
+    } catch (error) {
+      console.log("error in deleting item from wishlist", err);
+      toast({
+        variant: "destructive",
+        title: "success",
+        description: `${err.response.data.message}`,
+      });
+    }
+  };
+
   useEffect(() => {
     getProfile();
-    getCart();
-    getOrders();
+    getProducts();
   }, []);
-
-  useCallback(() => {
-    getCart();
-  }, [cartProducts, getCart]);
+  console.log(products);
+  // useCallback(() => {
+  //   getCart();
+  // }, [cartProducts, getCart]);
   const value = {
     getProducts,
     products,
@@ -573,6 +589,8 @@ export default function AppContextProvider({ children }) {
     setSelectedPrice,
     setSelectedSort,
     setQuery,
+    getWishlist,
+    setWishList,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }
