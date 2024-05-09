@@ -12,10 +12,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import DropDown from "./NavDropDown";
+import { CartContext } from "@/context/CartContext";
 
 const Navbar = () => {
-  const { cartProducts, loader, profileInfo, getProfile } =
-    useContext(AppContext);
+  const { loader, profileInfo, getProfile } = useContext(AppContext);
+  const { cartProducts, getCart, setCartProducts } = useContext(CartContext);
+
+  useEffect(() => {
+    getCart();
+  }, [setCartProducts]);
 
   return (
     <div className="flex relative">

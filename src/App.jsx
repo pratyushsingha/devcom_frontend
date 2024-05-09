@@ -4,6 +4,7 @@ import "./index.css";
 import LoadingBar from "react-top-loading-bar";
 import { AppContext } from "./context/AppContext";
 import { useContext } from "react";
+import CartContextProvider, { CartContext } from "./context/CartContext";
 
 function App() {
   const { progress, setProgress } = useContext(AppContext);
@@ -17,7 +18,9 @@ function App() {
         className="pb-1"
       />
       <div className="mx-20 my-4">
-        <Navbar />
+        <CartContextProvider>
+          <Navbar />
+        </CartContextProvider>
         <Outlet />
       </div>
     </>

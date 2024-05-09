@@ -33,21 +33,18 @@ import { Textarea } from "@/components/ui/textarea";
 import InputDiv from "@/components/InputDiv";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { WishContext } from "@/context/WishContext";
+import { CartContext } from "@/context/CartContext";
 
 const ProductDetails = () => {
   const { toast } = useToast();
-  const { addToCart, loader, setLoader } = useCart();
+  const { addToCart, cartProducts } = useContext(CartContext);
   const { id } = useParams();
-  const {
-    wishList,
-    addToWish,
-    removeFromWish,
-    cartProducts,
-    setProgress,
-    progress,
-    getWishlist,
-    setWishlist,
-  } = useContext(AppContext);
+  const { setProgress, progress, setWishlist, setLoader, loader } =
+    useContext(AppContext);
+
+  const { getWishlist, addToWish, removeFromWish, wishList } =
+    useContext(WishContext);
 
   const [productDetails, setProductDetails] = useState([]);
   const [categoryId, setCategoryId] = useState();
@@ -86,7 +83,11 @@ const ProductDetails = () => {
       setProgress(progress + 100);
       setLoader(false);
     } catch (err) {
-      toast.error(err.message);
+      toast({
+        variant: "destructive",
+        title: "error",
+        description: `${err.response?.data?.message}`,
+      });
       setProgress(progress + 100);
       setLoader(false);
     }
@@ -208,7 +209,7 @@ const ProductDetails = () => {
                     <span className="leading-7 text-2xl [&:not(:first-child)]:mt-6 text-white">
                       &#8377;{productDetails.price}
                     </span>
-                    {cartProducts.some((item) => item.product._id == id) ? (
+                    {cartProducts.some((item) => item.product._id === id) ? (
                       <Button className="flex ml-auto">
                         <Link to="/cart">Go to cart</Link>
                       </Button>
@@ -224,7 +225,8 @@ const ProductDetails = () => {
                         )}
                       </Button>
                     )}
-                    {wishList.map((item) => item.product._id).includes(id) ? (
+                    {wishList.length > 0 &&
+                    wishList.some((item) => item.product._id === id) ? (
                       <button
                         onClick={() => removeFromWish(id)}
                         className="rounded-full w-10 h-10 bg-gray-200 p-0 border-0 inline-flex items-center justify-center ml-4"

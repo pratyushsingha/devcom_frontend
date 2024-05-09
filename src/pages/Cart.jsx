@@ -21,27 +21,35 @@ import {
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { CartContext } from "@/context/CartContext";
+import WishContextProvider, { WishContext } from "@/context/WishContext";
+import { CouponContext } from "@/context/CouponContext";
 
 const Cart = () => {
+  const { clearCart, cartDetails, cartProducts, getCart, setCartProducts } =
+    useContext(CartContext);
+
   const {
-    getCart,
-    cartProducts,
-    cartTotal,
-    clearCart,
+    setCoupons,
+    allCoupon,
+    coupon,
     couponCode,
+    getCoupon,
+    availableCoupons,
+    applyCoupon,
+    removeCoupon,
     setCouponCode,
     error,
-    applyCoupon,
-    disCountedTotal,
-    removeCoupon,
-    coupon,
-    wishList,
-    allCoupon,
-  } = useContext(AppContext);
+  } = useContext(CouponContext);
 
   useEffect(() => {
     getCart();
-  }, []);
+  }, [setCouponCode]);
+
+  useEffect(() => {
+    availableCoupons();
+  }, [setCartProducts, cartProducts]);
+
   return (
     <Container>
       {cartProducts.length > 0 ? (
@@ -58,9 +66,9 @@ const Cart = () => {
                           <BsFillBagHeartFill className="self-center text-2xl" />
                         </button>
                       </Link>
-                      <p className="bg-red-500 w-4 h-4 pl-1 rounded-full text-xs text-white">
+                      {/* <p className="bg-red-500 w-4 h-4 pl-1 rounded-full text-xs text-white">
                         {wishList.length}
-                      </p>
+                      </p> */}
                     </div>
                     <h2 className="font-semibold text-4xl">
                       {cartProducts.length} Items
@@ -82,9 +90,11 @@ const Cart = () => {
                   </h3>
                 </div>
                 <ScrollArea className="h-72 w-full rounded-md border p-4">
-                  {cartProducts.map((item, index) => (
-                    <CartItem item={item} key={index} />
-                  ))}
+                  <WishContextProvider>
+                    {cartProducts.map((item, index) => (
+                      <CartItem item={item} key={index} />
+                    ))}
+                  </WishContextProvider>
                 </ScrollArea>
                 <Link
                   to={"/products"}
@@ -138,7 +148,9 @@ const Cart = () => {
                   <span className="font-semibold text-sm uppercase">
                     Items {cartProducts.length}
                   </span>
-                  <span className="font-semibold text-sm">₹ {cartTotal}</span>
+                  <span className="font-semibold text-sm">
+                    ₹ {cartDetails.cartTotal}
+                  </span>
                 </div>
                 <div>
                   <Label
@@ -182,12 +194,15 @@ const Cart = () => {
                 <div className="border-t mt-8">
                   <div className="flex font-semibold justify-between py-6 text-sm uppercase">
                     <span>Cart Total</span>
-                    <span>₹ {cartTotal}</span>
+                    <span>₹ {cartDetails.cartTotal}</span>
                   </div>
                   <div className="flex font-semibold justify-between py-6 text-sm uppercase">
                     <span>To Pay</span>
                     <span>
-                      ₹ {disCountedTotal < 0 ? cartTotal : disCountedTotal}
+                      ₹{" "}
+                      {cartDetails.discountCartValue < 0
+                        ? cartDetails.cartTotal
+                        : cartDetails.discountCartValue}
                     </span>
                   </div>
                   <Link to="/shipping">

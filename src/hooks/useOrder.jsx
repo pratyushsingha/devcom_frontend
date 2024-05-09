@@ -7,25 +7,23 @@ const useOrder = () => {
   const { toast } = useToast();
   const { setLoader } = useContext(AppContext);
   const [orderedProducts, setOrderedProducts] = useState([]);
-  const [customer, setCustomer] = useState({});
-  const [address, setAddress] = useState({});
-  const [order, setOrder] = useState({});
-  const [couponCode, setCouponCode] = useState({});
+  const [order, setOrder] = useState([]);
+  const [orderStatus, setOrderStatus] = useState("");
 
-  const orderDetails = async (id) => {
+  const orderDetails = async (productId) => {
     try {
       setLoader(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/orders/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/orders/${productId}`,
         {
           withCredentials: true,
         }
       );
-      setAddress(response.data.data.address);
-      setCustomer(response.data.data.customer);
-      response.data.data.map((item) => setOrderedProducts([item.items]));
+      console.log(response.data.data);
+      response.data.data.map((item) => {
+        setOrderedProducts(item.items);
+      });
       setOrder(response.data.data);
-      setCouponCode(response.data.data.coupon);
 
       setLoader(false);
     } catch (err) {
@@ -40,13 +38,30 @@ const useOrder = () => {
     }
   };
 
+  const updateStatus = async (e, productId) => {
+    e.preventDefault();
+    try {
+      const data = await axios.patch(
+        `${import.meta.env.VITE_BACKEND_URL}/orders/status/${productId}`,
+        { status: orderStatus },
+        { withCredentials: true }
+      );
+      // console.log(data);
+      toast({
+        title: "success",
+        description: data.data.message,
+      });
+      orderDetails(productId);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return {
     orderedProducts,
-    customer,
-    address,
     order,
-    couponCode,
     orderDetails,
+    updateStatus,
   };
 };
 

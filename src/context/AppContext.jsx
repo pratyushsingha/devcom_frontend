@@ -435,11 +435,13 @@ export default function AppContextProvider({ children }) {
     try {
       setProgress(progress + 10);
       setLoader(true);
-      const response = await axios.get(`${
-        import.meta.env.VITE_BACKEND_URL
-      }/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
-      `);
-
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/orders/list/admin?status=${statusFilter}&page=${page}&limit=15
+      `,
+        { withCredentials: true }
+      );
       setOrders(response.data.data.orders);
       setHasNextPage(response.data.data.hasNextPage);
       setProgress(progress + 100);
@@ -477,7 +479,7 @@ export default function AppContextProvider({ children }) {
         { withCredentials: true }
       );
       const product = products.find((item) => item._id == productId);
-      wishList.push({ product });
+      setWishList(...wishList, product);
       toast({
         title: "success",
         description: `${response.data.message}`,
@@ -514,14 +516,98 @@ export default function AppContextProvider({ children }) {
     }
   };
 
+  const [newCategory, setNewCategory] = useState("");
+  const [aOpen, setAopen] = useState(false);
+  const [adminCategories, setAdminCategorries] = useState([]);
+
+  const createCategory = async (e) => {
+    e.preventDefault();
+    try {
+      setProgress(progress + 10);
+      setLoader(true);
+      const data = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/categories`,
+
+        { name: newCategory },
+        { withCredentials: true }
+      );
+      getCategory();
+      toast({
+        title: "success",
+        description: data.data.message,
+      });
+      setProgress(progress + 100);
+      setLoader(false);
+      setDopen(false);
+    } catch (err) {
+      console.log(err);
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
+      setLoader(false);
+    }
+  };
+
+  const deleteCategory = async (categoryId) => {
+    try {
+      setProgress(progress + 10);
+      setLoader(true);
+      const data = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/categories/${categoryId}`,
+        { withCredentials: true }
+      );
+      console.log(categories);
+      const updatedCategories = adminCategories.filter(
+        (category) => category._id !== categoryId
+      );
+      console.log(updatedCategories);
+      setAdminCategorries(updatedCategories);
+      setProgress(progress + 100);
+      console.log(categories);
+
+      setLoader(false);
+      toast({
+        title: "success",
+        description: data.data.message,
+      });
+      setAopen(false);
+    } catch (err) {
+      toast({
+        title: "error",
+        description: err.response?.data?.message,
+      });
+      console.log(err);
+      setProgress(progress + 100);
+      setLoader(false);
+    }
+  };
+
+  const getAdminCategory = useCallback(async () => {
+    setProgress(progress + 10);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/admin/categories?page=1&limit=10`,
+        { withCredentials: true }
+      );
+      console.log(response);
+      setAdminCategorries(response.data.data.categories);
+      setProgress(progress + 100);
+    } catch (error) {
+      console.log(error);
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
+      setProgress(progress + 100);
+    }
+  }, [setAdminCategorries, deleteCategory]);
+
   useEffect(() => {
     getProfile();
     getProducts();
   }, []);
-  console.log(products);
-  // useCallback(() => {
-  //   getCart();
-  // }, [cartProducts, getCart]);
+  
   const value = {
     getProducts,
     products,
@@ -591,6 +677,11 @@ export default function AppContextProvider({ children }) {
     setQuery,
     getWishlist,
     setWishList,
+    getAdminCategory,
+    deleteCategory,
+    createCategory,
+    aOpen,
+    setAopen,
   };
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 }

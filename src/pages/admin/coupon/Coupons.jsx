@@ -1,7 +1,5 @@
-import axios from "axios";
 import Container from "../../../components/Container";
 import { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../../context/AppContext";
 import { Button } from "@/components/ui/button";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
@@ -18,8 +16,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 import AdminTable from "@/components/admin/AdminTable";
+import { CouponContext } from "@/context/CouponContext";
 
 export const columns = [
   {
@@ -48,70 +46,14 @@ export const columns = [
     Header: "Action",
     accessor: "_id",
     Cell: ({ row }) => {
-      const { toast } = useToast();
-      const { progress, setProgress, setLoader, getCoupon } =
-        useContext(AppContext);
-      const [couponUpdate, setCouponUpdate] = useState({
-        couponCode: "",
-        discountValue: Number,
-        name: "",
-      });
-
-      const updateCoupon = async (couponId, e) => {
-        e.preventDefault();
-        try {
-          setProgress(progress + 10);
-          setLoader(true);
-          const data = await axios.patch(
-            `${import.meta.env.VITE_BACKEND_URL}/coupons/${couponId}`,
-            couponUpdate,
-            { withCredentials: true }
-          );
-          setProgress(progress + 100);
-          setLoader(false);
-          toast({
-            title: "success",
-            description: data.data.message,
-          });
-          getCoupon();
-        } catch (err) {
-          console.log(err);
-          toast({
-            title: "error",
-            description: err.response.data.message,
-          });
-          setProgress(progress + 100);
-          setLoader(false);
-        }
-      };
-
-      const deleteCoupon = async (couponId, e) => {
-        try {
-          setProgress(progress + 10);
-          setLoader(true);
-          const response = await axios.delete(
-            `${import.meta.env.VITE_BACKEND_URL}/coupons/${couponId}`,
-            {
-              withCredentials: true,
-            }
-          );
-          setProgress(progress + 100);
-          setLoader(false);
-          toast({
-            title: "success",
-            description: response.data.message,
-          });
-          getCoupon();
-        } catch (err) {
-          console.log(err);
-          toast({
-            title: "error",
-            description: err.response.data.message,
-          });
-          setProgress(progress + 100);
-          setLoader(false);
-        }
-      };
+      const {
+        deleteCoupon,
+        updateCoupon,
+        couponUpdate,
+        setCouponUpdate,
+        coupons,
+        setCoupons,
+      } = useContext(CouponContext);
 
       return (
         <div className="flex space-x-3">
@@ -200,17 +142,17 @@ export const columns = [
 ];
 
 const Coupons = () => {
-  const { getCoupon, allCoupons, page } = useContext(AppContext);
-
+  const { page, getAdminCoupon, coupons } = useContext(CouponContext);
   useEffect(() => {
-    getCoupon();
+    getAdminCoupon();
   }, [page]);
+
   return (
     <Container className="flex space-x-5">
       <AdminSidebar />
       <AdminTable
         columns={columns}
-        data={allCoupons}
+        data={coupons}
         cardLabel="Coupons"
         inputPlaceholder="Filter coupons..."
       />

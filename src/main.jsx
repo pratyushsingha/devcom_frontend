@@ -35,7 +35,12 @@ import Orders from "./pages/admin/order/Orders.jsx";
 import ManageOrder from "./pages/admin/order/ManageOrder.jsx";
 import Admin from "./pages/admin/Admin.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
-
+import CouponContextProvider from "./context/CouponContext.jsx";
+import CategoryContextProvider from "./context/CategoryContext.jsx";
+import WishContextProvider from "./context/WishContext.jsx";
+import CartContextProvider from "./context/CartContext.jsx";
+import OrderContextProvider from "./context/OrderContext.jsx";
+import OrderDetailsPage from "./pages/OrderDetailsPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -68,14 +73,24 @@ const router = createBrowserRouter([
       },
       {
         path: "/product/:id",
-        element: <ProductDetails />,
+        element: (
+          <WishContextProvider>
+            <CartContextProvider>
+              <ProductDetails />
+            </CartContextProvider>
+          </WishContextProvider>
+        ),
       },
       {
         path: "/cart",
         element: (
           <AuthLayout authentication>
             {" "}
-            <Cart />
+            <CartContextProvider>
+              <CouponContextProvider>
+                <Cart />
+              </CouponContextProvider>
+            </CartContextProvider>
           </AuthLayout>
         ),
       },
@@ -83,7 +98,9 @@ const router = createBrowserRouter([
         path: "/wishlist",
         element: (
           <AuthLayout authentication>
-            <WishListPage />
+            <WishContextProvider>
+              <WishListPage />
+            </WishContextProvider>
           </AuthLayout>
         ),
       },
@@ -91,7 +108,19 @@ const router = createBrowserRouter([
         path: "/orders",
         element: (
           <AuthLayout authentication>
-            <OrderPage />
+            <OrderContextProvider>
+              <OrderPage />
+            </OrderContextProvider>
+          </AuthLayout>
+        ),
+      },
+      {
+        path: "/order/:orderId",
+        element: (
+          <AuthLayout authentication>
+            <OrderContextProvider>
+              <OrderDetailsPage />
+            </OrderContextProvider>
           </AuthLayout>
         ),
       },
@@ -173,7 +202,9 @@ const router = createBrowserRouter([
         path: "product/:id",
         element: (
           <AuthLayout authentication>
-            <ManageProduct />
+            <CategoryContextProvider>
+              <ManageProduct />
+            </CategoryContextProvider>
           </AuthLayout>
         ),
       },
@@ -181,7 +212,9 @@ const router = createBrowserRouter([
         path: "product/new",
         element: (
           <AuthLayout authentication>
-            <NewProduct />
+            <CategoryContextProvider>
+              <NewProduct />
+            </CategoryContextProvider>
           </AuthLayout>
         ),
       },
@@ -189,7 +222,9 @@ const router = createBrowserRouter([
         path: "categories",
         element: (
           <AuthLayout authentication>
-            <Categories />
+            <CategoryContextProvider>
+              <Categories />
+            </CategoryContextProvider>
           </AuthLayout>
         ),
       },
@@ -197,7 +232,11 @@ const router = createBrowserRouter([
         path: "coupons",
         element: (
           <AuthLayout authentication>
-            <Coupons />
+            <CartContextProvider>
+              <CouponContextProvider>
+                <Coupons />
+              </CouponContextProvider>
+            </CartContextProvider>
           </AuthLayout>
         ),
       },
@@ -213,7 +252,9 @@ const router = createBrowserRouter([
         path: "orders",
         element: (
           <AuthLayout authentication>
-            <Orders />
+            <OrderContextProvider>
+              <Orders />
+            </OrderContextProvider>
           </AuthLayout>
         ),
       },
@@ -221,7 +262,9 @@ const router = createBrowserRouter([
         path: "order/:id",
         element: (
           <AuthLayout authentication>
-            <ManageOrder />,
+            <OrderContextProvider>
+              <ManageOrder />,
+            </OrderContextProvider>
           </AuthLayout>
         ),
       },
@@ -230,12 +273,12 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <AuthContextProvider>
-      <AppContextProvider>
-        <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-          <RouterProvider router={router} />
-          <Toaster />
-        </ThemeProvider>
-      </AppContextProvider>
-    </AuthContextProvider>
+  <AuthContextProvider>
+    <AppContextProvider>
+      <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+        <RouterProvider router={router} />
+        <Toaster />
+      </ThemeProvider>
+    </AppContextProvider>
+  </AuthContextProvider>
 );

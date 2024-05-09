@@ -68,18 +68,19 @@ const NewCoupon = () => {
       // console.log(data);
       toast({
         title: "success",
-        description: response.data.message,
+        description: data.data.message,
       });
+      // setNewCoupon({});
       setProgress(progress + 100);
       setLoader(false);
     } catch (err) {
-      // console.log(err);
+      console.log(err);
       setProgress(progress + 100);
       setLoader(false);
       toast({
         variant: "destructive",
         title: "error",
-        description: err.response.data.message,
+        description: `${err.response?.data?.message}`,
       });
     }
   };
@@ -141,14 +142,14 @@ const NewCoupon = () => {
                   onChange={(e) =>
                     setNewCoupon({
                       ...newCoupon,
-                      discountValue: e.target.value,
+                      discountValue: Number(e.target.value),
                     })
                   }
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="minimumCartValue">Discount Value</Label>
+                <Label htmlFor="minimumCartValue">Minimum cart Value</Label>
                 <Input
                   id="minimumCartValue"
                   type="number"
@@ -156,7 +157,7 @@ const NewCoupon = () => {
                   onChange={(e) =>
                     setNewCoupon({
                       ...newCoupon,
-                      minimumCartValue: e.target.value,
+                      minimumCartValue: Number(e.target.value),
                     })
                   }
                   required
