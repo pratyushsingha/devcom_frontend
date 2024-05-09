@@ -1,7 +1,6 @@
-import { useEffect, useRef, useContext, useState, useCallback } from "react";
+import { useEffect, useRef, useContext, useState } from "react";
 import { AppContext } from "../../../context/AppContext";
 import Container from "../../../components/Container";
-import axios from "axios";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
 import { CiCirclePlus } from "react-icons/ci";
 import { MdContentCopy } from "react-icons/md";
@@ -18,7 +17,6 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
 
 import {
   AlertDialog,
@@ -31,9 +29,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import useCategory from "@/hooks/useCategory";
 import { TiTick } from "react-icons/ti";
 import AdminTable from "@/components/admin/AdminTable";
+import { CategoryContext } from "@/context/CategoryContext";
 
 export const columns = [
   {
@@ -71,70 +69,15 @@ export const columns = [
     Header: "Action",
     accessor: "actions",
     Cell: ({ row }) => {
-      const [aOpen, setAopen] = useState(false);
-      const [dOpen, setDopen] = useState(false);
-      const { toast } = useToast();
       const updatedCategoryRef = useRef("");
-      const { progress, setProgress, setLoader, getCategory } =
-        useContext(AppContext);
-      const updateCategory = async (e) => {
-        e.preventDefault();
-        try {
-          setProgress(progress + 10);
-          setLoader(true);
-          const data = await axios.patch(
-            `${import.meta.env.VITE_BACKEND_URL}/categories/${row.values._id}`,
-
-            { name: updatedCategoryRef.current },
-            { withCredentials: true }
-          );
-          setProgress(progress + 100);
-          setLoader(false);
-          toast({
-            title: "success",
-            description: data.data.message,
-          });
-          getCategory();
-          setDopen(false);
-        } catch (err) {
-          // console.log(err);
-          toast({
-            title: "error",
-            description: err.response.data.message,
-          });
-          setLoader(false);
-          setProgress(progress + 10);
-        }
-      };
-
-      const deleteCategory = async (e) => {
-        e.preventDefault();
-        try {
-          setProgress(progress + 10);
-          setLoader(true);
-          const data = await axios.delete(
-            `${import.meta.env.VITE_BACKEND_URL}/categories/${row.values._id}`,
-            { name: updatedCategoryRef.current },
-            { withCredentials: true }
-          );
-          setProgress(progress + 100);
-          setLoader(false);
-          toast({
-            title: "success",
-            description: data.data.message,
-          });
-          getCategory();
-          setAopen(false);
-        } catch (err) {
-          toast({
-            title: "error",
-            description: err.response.data.message,
-          });
-          console.log(err);
-          setProgress(progress + 100);
-          setLoader(false);
-        }
-      };
+      const {
+        deleteCategory,
+        aOpen,
+        setAopen,
+        updateCategory,
+        dOpen,
+        setDopen,
+      } = useContext(CategoryContext);
 
       return (
         <div className="flex space-x-3">
@@ -148,7 +91,11 @@ export const columns = [
                   Update Category
                 </DialogTitle>
               </DialogHeader>
-              <form onSubmit={updateCategory}>
+              <form
+                onSubmit={(e) =>
+                  updateCategory(e, row.values._id, updatedCategoryRef.current)
+                }
+              >
                 <div className="grid gap-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="name" className="text-right">
@@ -185,7 +132,9 @@ export const columns = [
               </AlertDialogHeader>
               <AlertDialogFooter>
                 <AlertDialogCancel>Cancel</AlertDialogCancel>
-                <AlertDialogAction onClick={deleteCategory}>
+                <AlertDialogAction
+                  onClick={() => deleteCategory(row.values._id)}
+                >
                   Continue
                 </AlertDialogAction>
               </AlertDialogFooter>
@@ -198,13 +147,20 @@ export const columns = [
 ];
 
 const Categories = () => {
-  const { categories, getCategory, page, dOpen, setDopen } =
-    useContext(AppContext);
-  const { createCategory, newCategory, setNewCategory } = useCategory();
+  const { dOpen, setDopen } = useContext(AppContext);
+  const {
+    createCategory,
+    newCategory,
+    setNewCategory,
+    getCategory,
+    categories,
+    page,
+    setCategorries,
+  } = useContext(CategoryContext);
 
   useEffect(() => {
     getCategory();
-  }, [page]);
+  }, [page, setCategorries]);
 
   return (
     <Container className="flex space-x-5">

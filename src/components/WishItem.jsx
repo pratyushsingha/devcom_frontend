@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { Link } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
 import { MdDelete } from "react-icons/md";
 import { Button } from "./ui/button";
+import { WishContext } from "@/context/WishContext";
 
 const WishItem = ({ item }) => {
-  const { removeFromWish } = useContext(AppContext);
+  const { removeFromWish } = useContext(WishContext);
   return (
     <div className="flex items-center hover:bg-[#00001e] px-6 py-2">
       <div className="flex w-2/5">

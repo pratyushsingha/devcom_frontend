@@ -43,32 +43,24 @@ const columns = [
   {
     Header: "Customer",
     accessor: "customer",
-    Cell: ({ row }) => <span>{row.values.customer.username}</span>,
+    Cell: ({ row }) => <span>{row.original.customer.username}</span>,
   },
   {
     Header: "Amount",
     accessor: "discountedOrderPrice",
-    Cell: ({ row }) => <span> &#8377; {row.values.discountedOrderPrice}</span>,
+    Cell: ({ row }) => (
+      <span> &#8377; {row.original.disCountedOrderPrice}</span>
+    ),
   },
   {
-    Header: "Discount",
-    accessor: (row) => {
-      if (row.discountedOrderPrice - row.orderPrice === 0) {
-        return (
-          <span className="text-red-500">
-            {" "}
-            &#8377; {row.discountedOrderPrice - row.orderPrice}
-          </span>
-        );
-      } else {
-        return (
-          <span className="text-green-500">
-            {" "}
-            &#8377; {row.discountedOrderPrice - row.orderPrice}
-          </span>
-        );
-      }
-    },
+    Header: "Dicount",
+    accessor: "discountedOrderPricee",
+    Cell: ({ row }) => (
+      <span>
+        {" "}
+        &#8377; {row.original.disCountedOrderPrice - row.original.orderPrice}
+      </span>
+    ),
   },
   {
     Header: () => {

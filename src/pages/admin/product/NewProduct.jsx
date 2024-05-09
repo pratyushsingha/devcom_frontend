@@ -26,15 +26,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useToast } from "@/components/ui/use-toast";
-import useCategory from "@/hooks/useCategory";
+import { CategoryContext } from "@/context/CategoryContext";
+import { ReloadIcon } from "@radix-ui/react-icons";
 
 const NewProduct = () => {
   const { toast } = useToast();
   const { categories, getCategory } = useContext(AppContext);
-  const { createCategory, newCategory, setNewCategory } = useCategory();
+  const { createCategory, newCategory, setNewCategory, setCategorries } =
+    useContext(CategoryContext);
   const [product, setProduct] = useState({});
   const [mainImage, setMainImage] = useState([]);
   const [isDisabled, setIsDisabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const handleInputChange = (e, field) => {
     setProduct({
@@ -54,13 +58,10 @@ const NewProduct = () => {
     }
   };
 
-  // //   const handleSubImageChange = () => {
-  // //     setSubImages([...subImages, ...e.target.files]);
-  // //   };
-
   const createProduct = async (e) => {
     e.preventDefault();
     try {
+      setLoading(true);
       const formData = new FormData();
       formData.append("category", product.category);
       formData.append("description", product.description);
@@ -68,36 +69,47 @@ const NewProduct = () => {
       formData.append("name", product.name);
       formData.append("price", product.price);
       formData.append("stock", product.stock);
-      //   for (let i = 0; i < subImages.length; i++) {
-      //     formData.append("subImages", subImages);
-      //   }
-      const data = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/ecommerce/products`, formData, {
-        withCredentials: true,
-      });
+
+      const data = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/products`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
       toast({
         title: "success",
         description: data.data.message,
       });
-
-      //   console.log(data);
+      setLoading(false);
       setIsDisabled(true);
     } catch (err) {
       console.log(err);
       toast({
+        varinat: "destructive",
         title: "error",
         description: err.response.data.message,
       });
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     getCategory();
-  }, []);
+  }, [setCategorries]);
+
+  useEffect(() => {
+    if (mainImage.length > 0) {
+      const imageUrl = URL.createObjectURL(mainImage[0]);
+      setPreviewImage(imageUrl);
+      console.log(imageUrl);
+    }
+  }, [mainImage, setPreviewImage]);
 
   return (
     <Container className="flex justify-center items-center h-screen">
       <Card>
-        <form onSubmit={createProduct}>
+        <form onSubmit={(e) => createProduct(e)}>
           <CardHeader>
             <CardTitle className="text-2xl mb-3 text-center">
               Create Product
@@ -216,8 +228,8 @@ const NewProduct = () => {
               <Label htmlFor="preview">Preview:</Label>
               <img
                 id="preview"
-                src={mainImage.length > 0 ? mainImage[0].name : ""}
-                alt={mainImage[0]?.name || "Selected Image"}
+                src={previewImage}
+                alt={"selected Image"}
                 style={{ maxWidth: "100%", maxHeight: "200px" }}
               />{" "}
             </div>
@@ -227,6 +239,7 @@ const NewProduct = () => {
               className="mt-3 w-full"
               onClick={createProduct}
             >
+              {loading && <ReloadIcon className="mr-2 h-4 w-4 animate-spin" />}
               Create
             </Button>
           </CardContent>

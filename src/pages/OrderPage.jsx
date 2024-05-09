@@ -1,123 +1,231 @@
-import toast from "react-hot-toast";
-import Container from "../components/Container";
-import React, { useState, useEffect, useContext } from "react";
-import axios from "axios";
-import OrderItem from "../components/OrderItem";
-import { Link } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
-import usePagination from "../hooks/usePagination";
+import { useContext, useEffect } from "react";
+import Container from "@/components/Container";
+import AdminSidebar from "@/components/admin/AdminSidebar";
 import { Button } from "@/components/ui/button";
+import { AppContext } from "@/context/AppContext";
+import { Link } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useGlobalFilter, useSortBy, useTable } from "react-table";
+import TableSearchFilter from "@/components/admin/TableSearchFilter";
+import usePagination from "@/hooks/usePagination";
+import { OrderContext } from "@/context/OrderContext";
+import moment from "moment";
+
+const statusFilteropts = [
+  { id: 1, name: "Delivered", value: "DELIVERED" },
+  { id: 2, name: "Pending", value: "PENDING" },
+  { id: 3, name: "Cancelled", value: "CANCELLED" },
+];
+
+const columns = [
+  {
+    Header: "Date",
+    accessor: "createdAt",
+    Cell: ({ row }) => (
+      <span>{moment(row.original.createdAt).format("LL")}</span>
+    ),
+  },
+  {
+    Header: "Amount",
+    accessor: "discountedOrderPrice",
+    Cell: ({ row }) => (
+      <span> &#8377; {row.original.disCountedOrderPrice}</span>
+    ),
+  },
+  {
+    Header: "Dicount",
+    accessor: "discountedOrderPricee",
+    Cell: ({ row }) => (
+      <span>
+        {" "}
+        &#8377; {row.original.disCountedOrderPrice - row.original.orderPrice}
+      </span>
+    ),
+  },
+  {
+    Header: () => {
+      const { statusFilter, getOrders, setStatusFilter } =
+        useContext(OrderContext);
+
+      useEffect(() => {
+        getOrders();
+      }, [statusFilter]);
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost">Status</Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Status filter</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuRadioGroup
+              value={statusFilter}
+              onValueChange={(value) => setStatusFilter(value)}
+            >
+              {statusFilteropts.map((filter) => (
+                <DropdownMenuRadioItem key={filter.id} value={filter.value}>
+                  {filter.name}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
+    accessor: "status",
+    Cell: ({ row }) =>
+      row.values.status === "PENDING" ? (
+        <Badge className="bg-yellow-700 hover:bg-yellow-600">PENDING</Badge>
+      ) : row.values.status === "DELIVERED" ? (
+        <Badge className="bg-green-700 hover:bg-green-600">DELIVERED</Badge>
+      ) : (
+        <Badge className="bg-red-700 hover:bg-red-600">CANCELLED</Badge>
+      ),
+    disableSortBy: true,
+  },
+  {
+    Header: "Action",
+    accessor: "_id",
+    Cell: ({ row }) => (
+      <Link to={`/order/${row.values._id}`}>
+        <Button>Details</Button>
+      </Link>
+    ),
+  },
+];
 
 const OrderPage = () => {
-  const { setLoader, page, progress, setProgress } = useContext(AppContext);
+  const { page } = useContext(AppContext);
+  const { getOrders, myOrders, hastNextPage, setStatusFilter, statusFilter } =
+    useContext(OrderContext);
   const { handlePrevClick, handleNextClick } = usePagination();
-  const [orders, setOrders] = useState([]);
-  const [totalOrders, setTotalOrders] = useState(0);
-
-  const orderPerPage = 6;
-  const getOrders = async () => {
-    try {
-      setLoader(true);
-      setProgress(progress + 10);
-      const response = await axios.get(
-        `${import.meta.env.VITE_BACKEND_URL}/orders/my-orders`,
-
-        {
-          withCredentials: true,
-        }
-      );
-      setOrders(response.data.data);
-      setTotalOrders(response.data.data.totalOrders);
-      setLoader(false);
-      setProgress(progress + 100);
-    } catch (err) {
-      console.log(err);
-      toast({
-        varinat: "destructive",
-        title: "error",
-        description: err.response.data.message,
-      });
-      setLoader(false);
-      setProgress(progress + 100);
-    }
-  };
-
-  useEffect(
-    () => {
-      getOrders();
+  const {
+    getTableProps,
+    getTableBodyProps,
+    rows,
+    headerGroups,
+    prepareRow,
+    state: { globalFilter },
+    setGlobalFilter,
+    getRowProps,
+  } = useTable(
+    {
+      columns,
+      data: myOrders,
     },
-    [page],
-    []
+    useGlobalFilter,
+    useSortBy
   );
-
+  useEffect(() => {
+    getOrders();
+  }, [page]);
   return (
-    <Container>
-      {orders.length > 0 ? (
-        <div className="container justify-center items-center mx-auto mt-10">
-          <div className="flex shadow-md my-10">
-            <div className="mx-auto w-3/4 bg-[#0E1629] px-10 py-10">
-              <div className="flex justify-between border-b pb-8">
-                <h1 className="font-semibold text-2xl">Order List</h1>
-                <div className="flex space-x-5">
-                  <h2 className="font-semibold text-4xl">
-                    {orders.length} Items
-                  </h2>
-                </div>
-              </div>
-              <div className="flex mt-10 mb-5 ml-8">
-                <h3 className="font-semibold text-gray-600 text-xs uppercase w-2/5">
-                  Date
-                </h3>
-                <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5">
-                  Quantity
-                </h3>
-                <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 ">
-                  Price
-                </h3>
-                <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 ">
-                  Discount
-                </h3>
-                <h3 className="font-semibold text-center text-gray-600 text-xs uppercase w-1/5 ">
-                  Status
-                </h3>
-              </div>
-              {orders.map((order) => (
-                <OrderItem key={order._id} item={order} />
-              ))}
-              <Link
-                to={"/products"}
-                className="flex font-semibold text-indigo-600 text-sm mt-10"
-              >
-                <svg
-                  className="fill-current mr-2 text-indigo-600 w-4"
-                  viewBox="0 0 448 512"
-                >
-                  <path d="M134.059 296H436c6.627 0 12-5.373 12-12v-56c0-6.627-5.373-12-12-12H134.059v-46.059c0-21.382-25.851-32.09-40.971-16.971L7.029 239.029c-9.373 9.373-9.373 24.569 0 33.941l86.059 86.059c15.119 15.119 40.971 4.411 40.971-16.971V296z" />
-                </svg>
-                Continue Shopping
-              </Link>
+    <Container className="flex space-x-5">
+      <Card className="mx-auto rounded-sm w-full bg-[#0E1629]">
+        <CardHeader className="flex flex-row justify-between">
+          <CardTitle className="text-3xl">Orders</CardTitle>
+          <div className="flex justify-end space-x-5 w-full">
+            <div className="self-center">
+              {statusFilter && (
+                <>
+                  <span className="text-lx font-semibold tracking-tight">
+                    Filter:{" "}
+                  </span>
+                  {statusFilter === "PENDING" ? (
+                    <Badge className="bg-yellow-700 hover:bg-yellow-600 gap-2">
+                      PENDING{" "}
+                      <button onClick={() => setStatusFilter("")}>X</button>
+                    </Badge>
+                  ) : statusFilter === "DELIVERED" ? (
+                    <Badge className="bg-green-700 hover:bg-green-600 gap-2">
+                      DELIVERED
+                      <button onClick={() => setStatusFilter("")}>X</button>
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-red-700 hover:bg-red-600 gap-2">
+                      CANCELLED{" "}
+                      <button onClick={() => setStatusFilter("")}>X</button>
+                    </Badge>
+                  )}
+                </>
+              )}
             </div>
+            <TableSearchFilter
+              className="w-3/4"
+              filter={globalFilter}
+              setFilter={setGlobalFilter}
+              inputPlaceholder="Filter orders..."
+            />
           </div>
-          <div className="flex space-x-3 justify-center">
-            <Button disabled={page <= 1} onClick={handlePrevClick}>
-              &laquo; Previous
-            </Button>
-            <Button
-              disabled={page === Math.ceil(totalOrders / orderPerPage)}
-              onClick={handleNextClick}
-            >
-              Next &raquo;
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <div className="flex flex-col justify-center items-center h-screen">
-          <h1 className="text-2xl mb-4">OrderPage is empty</h1>
-          <Link to="/products">
-            <Button>Buy now</Button>
-          </Link>
-        </div>
-      )}
+        </CardHeader>
+        <CardContent>
+          <Table {...getTableProps()}>
+            <TableHeader>
+              {headerGroups.map((headerGroup) => (
+                <TableRow {...headerGroup.getHeaderGroupProps()}>
+                  {headerGroup.headers.map((column) => (
+                    <TableHead
+                      {...column.getHeaderProps(column.getSortByToggleProps())}
+                    >
+                      {column.render("Header")}
+                      {column.isSorted && (
+                        <span>{column.isSortedDesc ? " ↓" : " ↑"}</span>
+                      )}
+                    </TableHead>
+                  ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody {...getTableBodyProps()}>
+              {rows.map((row) => {
+                prepareRow(row);
+                return (
+                  <TableRow {...row.getRowProps()}>
+                    {row.cells.map((cell) => (
+                      <TableCell {...cell.getCellProps()}>
+                        {cell.render("Cell")}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </CardContent>
+        <CardFooter className="flex space-x-3 justify-center my-4">
+          <Button disabled={page <= 1} onClick={handlePrevClick}>
+            &laquo; Previous
+          </Button>
+          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
+            Next &raquo;
+          </Button>
+        </CardFooter>
+      </Card>
     </Container>
   );
 };

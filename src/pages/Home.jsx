@@ -48,7 +48,7 @@ export default function Home() {
                   <CardContent className="p-6">
                     <img
                       className="w-full"
-                      src="https://i.postimg.cc/Dzpfs45w/image.png"
+                      src="https://i.postimg.cc/7LNHctCt/banner.webp"
                       alt="carousalImage"
                     />
                   </CardContent>

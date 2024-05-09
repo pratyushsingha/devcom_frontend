@@ -1,15 +1,20 @@
 import { useCallback, useContext } from "react";
 import { Link } from "react-router-dom";
-import { AppContext } from "../context/AppContext";
-import Spinner from "./loader/Spinner";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import useCart from "@/hooks/useCart";
+import { CartContext } from "@/context/CartContext";
+import { WishContext } from "@/context/WishContext";
 
 const CartItem = ({ item }) => {
-  const { cartItemIncrement, DeleteFromCart, addToWish } =
-    useContext(AppContext);
-  const { addToCart } = useCart();
+  const {
+    DeleteFromCart,
+    cartItemUpdate,
+    cartItemDecrement,
+    removeItemFromCart,
+  } = useContext(CartContext);
+
+  const { addToWish } = useContext(WishContext);
+
   return (
     <>
       <div className="flex items-center hover:bg-[#00001e]  px-6 py-5">
@@ -38,7 +43,7 @@ const CartItem = ({ item }) => {
           <Button
             variant="ghost"
             onClick={() => {
-              DeleteFromCart(item.product._id);
+              cartItemDecrement(item.product._id);
             }}
           >
             <svg
@@ -52,7 +57,7 @@ const CartItem = ({ item }) => {
           <Button
             variant="ghost"
             onClick={() => {
-              cartItemIncrement(item.product._id);
+              cartItemUpdate(item.product._id);
             }}
           >
             <svg
@@ -68,7 +73,7 @@ const CartItem = ({ item }) => {
         </span>
         <Button
           variant="destructive"
-          onClick={() => DeleteFromCart(item.product._id)}
+          onClick={() => removeItemFromCart(item.product._id)}
         >
           remove
         </Button>

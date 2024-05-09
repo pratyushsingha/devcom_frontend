@@ -22,6 +22,9 @@ const OrderItem = ({ item }) => {
     orderDetails,
   } = useOrder();
 
+  console.log(item)
+  console.log(orderedProducts)
+
   return (
     <div className="flex items-center hover:bg-[#00001e] -mx-8 px-6 py-5">
       <div className="flex w-2/5">
@@ -55,8 +58,8 @@ const OrderItem = ({ item }) => {
           </Button>
         </HoverCardTrigger>
         <HoverCardContent className="w-80">
-          {orderedProducts.map((item) =>
-            item.map((product) => (
+          {orderedProducts.map((i) =>
+            i.map((product) => (
               <Link to={`/product/${product.product._id}`} key={product._id}>
                 <div className="flex justify-between space-x-4">
                   <img

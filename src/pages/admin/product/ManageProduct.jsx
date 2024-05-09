@@ -34,14 +34,15 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Label } from "@radix-ui/react-dropdown-menu";
-import useCategory from "@/hooks/useCategory";
+import { CategoryContext } from "@/context/CategoryContext";
 
 const ManageProduct = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const { setLoader, progress, setProgress, categories, getCategory } =
     useContext(AppContext);
-  const { createCategory, newCategory, setNewCategory } = useCategory();
+  const { createCategory, newCategory, setNewCategory } =
+    useContext(CategoryContext);
 
   const { id } = useParams();
 
@@ -55,7 +56,9 @@ const ManageProduct = () => {
     try {
       setProgress(progress + 10);
       setLoader(true);
-      const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/ecommerce/products/${id}`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/products/${id}`
+      );
       setProductDetails([response.data.data]);
       setUpdatedProduct(response.data.data);
       setProgress(progress + 100);
@@ -102,7 +105,7 @@ const ManageProduct = () => {
       formData.append("stock", updatedProduct.stock);
 
       const response = await axios.patch(
-        `${import.meta.env.VITE_BACKEND_URL}/ecommerce/products/${id}`,
+        `${import.meta.env.VITE_BACKEND_URL}/products/${id}`,
         formData,
         { withCredentials: true }
       );
@@ -121,10 +124,13 @@ const ManageProduct = () => {
     }
   };
 
-  const deleteProrduct = async () => {
+  const deleteProrduct = async (productId) => {
     try {
-      const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/ecommerce/products/${id}
-`);
+      const response = await axios.delete(
+        `${import.meta.env.VITE_BACKEND_URL}/products/${productId}
+`,
+        { withCredentials: true }
+      );
       // console.log(response);
       toast({
         title: "success",
@@ -155,7 +161,7 @@ const ManageProduct = () => {
                 <Button
                   size="sm"
                   variant="destructive"
-                  onClick={deleteProrduct}
+                  onClick={() => deleteProrduct(product._id)}
                 >
                   <MdDelete />
                 </Button>
@@ -168,7 +174,7 @@ const ManageProduct = () => {
                 <div className="flex-col space-y-3">
                   <img
                     className="mx-auto w-48 h-52 rounded"
-                    src={product.mainImage.url}
+                    src={product.mainImage}
                     alt={product.name}
                   />
                 </div>

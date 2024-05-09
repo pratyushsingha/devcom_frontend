@@ -7,16 +7,60 @@ import { Card } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { WishContext } from "@/context/WishContext";
+import AdminTable from "@/components/admin/AdminTable";
+import { MdDelete } from "react-icons/md";
 
 const WishListPage = () => {
-  const { wishList, getWishlist } = useContext(AppContext);
+  const { wishList, getWishlist, removeFromWish } = useContext(WishContext);
 
   useEffect(() => {
     getWishlist();
   }, []);
+
+  const columns = [
+    {
+      Header: "Product Image",
+      accessor: "mainImage",
+      Cell: ({ row }) => (
+        <Link to={`/product/${row.original.product._id}`}>
+          <img
+            src={row.original.product.mainImage}
+            alt={row.original.product.name}
+            className="w-20 h-20 rounded"
+          />
+        </Link>
+      ),
+    },
+    {
+      Header: "Name",
+      accessor: "name",
+      Cell: ({ row }) => (
+        <div className="">
+          <p>{row.original.product.name}</p>
+          <p>₹ {row.original.product.price}</p>
+        </div>
+      ),
+    },
+    {
+      Header: "Action",
+      accessor: "_id",
+      Cell: ({ row }) => (
+        <Button onClick={() => removeFromWish(row.original.product._id)}>
+          <MdDelete />
+        </Button>
+      ),
+    },
+  ];
   return (
     <Container>
-      {wishList.length > 0 ? (
+      <AdminTable
+        columns={columns}
+        data={wishList}
+        cardLabel="Wishlist"
+        inputPlaceholder="Filter wishlist..."
+      />
+      {/* {wishList.length > 0 ? (
         <div className="container mx-auto mt-10">
           <div className="flex shadow-md my-10">
             <Card className="mx-auto w-3/4 bg-[#0E1629] px-10 py-10">
@@ -58,12 +102,10 @@ const WishListPage = () => {
         <div className="flex flex-col justify-center items-center h-screen">
           <h1 className="text-2xl mb-4">Wishlist is empty</h1>
           <Link to="/products">
-            <Button >
-              Buy now
-            </Button>
+            <Button>Buy now</Button>
           </Link>
         </div>
-      )}
+      )} */}
     </Container>
   );
 };
