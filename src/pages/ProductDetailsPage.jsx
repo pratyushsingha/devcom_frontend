@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import axios from "axios";
@@ -6,9 +6,7 @@ import ProductItem from "../components/ProductItem";
 import { CiHeart } from "react-icons/ci";
 import { IoHeartSharp } from "react-icons/io5";
 import Container from "../components/Container";
-import useCart from "../hooks/useCart";
 import { Spinner } from "../components";
-import toast from "react-hot-toast";
 import { Button } from "@/components/ui/button";
 import { ReloadIcon } from "@radix-ui/react-icons";
 import StarRatting from "@/components/StarRatting";
@@ -52,9 +50,10 @@ const ProductDetails = () => {
   const [category, setCategory] = useState("");
   const [rating, setRating] = useState(0);
   const [userReviews, setUserReviews] = useState([]);
-  const [readMore, setReadMore] = useState(false);
+  const [ReviewReadMore, setReviewReadMore] = useState(false);
   const [reviewLoading, setReviewLoading] = useState(false);
   const [userRating, setUserRating] = useState(0);
+  const [descReadMore, setDescReadMore] = useState(false);
 
   const {
     register,
@@ -202,9 +201,17 @@ const ProductDetails = () => {
                     {productDetails.name}
                   </h1>
                   <StarRatting rating={userRating} fontSize="25px" />
-                  <p className="leading-7 [&:not(:first-child)]:mt-6 text-slate-200">
-                    {productDetails.description}
-                  </p>
+                  <span className="leading-7 [&:not(:first-child)]:mt-6 text-slate-200">
+                    {descReadMore && productDetails.description.length > 0
+                      ? productDetails.description
+                      : `${productDetails.description?.slice(0, 80)}...`}
+                  </span>
+                  <button
+                    className="text-purple-500"
+                    onClick={() => setDescReadMore((prev) => !prev)}
+                  >
+                    read more
+                  </button>
                   <div className="flex mt-10">
                     <span className="leading-7 text-2xl [&:not(:first-child)]:mt-6 text-white">
                       &#8377;{productDetails.price}
@@ -363,13 +370,14 @@ const ProductDetails = () => {
                           rating={review.starRatting}
                           fontSize="20px"
                         />
-                        {review.reviewDescription.length > 80 && !readMore ? (
+                        {review.reviewDescription.length > 80 &&
+                        !ReviewReadMore ? (
                           <>
                             <p className="leading-7 my-2 border-l-2 pl-6 italic">
                               {review.reviewDescription.slice(0, 80)}
                             </p>
                             <button
-                              onClick={() => setReadMore(true)}
+                              onClick={() => setReviewReadMore(true)}
                               className="text-purple-500"
                             >
                               read more
@@ -381,7 +389,7 @@ const ProductDetails = () => {
                               {review.reviewDescription}
                             </p>
                             <button
-                              onClick={() => setReadMore(false)}
+                              onClick={() => setReviewReadMore(false)}
                               className="text-purple-500"
                             >
                               read less

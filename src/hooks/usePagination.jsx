@@ -1,8 +1,8 @@
+import { AppContext } from "@/context/AppContext";
 import { useContext } from "react";
-import { AppContext } from "../context/AppContext";
 
 const usePagination = () => {
-  const { setPage } = useContext(AppContext);
+  const { page, setPage, hasNextPage, setHasNextPage } = useContext(AppContext);
 
   const handlePrevClick = () => {
     setPage((prev) => prev - 1);
@@ -12,7 +12,14 @@ const usePagination = () => {
     setPage((prev) => prev + 1);
   };
 
-  return { handlePrevClick, handleNextClick };
+  return {
+    handlePrevClick,
+    handleNextClick,
+    page,
+    setPage,
+    hasNextPage,
+    setHasNextPage,
+  };
 };
 
 export default usePagination;

@@ -33,7 +33,6 @@ import NewCoupon from "./pages/admin/coupon/NewCoupon.jsx";
 import { ThemeProvider } from "./context/theme-provider.jsx";
 import Orders from "./pages/admin/order/Orders.jsx";
 import ManageOrder from "./pages/admin/order/ManageOrder.jsx";
-import Admin from "./pages/admin/Admin.jsx";
 import Dashboard from "./pages/admin/Dashboard.jsx";
 import CouponContextProvider from "./context/CouponContext.jsx";
 import CategoryContextProvider from "./context/CategoryContext.jsx";
@@ -41,6 +40,8 @@ import WishContextProvider from "./context/WishContext.jsx";
 import CartContextProvider from "./context/CartContext.jsx";
 import OrderContextProvider from "./context/OrderContext.jsx";
 import OrderDetailsPage from "./pages/OrderDetailsPage.jsx";
+import Admin from "./pages/admin/Admin.jsx";
+import AddressContextProvider from "./context/AddressContext.jsx";
 
 const router = createBrowserRouter([
   {
@@ -69,7 +70,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/products",
-        element: <ProductPage />,
+        element: (
+          <CategoryContextProvider>
+            <ProductPage />
+          </CategoryContextProvider>
+        ),
       },
       {
         path: "/product/:id",
@@ -128,7 +133,9 @@ const router = createBrowserRouter([
         path: "/shipping",
         element: (
           <AuthLayout authentication>
-            <Shipping />
+            <AddressContextProvider>
+              <Shipping />
+            </AddressContextProvider>
           </AuthLayout>
         ),
       },
@@ -273,12 +280,12 @@ const router = createBrowserRouter([
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <AuthContextProvider>
-    <AppContextProvider>
+  <AppContextProvider>
+    <AuthContextProvider>
       <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
         <RouterProvider router={router} />
         <Toaster />
       </ThemeProvider>
-    </AppContextProvider>
-  </AuthContextProvider>
+    </AuthContextProvider>
+  </AppContextProvider>
 );

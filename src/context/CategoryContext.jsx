@@ -12,6 +12,25 @@ export default function CategoryContextProvider({ children }) {
   const [newCategory, setNewCategory] = useState("");
   const [aOpen, setAopen] = useState(false);
   const [categories, setCategorries] = useState([]);
+  const [productCategories, setProductCategories] = useState([]);
+
+  const getProductCategories = useCallback(async () => {
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/categories`,
+        {
+          withCredentials: true,
+        }
+      );
+      setProductCategories(response.data.data.Categories);
+    } catch (error) {
+      console.log(err);
+      toast({
+        title: "error",
+        description: err.response.data.message,
+      });
+    }
+  }, [setProductCategories]);
 
   const createCategory = async (e) => {
     e.preventDefault();
@@ -143,6 +162,9 @@ export default function CategoryContextProvider({ children }) {
     updateCategory,
     setDopen,
     dOpen,
+    getProductCategories,
+    setProductCategories,
+    productCategories,
   };
 
   return (

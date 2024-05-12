@@ -31,9 +31,14 @@ import { ReloadIcon } from "@radix-ui/react-icons";
 
 const NewProduct = () => {
   const { toast } = useToast();
-  const { categories, getCategory } = useContext(AppContext);
-  const { createCategory, newCategory, setNewCategory, setCategorries } =
-    useContext(CategoryContext);
+  const {
+    createCategory,
+    newCategory,
+    setNewCategory,
+    setProductCategories,
+    productCategories,
+    getProductCategories,
+  } = useContext(CategoryContext);
   const [product, setProduct] = useState({});
   const [mainImage, setMainImage] = useState([]);
   const [isDisabled, setIsDisabled] = useState(true);
@@ -95,8 +100,8 @@ const NewProduct = () => {
   };
 
   useEffect(() => {
-    getCategory();
-  }, [setCategorries]);
+    getProductCategories();
+  }, [setProductCategories]);
 
   useEffect(() => {
     if (mainImage.length > 0) {
@@ -165,7 +170,7 @@ const NewProduct = () => {
                   <SelectContent>
                     <SelectGroup>
                       <SelectLabel>none</SelectLabel>
-                      {categories.map((category) => (
+                      {productCategories.map((category) => (
                         <SelectItem key={category._id} value={category._id}>
                           {category.name}
                         </SelectItem>

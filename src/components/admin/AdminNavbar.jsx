@@ -21,8 +21,8 @@ import { AuthContext } from "@/context/AuthContext";
 import { IoLogOut } from "react-icons/io5";
 
 const AdminNavbar = () => {
-  const { loader, profileInfo, getProfile } = useContext(AppContext);
-  const { logout } = useContext(AuthContext);
+  const { loader } = useContext(AppContext);
+  const { logout, profileInfo, getProfile } = useContext(AuthContext);
   useEffect(() => {
     getProfile();
   }, []);
@@ -51,7 +51,7 @@ const AdminNavbar = () => {
                   <DropdownMenuLabel>
                     Hii {profileInfo.username} 👋
                   </DropdownMenuLabel>
-                  <DropdownMenuSeparator/>
+                  <DropdownMenuSeparator />
                   <Link to="/">
                     <DropdownMenuItem className="flex space-x-3">
                       <RiAdminLine className="w-5 h-5" />

@@ -31,8 +31,8 @@ const AdminTable = forwardRef(function table(
   },
   ref
 ) {
-  const { handleNextClick, handlePrevClick } = usePagination();
-  const { page, hastNextPage } = useContext(AppContext);
+  const { handleNextClick, handlePrevClick, page, setPage, hasNextPage } =
+    usePagination();
   const {
     getTableProps,
     getTableBodyProps,
@@ -103,7 +103,7 @@ const AdminTable = forwardRef(function table(
         <Button disabled={page <= 1} onClick={handlePrevClick}>
           &laquo; Previous
         </Button>
-        <Button disabled={hastNextPage == false} onClick={handleNextClick}>
+        <Button disabled={hasNextPage !== true} onClick={handleNextClick}>
           Next &raquo;
         </Button>
       </CardFooter>

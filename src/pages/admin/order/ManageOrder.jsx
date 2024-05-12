@@ -1,9 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 import Container from "@/components/Container";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,11 +22,9 @@ import {
 import { OrderStatuses } from "@/utils";
 import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
-import useOrder from "@/hooks/useOrder";
 import { OrderContext } from "@/context/OrderContext";
 
 const ManageOrder = () => {
-  const { toast } = useToast();
   const { id } = useParams();
   const {
     orderedProducts,
@@ -42,7 +38,6 @@ const ManageOrder = () => {
   useEffect(() => {
     orderDetails(id);
   }, [id]);
-
 
   return (
     <Container className="flex flex-col md:flex-row space-y-3 justify-center items-center h-screen md:space-x-3">

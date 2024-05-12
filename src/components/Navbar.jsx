@@ -13,14 +13,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import DropDown from "./NavDropDown";
 import { CartContext } from "@/context/CartContext";
+import { AuthContext } from "@/context/AuthContext";
 
 const Navbar = () => {
-  const { loader, profileInfo, getProfile } = useContext(AppContext);
-  const { cartProducts, getCart, setCartProducts } = useContext(CartContext);
-
-  useEffect(() => {
-    getCart();
-  }, [setCartProducts]);
+  const { loader } = useContext(AppContext);
+  const { cartProducts } = useContext(CartContext);
+  const { profileInfo } = useContext(AuthContext);
 
   return (
     <div className="flex relative">

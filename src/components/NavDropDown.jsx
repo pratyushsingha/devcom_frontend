@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { AppContext } from "../context/AppContext";
 import { DropDownOptions } from "../utils";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
@@ -17,7 +16,7 @@ import { RiAdminLine } from "react-icons/ri";
 
 const DropdownMenu = () => {
   const { logout } = useContext(AuthContext);
-  const { profileInfo } = useContext(AppContext);
+  const { profileInfo } = useContext(AuthContext);
   return (
     <DropdownMenuContent className="w-56">
       <DropdownMenuLabel>Hii {profileInfo.username} 👋</DropdownMenuLabel>
