@@ -32,6 +32,7 @@ import {
 import { useGlobalFilter, useSortBy, useTable } from "react-table";
 import TableSearchFilter from "@/components/admin/TableSearchFilter";
 import usePagination from "@/hooks/usePagination";
+import { OrderContext } from "@/context/OrderContext";
 
 const statusFilteropts = [
   { id: 1, name: "Delivered", value: "DELIVERED" },
@@ -64,11 +65,12 @@ const columns = [
   },
   {
     Header: () => {
-      const { statusFilter, handleStatus, getOrders } = useContext(AppContext);
+      const { adminStatusFilter, handleAdminOrderStatus, getAdminOrders } =
+        useContext(OrderContext);
 
       useEffect(() => {
-        getOrders();
-      }, [statusFilter]);
+        getAdminOrders();
+      }, [adminStatusFilter]);
 
       return (
         <DropdownMenu>
@@ -79,8 +81,8 @@ const columns = [
             <DropdownMenuLabel>Status filter</DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuRadioGroup
-              value={statusFilter}
-              onValueChange={handleStatus}
+              value={adminStatusFilter}
+              onValueChange={handleAdminOrderStatus}
             >
               {statusFilteropts.map((filter) => (
                 <DropdownMenuRadioItem key={filter.id} value={filter.value}>
@@ -116,14 +118,13 @@ const columns = [
 
 const Orders = () => {
   const {
-    getOrders,
     orders,
-    page,
+    getAdminOrders,
+    adminStatusFilter,
+    setAdminStatusFilter,
     hastNextPage,
-    statusFilter,
-    setStatusFilter,
-  } = useContext(AppContext);
-  const { handlePrevClick, handleNextClick } = usePagination();
+  } = useContext(OrderContext);
+  const { handlePrevClick, handleNextClick, page, setPage } = usePagination();
   const {
     getTableProps,
     getTableBodyProps,
@@ -142,7 +143,7 @@ const Orders = () => {
     useSortBy
   );
   useEffect(() => {
-    getOrders();
+    getAdminOrders();
   }, [page]);
   return (
     <Container className="flex space-x-5">
@@ -152,25 +153,31 @@ const Orders = () => {
           <CardTitle className="text-3xl">Orders</CardTitle>
           <div className="flex justify-end space-x-5 w-full">
             <div className="self-center">
-              {statusFilter && (
+              {adminStatusFilter && (
                 <>
                   <span className="text-lx font-semibold tracking-tight">
                     Filter:{" "}
                   </span>
-                  {statusFilter === "PENDING" ? (
+                  {adminStatusFilter === "PENDING" ? (
                     <Badge className="bg-yellow-700 hover:bg-yellow-600 gap-2">
                       PENDING{" "}
-                      <button onClick={() => setStatusFilter("")}>X</button>
+                      <button onClick={() => setAdminStatusFilter("")}>
+                        X
+                      </button>
                     </Badge>
-                  ) : statusFilter === "DELIVERED" ? (
+                  ) : adminStatusFilter === "DELIVERED" ? (
                     <Badge className="bg-green-700 hover:bg-green-600 gap-2">
                       DELIVERED
-                      <button onClick={() => setStatusFilter("")}>X</button>
+                      <button onClick={() => setAdminStatusFilter("")}>
+                        X
+                      </button>
                     </Badge>
                   ) : (
                     <Badge className="bg-red-700 hover:bg-red-600 gap-2">
                       CANCELLED{" "}
-                      <button onClick={() => setStatusFilter("")}>X</button>
+                      <button onClick={() => setAdminStatusFilter("")}>
+                        X
+                      </button>
                     </Badge>
                   )}
                 </>
@@ -222,7 +229,7 @@ const Orders = () => {
           <Button disabled={page <= 1} onClick={handlePrevClick}>
             &laquo; Previous
           </Button>
-          <Button disabled={hastNextPage == false} onClick={handleNextClick}>
+          <Button disabled={hastNextPage !== true} onClick={handleNextClick}>
             Next &raquo;
           </Button>
         </CardFooter>

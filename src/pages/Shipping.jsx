@@ -21,10 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { AuthContext } from "@/context/AuthContext";
+import { AddressContext } from "@/context/AddressContext";
 
 const Shipping = () => {
-  const { setLoader, getAddress } = useContext(AppContext);
-  const { allAddress, profileInfo } = useContext(AppContext);
+  const { setLoader } = useContext(AppContext);
+  const { allAddress, getAddress } = useContext(AddressContext);
+  const { profileInfo } = useContext(AuthContext);
   const [selectedAddress, setSelectedAddress] = useState();
   const [generatedOrder, setGeneratedOrder] = useState([]);
 
@@ -77,7 +80,7 @@ const Shipping = () => {
 
   return (
     <Container className="my-10 flex flex-col justify-center items-center">
-      <Card>
+      <Card className="bg-[#0E1629] w-8/12">
         <CardHeader>
           <CardTitle className="text-2xl uppercase">Delivery address</CardTitle>
         </CardHeader>
@@ -90,7 +93,7 @@ const Shipping = () => {
                   defaultValue={selectedAddress}
                   onValueChange={(value) => setSelectedAddress(value)}
                 >
-                  <div>
+                  <>
                     <div className="flex my-2 space-x-2">
                       <RadioGroupItem
                         checked={selectedAddress == item._id}
@@ -103,7 +106,7 @@ const Shipping = () => {
                         {item.pincode}
                       </Label>
                     </div>
-                  </div>
+                  </>
                 </RadioGroup>
               </div>
             ))

@@ -18,6 +18,7 @@ import {
 import InputDiv from "@/components/InputDiv";
 import { useToast } from "@/components/ui/use-toast";
 import { ReloadIcon } from "@radix-ui/react-icons";
+import { AuthContext } from "@/context/AuthContext";
 
 const profileDetailsSchema = z.object({
   firstName: z.string().nonempty("Firstname is required").min(2, {
@@ -44,8 +45,8 @@ const profileDetailsSchema = z.object({
 
 const EditProfile = () => {
   const { toast } = useToast();
-  const { loader, setLoader, progress, setProgress, getProfile } =
-    useContext(AppContext);
+  const { loader, setLoader, progress, setProgress } = useContext(AppContext);
+  const { getProfile } = useContext(AuthContext);
   const [files, setFiles] = useState([]);
   const {
     register,

@@ -1,4 +1,10 @@
-import { useCallback, useContext, useState, createContext } from "react";
+import {
+  useCallback,
+  useContext,
+  useState,
+  createContext,
+  useEffect,
+} from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { AppContext } from "@/context/AppContext";
 import axios from "axios";
@@ -190,6 +196,10 @@ export default function CouponContextProvider({ children }) {
       setProgress(progress + 100);
     }
   }, [updateCoupon, deleteCoupon]);
+
+  useEffect(() => {
+    cartProducts.length > 0 && availableCoupons();
+  }, []);
 
   const values = {
     getAdminCoupon,

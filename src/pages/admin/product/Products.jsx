@@ -1,12 +1,13 @@
-import { useContext, useEffect, useState } from "react";
+// Assuming correct implementation of usePagination hook
+import { useCallback, useEffect, useState } from "react";
 import Container from "../../../components/Container";
 import AdminSidebar from "../../../components/admin/AdminSidebar";
-import { AppContext } from "../../../context/AppContext";
 import { Link } from "react-router-dom";
 import { CiCirclePlus } from "react-icons/ci";
 import { Button } from "@/components/ui/button";
 import AdminTable from "@/components/admin/AdminTable";
 import axios from "axios";
+import usePagination from "@/hooks/usePagination";
 
 const columns = [
   {
@@ -27,7 +28,7 @@ const columns = [
   {
     Header: "Price",
     accessor: "price",
-    Cell: ({ row }) => <p> &#8377; {row.values.price}</p>,
+    Cell: ({ row }) => <p> ₹{row.values.price}</p>,
   },
   {
     Header: "Stock",
@@ -46,25 +47,27 @@ const columns = [
 
 const Products = () => {
   const [products, setProducts] = useState([]);
-  const { page } = useContext(AppContext);
+  const { page, setHasNextPage, setPage } = usePagination();
 
-  const adminAllProducts = async () => {
+  const adminAllProducts = useCallback(async () => {
     try {
       const response = await axios.get(
         `${
           import.meta.env.VITE_BACKEND_URL
-        }/admin/products?page=${page}&limit=12`,
+        }/admin/products?page=${page}&limit=50`,
         { withCredentials: true }
       );
       setProducts(response.data.data.products);
-      console.log(response.data.data.products);
+      setHasNextPage(response.data.data.hasNextPage);
+      setPage(response.data.data.page);
     } catch (error) {
       console.log(error.message);
     }
-  };
+  }, [page, setHasNextPage, setPage]);
+
   useEffect(() => {
     adminAllProducts();
-  }, []);
+  }, [adminAllProducts]);
 
   return (
     <Container className="flex space-x-5">

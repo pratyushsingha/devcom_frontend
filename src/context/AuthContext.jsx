@@ -1,12 +1,20 @@
 import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { AppContext } from "./AppContext";
 
 export const AuthContext = createContext();
 
 export default function AuthContextProvider({ children }) {
+  const { setProgress, progress, setLoader } = useContext(AppContext);
   const { toast } = useToast();
   const [auth, setAuth] = useState({});
+  const [profileInfo, setProfileInfo] = useState({
+    avatar: "",
+    email: "",
+    username: "",
+    role: "",
+  });
   const refreshAccessToken = async () => {
     try {
       const response = await axios.post(
@@ -68,7 +76,39 @@ export default function AuthContextProvider({ children }) {
     }
   };
 
-  const values = { auth, setAuth, logout };
+  const getProfile = async () => {
+    try {
+      setLoader(true);
+      setProgress(progress + 10);
+      const response = await axios.get(
+        `${import.meta.env.VITE_BACKEND_URL}/users/current-user`,
+        { withCredentials: true }
+      );
+      // console.log(response.data.data.avatar.url);
+
+      console.log(response.data.data);
+
+      setProfileInfo({
+        avatar: response.data.data.avatar,
+        email: response.data.data.email,
+        username: response.data.data.username,
+        role: response.data.data.role,
+      });
+      console.log(response);
+      setLoader(false);
+      setProgress(progress + 100);
+    } catch (err) {
+      console.log(err);
+      setLoader(false);
+      setProgress(progress + 100);
+    }
+  };
+
+  useEffect(() => {
+    localStorage.getItem("accessToken") && getProfile();
+  }, []);
+
+  const values = { auth, setAuth, logout, getProfile, profileInfo };
   return (
     <AuthContext.Provider value={values}>{children} </AuthContext.Provider>
   );

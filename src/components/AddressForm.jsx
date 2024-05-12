@@ -14,9 +14,10 @@ import {
 } from "@/components/ui/select";
 import { Button } from "./ui/button";
 import { DialogFooter } from "./ui/dialog";
+import { AddressContext } from "@/context/AddressContext";
 
 const AddressForm = () => {
-  const { address, setAddress, saveAddress } = useContext(AppContext);
+  const { address, setAddress, saveAddress } = useContext(AddressContext);
   return (
     <form onSubmit={saveAddress}>
       <div className="grid gap-4 py-4">

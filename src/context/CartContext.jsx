@@ -192,6 +192,9 @@ export default function CartContextProvider({ children }) {
     setCartProducts,
   ]);
 
+  useEffect(() => {
+    localStorage.getItem("accessToken") && getCart();
+  }, [setCartProducts, setCartDetails]);
 
   const values = {
     addToCart,

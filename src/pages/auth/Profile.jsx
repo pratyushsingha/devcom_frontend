@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { AppContext } from "../../context/AppContext";
 import ProfileSidebar from "../../components/ProfileSidebar";
 import { FaEdit } from "react-icons/fa";
 import { CgDanger } from "react-icons/cg";
@@ -16,6 +15,7 @@ import InputDiv from "../../components/InputDiv";
 import PassStrengthBar from "@/components/PassStrengthBar";
 import { passwordStrength } from "check-password-strength";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AuthContext } from "@/context/AuthContext";
 
 const passwordSchema = z.object({
   oldPassword: z.string().nonempty("old password is required"),
@@ -30,7 +30,7 @@ const passwordSchema = z.object({
 
 const Profile = () => {
   const { toast } = useToast();
-  const { profileInfo, getProfile } = useContext(AppContext);
+  const { profileInfo, getProfile } = useContext(AuthContext);
   const [showPassword, setShowPassword] = useState(false);
   const [cnfShowPassword, setCnfShowPassword] = useState(false);
   const [passStrength, setPassStrength] = useState(-1);

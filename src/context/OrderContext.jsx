@@ -11,9 +11,12 @@ export default function OrderContextProvider({ children }) {
   const [order, setOrder] = useState([]);
   const [orderStatus, setOrderStatus] = useState("");
   const [myOrders, setMyOrders] = useState([]);
-  const { progress, setProgress, setLoader, page } = useContext(AppContext);
+  const { progress, setProgress, setLoader } = useContext(AppContext);
   const [hasNextPage, setHasNextPage] = useState(false);
   const [statusFilter, setStatusFilter] = useState("");
+  const [adminStatusFilter, setAdminStatusFilter] = useState("");
+  const [orders, setOrders] = useState([]);
+  const [page, setPage] = useState(1);
 
   const getOrders = async () => {
     try {
@@ -63,7 +66,6 @@ export default function OrderContextProvider({ children }) {
         return item;
       });
       setOrder(updatedOrder);
-      console.log(order);
     } catch (err) {
       console.log(err);
     }
@@ -100,9 +102,46 @@ export default function OrderContextProvider({ children }) {
     [updateStatus, setOrderStatus, setOrder]
   );
 
+  const handleAdminOrderStatus = (value) => {
+    setAdminStatusFilter(value);
+  };
+
+  const getAdminOrders = useCallback(async () => {
+    try {
+      setProgress(progress + 10);
+      setLoader(true);
+      const response = await axios.get(
+        `${
+          import.meta.env.VITE_BACKEND_URL
+        }/orders/list/admin?status=${adminStatusFilter}&page=${page}&limit=15
+      `,
+        { withCredentials: true }
+      );
+      setOrders(response.data.data.orders);
+      setHasNextPage(response.data.data.hasNextPage);
+      setProgress(progress + 100);
+      setLoader(false);
+    } catch (err) {
+      console.log(err);
+      setProgress(progress + 100);
+      setLoader(false);
+    }
+  }, [updateStatus, setOrderStatus]);
+
+  const handlePrevClick = () => {
+    setPage((prev) => prev - 1);
+    console.log(page);
+  };
+
+  const handleNextClick = () => {
+    setPage((prev) => prev + 1);
+    console.log(page);
+  };
+
   const values = {
-    orderedProducts,
     order,
+    orders,
+    orderedProducts,
     orderDetails,
     updateStatus,
     orderStatus,
@@ -113,6 +152,14 @@ export default function OrderContextProvider({ children }) {
     hasNextPage,
     statusFilter,
     setStatusFilter,
+    getAdminOrders,
+    adminStatusFilter,
+    setAdminStatusFilter,
+    handleAdminOrderStatus,
+    page,
+    setPage,
+    handlePrevClick,
+    handleNextClick,
   };
 
   return (

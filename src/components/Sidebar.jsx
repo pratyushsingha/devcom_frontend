@@ -14,14 +14,13 @@ import {
 } from "@/components/ui/select";
 import { FcClearFilters } from "react-icons/fc";
 import { Button } from "./ui/button";
-const Sidebar = () => {
+
+const Sidebar = ({ productCategories }) => {
   const {
-    categories,
     handlePrice,
     selectedPrice,
     handleCategory,
     selectedCategory,
-    getCategory,
     handleSort,
     selectedSort,
     setSelectedCategory,
@@ -94,7 +93,7 @@ const Sidebar = () => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>none</SelectLabel>
-              {categories.map((category) => (
+              {productCategories.map((category) => (
                 <SelectItem key={category._id} value={category._id}>
                   {category.name}
                 </SelectItem>
